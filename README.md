@@ -190,7 +190,7 @@ Default agent counts in `config/config_*.json`:
 | Scenario | UserAgent | RecommenderAgent |
 |----------|-----------|------------------|
 | Rednote | 1476 | 7 |
-| Twitter | 1067 | 3 |
+| Twitter | 1067 | 7 |
 | Weibo | 130 | 7 |
 
 ### Setup checklist

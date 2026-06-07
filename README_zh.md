@@ -189,7 +189,7 @@ datasets/
 | 场景 | UserAgent | RecommenderAgent |
 |------|-----------|------------------|
 | Rednote | 1476 | 7 |
-| Twitter | 1067 | 3 |
+| Twitter | 1067 | 7 |
 | Weibo | 130 | 7 |
 
 ### 准备步骤
