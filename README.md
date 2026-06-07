@@ -43,9 +43,14 @@ Make sure `config_name` values referenced in scenario configs match entries in `
 
 ### 3. Prepare datasets
 
-Simulation backbones are stored under the project-root `datasets/` directory (gitignored due to size). See [Datasets](#datasets) for layout and setup.
+Simulation backbones are stored under the project-root `datasets/` directory. See [Datasets](#datasets) for layout and setup.
 
-At minimum, before running a scenario, place the corresponding platform data under `datasets/<platform>/` (see layout below).
+At minimum, after cloning, fetch backbone data with Git LFS:
+
+```bash
+git lfs install
+git lfs pull
+```
 
 Run simulations from the **project root** so relative paths inside `env_data.json` (e.g. `datasets/rednote/embeddings/...`) resolve correctly.
 
@@ -143,7 +148,7 @@ MIDSim uses two different `datasets` paths:
 | `datasets/` (project root) | **Input** — static backbone data for each platform (posts, users, embeddings) |
 | `src/envs/<env>/runs/<timestamp>/datasets/` | **Output** — per-round snapshots exported during a run |
 
-The root `datasets/` directory is listed in `.gitignore` because profile and embedding files can be very large (hundreds of MB per scenario). Obtain or build them locally before the first run.
+The root `datasets/` directory contains platform backbones (large `UserAgent.json` files are tracked via Git LFS). Clone with `git lfs pull` to fetch them.
 
 ### Directory layout
 
@@ -216,7 +221,7 @@ MIDSim/
 │   ├── config_twitter.json
 │   ├── config_weibo.json
 │   └── model_config.json            # LLM / embedding endpoints
-├── datasets/                        # Input backbones (gitignored; see Datasets section)
+├── datasets/                        # Input backbones (see Datasets section)
 │   ├── rednote/
 │   ├── twitter/
 │   └── weibo/

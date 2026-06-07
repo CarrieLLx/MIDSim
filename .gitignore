@@ -115,7 +115,6 @@ runs/
 *large*
 !src/onesim/proto/*.pyi
 input/
-datasets/
 metrics_plots/
 events/
 logs/

@@ -43,9 +43,14 @@ cd MIDSim
 
 ### 3. 准备 datasets
 
-仿真所需的骨干数据存放在项目根目录的 `datasets/` 下（因体积较大已加入 `.gitignore`）。目录结构与说明见 [数据集](#数据集)。
+仿真所需的骨干数据存放在项目根目录的 `datasets/` 下。目录结构与说明见 [数据集](#数据集)。
 
-运行场景前，至少将对应平台的数据放入 `datasets/<platform>/`（布局见下文）。
+克隆后请先拉取 Git LFS 中的骨干数据：
+
+```bash
+git lfs install
+git lfs pull
+```
 
 请在**项目根目录**下启动仿真，以便 `env_data.json` 中的相对路径（如 `datasets/rednote/embeddings/...`）能正确解析。
 
@@ -142,7 +147,7 @@ MIDSim 中有两处名为 `datasets` 的路径，含义不同：
 | `datasets/`（项目根目录） | **输入** — 各平台的静态骨干数据（帖子、用户、Embedding） |
 | `src/envs/<env>/runs/<timestamp>/datasets/` | **输出** — 仿真过程中按轮导出的快照 |
 
-根目录 `datasets/` 因画像与 Embedding 文件体积较大（单场景可达数百 MB）未纳入版本控制，首次运行前请在本地准备或下载。
+根目录 `datasets/` 包含各平台骨干数据（较大的 `UserAgent.json` 通过 Git LFS 管理）。克隆后请执行 `git lfs pull` 拉取大文件。
 
 ### 目录结构
 
@@ -215,7 +220,7 @@ MIDSim/
 │   ├── config_twitter.json
 │   ├── config_weibo.json
 │   └── model_config.json            # LLM / Embedding 端点
-├── datasets/                        # 输入骨干数据（gitignore；见「数据集」）
+├── datasets/                        # 输入骨干数据（见「数据集」）
 │   ├── rednote/
 │   ├── twitter/
 │   └── weibo/
