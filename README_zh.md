@@ -195,21 +195,18 @@ datasets/
 ### 准备步骤
 
 ```bash
-# 示例：在项目根目录准备小红书骨干数据
-mkdir -p datasets/rednote/embeddings
-
-# 复制或下载文件到 datasets/
-# cp /path/to/{env_data.json,UserAgent.json,RecommenderAgent.json} datasets/rednote/
-# cp /path/to/bge-base-zh-v1.5_embeddings.json datasets/rednote/embeddings/
+# 克隆后拉取 datasets（含 LFS 管理的 UserAgent.json）
+git lfs install
+git lfs pull
 ```
 
-若从 Hugging Face 发布或下载数据，可使用仓库自带的 `hfd.sh`：
+若使用独立数据镜像，也可通过仓库自带的 `hfd.sh` 从 Hugging Face 下载：
 
 ```bash
 bash hfd.sh <ORG/REPO> --dataset --local-dir datasets/<platform>
 ```
 
-放置文件后，请确认 `datasets/<platform>/env_data.json` 中的 `reference_embedding_path` 使用**相对于项目根目录**的路径。
+请确认 `datasets/<platform>/env_data.json` 中的 `reference_embedding_path` 使用**相对于项目根目录**的路径。
 
 ## 项目结构
 

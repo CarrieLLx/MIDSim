@@ -196,21 +196,18 @@ Default agent counts in `config/config_*.json`:
 ### Setup checklist
 
 ```bash
-# Example: prepare Rednote backbone under the project root
-mkdir -p datasets/rednote/embeddings
-
-# Copy or download backbone files into datasets/
-# cp /path/to/{env_data.json,UserAgent.json,RecommenderAgent.json} datasets/rednote/
-# cp /path/to/bge-base-zh-v1.5_embeddings.json datasets/rednote/embeddings/
+# After clone, fetch datasets (including LFS-tracked UserAgent.json)
+git lfs install
+git lfs pull
 ```
 
-If you publish or download data from Hugging Face, the repo includes `hfd.sh` as a generic download helper:
+If you maintain a separate data mirror, the repo also includes `hfd.sh` as a generic Hugging Face download helper:
 
 ```bash
 bash hfd.sh <ORG/REPO> --dataset --local-dir datasets/<platform>
 ```
 
-After placing files, verify that `reference_embedding_path` in `datasets/<platform>/env_data.json` uses a **repo-root-relative** path.
+Verify that `reference_embedding_path` in `datasets/<platform>/env_data.json` uses a **repo-root-relative** path.
 
 ## Project Structure
 
