@@ -23,7 +23,7 @@
                 "schema_path": "UserAgent.json"
             },
             "RecommenderAgent": {
-                "count": 3,
+                "count": 7,
                 "profile_path": "RecommenderAgent.json",
                 "schema_path": "RecommenderAgent.json"
             }
