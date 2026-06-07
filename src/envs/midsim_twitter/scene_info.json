@@ -1,0 +1,271 @@
+{
+  "domain": "Sociology",
+  "scene_name": "multi-channel_information_diffusion",
+  "odd_protocol": {
+    "overview": {
+      "system_goal": "Simulate multi-channel information diffusion in social networks through social relationships and recommendation algorithms, analyzing the impact of different recommendation strategies on network evolution.",
+      "agent_types": "Useragent, Recommenderagent",
+      "environment_description": "Agents are connected by social relationships, and each agent can receive content from different kinds of recommendation systems and social networks.",
+      "workflow_structure": "From the start, through sequential agent interactions, and ends when the condition is met."
+    },
+    "design_concepts": {
+      "interaction_patterns": "Recommendation algorithms and social networks recommend content to users in parallel. Users make decisions based on recommendations and can further spread information through mentions.",
+      "communication_protocols": "RecommenderAgent recommends content to all UserAgents in each round. If a UserAgent publishes new content, it recommends to all fans. Information can be further spread through mentions.",
+      "decision_mechanisms": "Decision factors include the overlap between notes and interests, social relationships, and activity levels.",
+      "execution_flow": "Start → RecommenderAgent && UserAgent → UserAgent [→ UserAgent]...[→ UserAgent] → End"
+    },
+    "details": {
+      "agent_behaviors": "Recommendation algorithms recommend content to all UserAgents. If a UserAgent publishes new content, it recommends to all fans. UserAgents receiving messages must decide in the current round whether to comment or mention others. All mentions are also processed in the current round.",
+      "decision_algorithms": "Algorithms consider the overlap between notes and interests, social relationships, and activity levels to determine what actions agents should take.",
+      "specific_constraints": "Initialization involves creating a specified number of agents and loading their profile information. The environment also needs to be updated, retrieving previous_notes and current_notes from content_pool for specified time periods, and updating current_timestep.",
+      "process_sequence": "1) Start initialization, 2) Recommendation algorithms recommend content to all UserAgents, and UserAgents with new content recommend to all fans, 3) UserAgents receiving messages must decide in the current round whether to comment or mention others, 4) If receiving a mention, choose whether to reply, 5) After all agents act, check termination conditions, 6) Either terminate or start the next round."
+    }
+  },
+  "agent_types": {
+    "UserAgent": "Represents homogeneous users in social networks, with attributes such as id, nickname, gender, description, ip_location, follow_count, fan_count, interaction, user interest tag list(interest_tags), activity level and etc.",
+    "RecommenderAgent": "Represents recommendation systems. Includes hot topic recommendation, interest-based recommendation, and random recommendation."
+  },
+  "portrait": {
+    "UserAgent": 1067,
+    "RecommenderAgent": 7
+  },
+  "metrics": [
+    {
+      "id": "tweet_generation",
+      "name": "Tweet Pool Count Over Time",
+      "description": "Counts propagation-only tweets in content_pool: retweets, quotes, and replies (any parent/ref id set). All original tweets (no retweet/quote/reply parent) are excluded. current_timestamp is optional and unused for this count.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_tweet_generation",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "current_timestamp",
+          "source_type": "env",
+          "path": "current_timestamp",
+          "required": false
+        }
+      ],
+      "calculation_logic": "Count dict entries in content_pool that are not original tweets (exclude if no retweeted_tweet_id, quoted_tweet_id, replied_tweet_id). Retweets, quotes, and replies always count. Original tweets are never counted. Timestamp is not used."
+    },
+    {
+      "id": "direct_tweet_generation",
+      "name": "Direct Tweet Pool Count Over Time",
+      "description": "Counts non-secondary propagation tweets in content_pool: for retweets, quotes, and replies, only count rows whose parent tweet is original (parent retweeted_tweet_id, quoted_tweet_id, replied_tweet_id all empty).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_direct_tweet_generation",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "current_timestamp",
+          "source_type": "env",
+          "path": "current_timestamp",
+          "required": false
+        }
+      ],
+      "calculation_logic": "Count propagation tweets whose parent tweet is original: the parent tweet (retweeted_tweet / quoted_tweet / replied_tweet) has no retweeted_tweet_id, quoted_tweet_id, replied_tweet_id. Original tweets are never counted."
+    },
+    {
+      "id": "direct_retweet_generation",
+      "name": "Direct Retweet Count Over Time",
+      "description": "Counts non-secondary retweets in content_pool: retweeted_tweet_id is set and parent tweet is original (no retweeted/quoted/replied parent refs).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_direct_retweet_generation",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Count retweets whose parent tweet is original."
+    },
+    {
+      "id": "direct_quote_generation",
+      "name": "Direct Quote Count Over Time",
+      "description": "Counts non-secondary quotes in content_pool: quoted_tweet_id is set and parent tweet is original (no retweeted/quoted/replied parent refs).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_direct_quote_generation",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Count quotes whose parent tweet is original."
+    },
+    {
+      "id": "direct_reply_generation",
+      "name": "Direct Reply Count Over Time",
+      "description": "Counts non-secondary replies in content_pool: replied_tweet_id/replyed_tweet_id is set and parent tweet is original (no retweeted/quoted/replied parent refs).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_direct_reply_generation",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Count replies whose parent tweet is original."
+    },
+    {
+      "id": "original_tweet_count",
+      "name": "Original Tweet Count Over Time",
+      "description": "Counts original tweets in content_pool: retweeted_tweet_id, quoted_tweet_id, replied_tweet_id (and replyed_tweet_id) are all empty.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_original_tweet_count",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Count dict entries in content_pool whose retweeted_tweet_id, quoted_tweet_id, replied_tweet_id/replyed_tweet_id are all empty."
+    },
+    {
+      "id": "repost_volume_realtime",
+      "name": "Repost Volume Real Time",
+      "description": "Propagation tweets only: use tweet `time` (ms) as event time. Sorted timestamps → same _viz_kind repost_realtime as Weibo: top panel cumulative count vs real time (UTC), bottom panel reposts per equal-width time bin (rate per bin).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_repost_volume_realtime",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Only propagation rows (retweet/quote/reply parent refs) with valid `time`; _viz_kind repost_realtime; monitor draws twin-panel PNG like Weibo Repost Volume Real Time."
+    },
+    {
+      "id": "repost_count_frequency",
+      "name": "Repost Count Frequency",
+      "description": "Two charts (same contract as Weibo): (1) X = total propagation nodes under each env seed root tweet (multi-hop via retweet/quote/reply chain), Y = number of seed roots with that count (including 0). (2) X = propagation entries authored per user attributed to any seed, Y = number of users with that count (including 0); denominator = all tweet authors in pool. Seeds = seed_root_tweet_ids (frozen from initial env_data content_pool keys).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_repost_count_frequency",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "seed_root_tweet_ids",
+          "source_type": "env",
+          "path": "seed_root_tweet_ids",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Walk parent chain: retweeted_tweet_id, quoted_tweet_id, replied_tweet_id/replyed_tweet_id until hitting seed_root_tweet_ids; per-root descendant count; per-user propagation counts; exports _root_tweets.png and _users.png via repost_count_freq_bar."
+    },
+    {
+      "id": "repost_hop_depth_over_time",
+      "name": "Repost Hop Depth Over Time",
+      "description": "At each sample, count propagation tweets in content_pool by hop depth vs env seed roots (root = hop 0). Parent walk order: retweeted_tweet_id, quoted_tweet_id, replied_tweet_id/replyed_tweet_id; hop_k = number of edges from tweet up to seed. Same time-series keys hop_1, hop_2, ... as Weibo; monitor splits into part1, part2, ... (4 hops per PNG).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_repost_hop_depth_over_time",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "seed_root_tweet_ids",
+          "source_type": "env",
+          "path": "seed_root_tweet_ids",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Edges from propagation tweet to seed_root_tweet_ids along immediate parent chain; series hop_1, hop_2, ...; only entries attributed to a seed."
+    },
+    {
+      "id": "posting_root_author_repost_behavior",
+      "name": "Root Author Self-Repost Behavior",
+      "description": "Per user who authored at least one env seed root: root_post_count; self_repost_hop_k and aggregates self_propagation_one_hop (k=1) vs self_propagation_multi_hop (k≥2) on own-root chains; repost_on_others_count on others' seed-root chains. Same CSV/JSONL as Weibo under root_author_self_repost_behavior/.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_posting_root_author_repost_behavior",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "seed_root_tweet_ids",
+          "source_type": "env",
+          "path": "seed_root_tweet_ids",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Seeds from seed_root_tweet_ids; resolve root and hop depth via parent chain; monitor appends snapshots.jsonl and exports CSV when metric name matches."
+    },
+    {
+      "id": "tweet_text_similarity",
+      "name": "Tweet Text Similarity",
+      "description": "BGE 向量相似度均值：将生成文本与根推 tweet 的参考 embedding 对齐后，计算 mean(cosine_similarity)。需 content_pool；参考向量由 reference_embedding_path / tweet_embeddings_path 等提供。",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_tweet_text_similarity",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "reference_embedding_path",
+          "source_type": "env",
+          "path": "reference_embedding_path",
+          "required": false
+        },
+        {
+          "name": "tweet_embeddings_path",
+          "source_type": "env",
+          "path": "tweet_embeddings_path",
+          "required": false
+        },
+        {
+          "name": "reference_csv_path",
+          "source_type": "env",
+          "path": "reference_csv_path",
+          "required": false
+        }
+      ],
+      "calculation_logic": "从 content_pool 提取符合规则的生成文本，按根推 id 对齐参考 tweet embedding，调用 BGE 算余弦相似度均值；无样本或无参考向量则返回 None。"
+    }
+  ]
+}
+
+

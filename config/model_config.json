@@ -1,0 +1,29 @@
+{
+    "chat": [
+        {
+            "provider": "vllm",
+            "config_name": "vllm-qwen-9888",
+            "model_name": "models/Qwen2.5-14B-Instruct",
+            "api_key": "sk-xxx",
+            "client_args": {
+                "max_retries": 3,
+                "base_url": "http://localhost:9888/v1/"
+            },
+            "generate_args": {
+                "temperature": 0
+            }
+        }
+    ],
+    "embedding": [
+        {
+            "provider": "vllm",
+            "config_name": "vllm-embedding-bert",
+            "model_name": "models/bge-base-zh-v1.5",
+            "api_key": "sk-xxx",
+            "client_args": {
+                "max_retries": 3,
+                "base_url": "http://localhost:9890/v1/"
+            }
+        }
+    ]
+}

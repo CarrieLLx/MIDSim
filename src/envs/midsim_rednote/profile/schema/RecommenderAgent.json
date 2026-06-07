@@ -1,0 +1,82 @@
+{
+    "id": {
+        "type": "str",
+        "default": "recommender_agent_ffff",
+        "private": false,
+        "sampling": "default",
+        "description": "Unique id of recommender_agent"
+    },
+    "type": {
+        "type": "str",
+        "default": "Random Recommendation",
+        "private": false,
+        "sampling": "default",
+        "choices": ["Hot Recommendation", "Random Recommendation"],
+        "description": "Algorithm of recommendation system"
+    },
+    "limit": {
+        "type": "int",
+        "default": "5",
+        "private": false,
+        "sampling": "default",
+        "description": "Number of recommended contents"
+    },
+    "random_rec_mau": {
+        "type": "float",
+        "default": 240000000,
+        "private": false,
+        "sampling": "default",
+        "description": "随机推荐用：平台月活 MAU；权重 w∝(1/MAU)×avg_posts。仅 Random Recommendation 实例需配置。"
+    },
+    "random_rec_avg_posts_per_user_month": {
+        "type": "float",
+        "default": 1.1182,
+        "private": false,
+        "sampling": "default",
+        "description": "随机推荐用：平均每用户每月发帖量，与 random_rec_mau 一起决定单条 note 权重。"
+    },
+    "recommendations":{
+        "type": "dict",
+        "default": {},
+        "private": false,
+        "sampling": "none",
+        "description": "Dictionary of post content pushed by recommendation algorithm. The key is the note ID, the value is a dictionary containing note ID, title, content, publisher ID, publisher nickname, publication time, and other fields."
+    },
+    "current_notes":{
+        "type": "dict",
+        "default": {},
+        "private": false,
+        "sampling": "none",
+        "description": "Dictionary of current notes published by the agent."
+    },
+    "comment_count_dist_7d": {
+        "type": "list",
+        "default": [],
+        "private": false,
+        "sampling": "none",
+        "description": "7 天去重帖子的评论数分布：每项为 {\"comment_count\": int, \"post_count\": int}。热点推荐时与 contents 中 7 天内帖子合并排序；空列表则从 CSV 读取（见 comment_count_dist_7d_csv）。"
+    },
+    "comment_count_dist_7d_csv": {
+        "type": "str",
+        "default": "",
+        "private": false,
+        "sampling": "none",
+        "description": "热点推荐：当 comment_count_dist_7d 为空时从此 CSV 加载分布；空字符串则用代码内置默认路径。不使用环境变量。"
+    },
+    "recommended_note_ids_by_user": {
+        "type": "dict",
+        "default": {},
+        "private": false,
+        "sampling": "none",
+        "description": "推荐系统维护：被推荐用户 id（UserAgent id）为 key，value 为曾向该用户推送过的 note_id 列表（按轮次累积、去重）。"
+    },
+    "candidate_note_ids_by_user": {
+        "type": "dict",
+        "default": {},
+        "private": false,
+        "sampling": "none",
+        "description": "兴趣推荐用：用户 id -> 该用户候选 note_id 列表（可由 candidate_note_ids.json 生成并写入 profile）。"
+    }
+}
+
+

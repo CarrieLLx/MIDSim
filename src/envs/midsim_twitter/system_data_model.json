@@ -1,0 +1,90 @@
+{
+    "environment": {
+        "variables": [
+            {
+                "name": "content_pool",
+                "type": "dict",
+                "default_value": {},
+                "description": "Available content pool in dictionary format with note_id as keys. Each content item contains the following fields: note_id (note ID), title (title), desc (content), time (timestamp indicating content publication time in milliseconds), user_id (publisher ID), nickname (publisher nickname), liked_count (like count), collected_count (collection count), comment_count (comment count), ip_location (IP geographic location), tags_list (tag list), comments (comment list)."
+            },
+            {
+                "name": "current_timestamp",
+                "type": "int",
+                "default_value": 0,
+                "description": "Current simulation time step. Initial time is set to the earliest note publication time."
+            },
+            {
+                "name": "timestamp_duration",
+                "type": "int",
+                "default_value": 3600000,
+                "description": "Duration of each time step in milliseconds."
+            },
+            {
+                "name": "current_tweets",
+                "type": "dict",
+                "default_value": {},
+                "description": "Dictionary of current notes in dictionary format with note_id as keys. Each note item contains the following fields: note_id (note ID), title (title), desc (content), time (timestamp indicating content publication time in milliseconds), user_id (publisher ID), nickname (publisher nickname), liked_count (like count), collected_count (collection count), comment_count (comment count), ip_location (IP geographic location), tags_list (tag list), comments (comment list)."
+            },
+            {
+                "name": "mention_pool",
+                "type": "dict",
+                "default_value": {},
+                "description": "Dictionary of mention pool in dictionary format with comment_id as keys. Each mention item contains the following fields: comment_id (comment ID), note_id (note ID), comment_content (comment content), mentioner_id (mentioner ID), mentioner_nickname (mentioner nickname), mention_type (mention type)."
+            },
+            {
+                "name": "reference_csv_path",
+                "type": "string",
+                "default_value": "",
+                "description": "The path to the reference CSV file."
+            }
+        ]
+    },
+    "agents": {
+        "UserAgent": {
+            "variables": [
+                {
+                    "name": "recommended_tweet_ids",
+                    "type": "list",
+                    "default_value": [],
+                    "description": "List of note IDs received"
+                },
+                {
+                    "name": "recommendations",
+                    "type": "dict",
+                    "default_value": {},
+                    "description": "Dictionary of note content pushed by social network. The key is the note ID, the value is a dictionary containing note ID, title, content, publisher ID, publisher nickname, publication time, and other fields."
+                },
+                {
+                    "name": "mentions",
+                    "type": "dict",
+                    "default_value": {},
+                    "description": "Dictionary of mentions."
+                },
+                {
+                    "name": "last_login_timestamp",
+                    "type": "int",
+                    "default_value": 0,
+                    "description": "The timestamp of the last login."
+                },
+                {
+                    "name": "login",
+                    "type": "int",
+                    "default_value": -1,
+                    "description": "The flag of login. True(1), False(0), Not Set(-1)"
+                }
+            ]
+        },
+        "RecommenderAgent": {
+            "variables": [
+              {
+                "name": "recommendations",
+                "type": "dict",
+                "default_value": {},
+                "description": "Dictionary of note content pushed by recommendation algorithm. The key is the note ID, the value is a dictionary containing note ID, title, content, publisher ID, publisher nickname, publication time, and other fields."
+              }
+            ]
+        }
+    }
+}
+
+

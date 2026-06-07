@@ -1,0 +1,153 @@
+{
+    "id": {
+        "type": "str",
+        "default": "ffffffffffffffffffffffff",
+        "private": false,
+        "sampling": "default",
+        "description": "Unique id of agent"
+    },
+    "nickname": {
+        "type": "str",
+        "default": "小红薯FFFFFFFF",
+        "private": false,
+        "sampling": "default",
+        "description": "User's nickname"
+    },
+    "gender": {
+        "type": "str",
+        "default": "",
+        "private": false,
+        "sampling": "random",
+        "choices": ["Male", "Female"],
+        "description": "User gender"
+    },
+    "description": {
+        "type": "str",
+        "default": "No description yet",
+        "private": false,
+        "sampling": "default",
+        "description": "User's personal description"
+    },
+    "location": {
+        "type": "str",
+        "default": "",
+        "private": false,
+        "sampling": "default",
+        "description": "User's geographic location"
+    },
+    "follow_count": {
+        "type": "int",
+        "default": 0,
+        "private": false,
+        "sampling": "default",
+        "description": "Number of follow"
+    },
+    "fan_count": {
+        "type": "int",
+        "default": 0,
+        "private": false,
+        "sampling": "default",
+        "description": "Number of fan"
+    },
+    "interaction": {
+        "type": "int",
+        "default": 0,
+        "private": false,
+        "sampling": "default",
+        "description": "Likes and collections count"
+    },
+    "interest_tags": {
+        "type": "list",
+        "default": [],
+        "private": false,
+        "sampling": "llm",
+        "description": "User's interest tag list",
+        "sample_size": 5
+    },
+    "activity_level": {
+        "type": "float",
+        "default": 0.5,
+        "private": false,
+        "sampling": "default",
+        "description": "User's activity level"
+    },
+    "follow_ids":{
+        "type": "list",
+        "default": [],
+        "private": true,
+        "sampling": "default",
+        "description": "List of follow user IDs"
+    },
+    "fan_ids":{
+        "type": "list",
+        "default": [],
+        "private": true,
+        "sampling": "default",
+        "description": "List of fan user IDs"
+    },
+    "recommended_note_ids": {
+        "type": "list",
+        "default": [],
+        "private": true,
+        "sampling": "default",
+        "description": "All note_ids already recommended (flat list, legacy union)"
+    },
+    "recommended_note_ids_by_channel": {
+        "type": "dict",
+        "default": {},
+        "private": true,
+        "sampling": "default",
+        "description": "Nested by recommendation source_type (algorithm|social|search|keep_following): each value is dict step_num(str)->list of note_id appended per round when that event is received"
+    },
+    "mentioned_note_ids_by_channel": {
+        "type": "dict",
+        "default": {},
+        "private": true,
+        "sampling": "default",
+        "description": "Nested by mention_type (at|comment|reply|...): each value is dict step_num(str)->list of note_id from MentionEvent.handle_mention"
+    },
+    "recommendations":{
+        "type": "dict",
+        "default": {},
+        "private": true,
+        "sampling": "none",
+        "description": "Dictionary of post content pushed by social network. The key is the post ID, the value is a dictionary containing post ID, title, content, publisher ID, publisher nickname, publication time, and other fields."
+    },
+    "mentions":{
+        "type": "dict",
+        "default": {},
+        "private": true,
+        "sampling": "none",
+        "description": "Dictionary of mentions."
+    },
+    "last_login_timestamp":{
+        "type": "int",
+        "default": 0,
+        "private": true,
+        "sampling": "default",
+        "description": "The timestamp of the last mention check."
+    },
+    "login":{
+        "type": "int",
+        "default": -1,
+        "private": true,
+        "sampling": "default",
+        "description": "The flag of login. True(1), False(0), Not Set(-1)"
+    },
+    "historical_notes":{
+        "type": "dict",
+        "default": {},
+        "private": true,
+        "sampling": "default",
+        "description": "List of content IDs received"
+    },
+    "historical_summary":{
+        "type": "str",
+        "default": "",
+        "private": false,
+        "sampling": "default",
+        "description": "The summary of the historical notes"
+    }
+}
+
+

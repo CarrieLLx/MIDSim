@@ -1,0 +1,95 @@
+# Git相关
+.git
+.gitignore
+.gitattributes
+
+# 文档和示例
+docs/
+assets/
+*.png
+*.jpg
+*.gif
+# 但保留README.md用于setup.py
+!README.md
+
+# 日志文件
+*.log
+logs/
+app.log
+
+# Python相关
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# 虚拟环境
+venv/
+env/
+ENV/
+
+# IDE相关
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统相关
+.DS_Store
+Thumbs.db
+
+# Node.js相关（仅在前端构建时排除）
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 数据文件
+data/
+*.db
+*.sqlite
+
+# 配置文件（敏感信息）
+.env
+.env.local
+.env.production
+*.key
+*.pem
+
+# 临时文件
+tmp/
+temp/
+cache/
+
+# 测试相关
+.coverage
+.pytest_cache/
+.tox/
+coverage.xml
+
+# Docker相关
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# 备份文件
+*.bak
+*.backup 

@@ -1,0 +1,163 @@
+{
+  "domain": "Sociology",
+  "scene_name": "multi-channel_information_diffusion",
+  "odd_protocol": {
+    "overview": {
+      "system_goal": "Simulate multi-channel information diffusion in social networks through social relationships and recommendation algorithms, analyzing the impact of different recommendation strategies on network evolution.",
+      "agent_types": "Useragent, Recommenderagent",
+      "environment_description": "Agents are connected by social relationships, and each agent can receive content from different kinds of recommendation systems and social networks.",
+      "workflow_structure": "From the start, through sequential agent interactions, and ends when the condition is met."
+    },
+    "design_concepts": {
+      "interaction_patterns": "Recommendation algorithms and social networks recommend content to users in parallel. Users make decisions based on recommendations and can further spread information through mentions.",
+      "communication_protocols": "RecommenderAgent recommends content to all UserAgents in each round. If a UserAgent publishes new content, it recommends to all fans. Information can be further spread through mentions.",
+      "decision_mechanisms": "Decision factors include the overlap between notes and interests, social relationships, and activity levels.",
+      "execution_flow": "Start → RecommenderAgent && UserAgent → UserAgent [→ UserAgent]...[→ UserAgent] → End"
+    },
+    "details": {
+      "agent_behaviors": "Recommendation algorithms recommend content to all UserAgents. If a UserAgent publishes new content, it recommends to all fans. UserAgents receiving messages must decide in the current round whether to comment or mention others. All mentions are also processed in the current round.",
+      "decision_algorithms": "Algorithms consider the overlap between notes and interests, social relationships, and activity levels to determine what actions agents should take.",
+      "specific_constraints": "Initialization involves creating a specified number of agents and loading their profile information. The environment also needs to be updated, retrieving previous_notes and current_notes from content_pool for specified time periods, and updating current_timestep.",
+      "process_sequence": "1) Start initialization, 2) Recommendation algorithms recommend content to all UserAgents, and UserAgents with new content recommend to all fans, 3) UserAgents receiving messages must decide in the current round whether to comment or mention others, 4) If receiving a mention, choose whether to reply, 5) After all agents act, check termination conditions, 6) Either terminate or start the next round."
+    }
+  },
+  "agent_types": {
+    "UserAgent": "Represents homogeneous users in social networks, with attributes such as id, nickname, gender, description, ip_location, follow_count, fan_count, interaction, user interest tag list(interest_tags), activity level and etc.",
+    "RecommenderAgent": "Represents recommendation systems. Includes hot topic recommendation, interest-based recommendation, and random recommendation."
+  },
+  "portrait": {
+    "UserAgent": 130,
+    "RecommenderAgent": 7
+  },
+  "metrics": [
+    {
+      "id": "repost_generation",
+      "name": "Repost Generation Over Time",
+      "description": "Tracks the number of reposts generated over time to measure information diffusion activity. The x-axis represents time steps, and the y-axis represents the total number of reposts at the current time step.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_repost_generation",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Count top-level content_pool dict entries where reposted_blog_id is non-empty (after strip). Does not traverse nested reposts."
+    },
+    {
+      "id": "repost_volume_realtime",
+      "name": "Repost Volume Real Time",
+      "description": "Sorted repost event times from blog `time` (ms): cumulative repost count vs time (top), and reposts per equal-width time bin (bottom). Same layout as Comment Volume Real Time.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_repost_volume_realtime",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Only repost rows (reposted_blog_id != blog_id) with valid `time`; _viz_kind repost_realtime; monitor draws twin-panel PNG like Comment Volume Real Time."
+    },
+    {
+      "id": "repost_hop_depth_over_time",
+      "name": "Repost Hop Depth Over Time",
+      "description": "At each monitor sample, total repost counts in content_pool by hop depth (1=direct repost of root, 2=repost of repost, ...). Time series like Comment Top-Level vs Reply; exports multiple PNGs with up to 4 hop series per figure.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_repost_hop_depth_over_time",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Hop depth from len(reposted_path)-1 when path length>=2, else walk reposted_blog_id; series keys hop_1, hop_2, ...; monitor splits into part1, part2, ... (4 hops per PNG)."
+    },
+    {
+      "id": "repost_count_frequency",
+      "name": "Repost Count Frequency",
+      "description": "Two line charts (markers): (1) X = total repost nodes under each root tweet (multi-level), Y = number of root tweets with that count (including 0). (2) X = repost entries authored per user, Y = number of users with that count (including 0); denominator = all UserAgent profile ids (user_agent_profile_ids) merged with blog authors in content_pool, so agents with 0 reposts and never appearing in pool still count.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_repost_count_frequency",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "user_agent_profile_ids",
+          "source_type": "agent",
+          "agent_type": "UserAgent",
+          "path": "id",
+          "required": false
+        }
+      ],
+      "calculation_logic": "Root id from reposted_path[0] or walk reposted_blog_id; per-root descendant count; per-user repost count where reposted_blog_id != blog_id; user histogram denominator merges every UserAgent id with pool authors. exports _root_tweets.png and _users.png with English axes."
+    },
+    {
+      "id": "posting_root_author_repost_behavior",
+      "name": "Root Author Self-Repost Behavior",
+      "description": "Each sample: all users who authored at least one root blog; per user count root_post_count and self_repost_hop_k (k=1,2,...) = reposts they authored on chains rooted at their own roots, by hop depth. Exports CSV and appends metrics_save_dir/root_author_self_repost_behavior/snapshots.jsonl.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_posting_root_author_repost_behavior",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Repost must be by same user_id as chain root author; hop depth via path length or parent walk; columns self_repost_hop_* in CSV."
+    },
+    {
+      "id": "repost_similarity",
+      "name": "Repost Similarity",
+      "description": "BGE 向量相似度均值：生成评论与参考评论按 (note_id, user_id) 对齐后，计算 mean(cosine_similarity)。需环境提供 reference_json_path 或 reference_comments。",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_repost_similarity",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "reference_embedding_path",
+          "source_type": "env",
+          "path": "reference_embedding_path",
+          "required": false
+        },
+        {
+          "name": "reference_csv_path",
+          "source_type": "env",
+          "path": "reference_csv_path",
+          "required": false
+        },
+        {
+          "name": "reference_reposts",
+          "source_type": "env",
+          "path": "reference_reposts",
+          "required": false
+        }
+      ],
+      "calculation_logic": "从 content_pool 提取生成转发，从 reference_json_path 或 reference_reposts 读取参考转发，按 (blog_id, user_id) 配对后调用 BGE embedding 算均值。若无参考或无配对则返回 None。"
+    }
+  ]
+}
+
+

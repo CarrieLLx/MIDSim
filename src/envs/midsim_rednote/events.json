@@ -1,0 +1,274 @@
+{
+    "-1": {
+        "id": -1,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "send_social_recommendations",
+        "from_action_id": 0,
+        "to_action_id": 1,
+        "event_name": "StartEvent",
+        "event_info": "Initial trigger for sending social recommendations",
+        "fields": []
+    },
+    "-2": {
+        "id": -2,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "RecommenderAgent",
+        "to_action_name": "send_algorithm_recommendations",
+        "from_action_id": 0,
+        "to_action_id": 4,
+        "event_name": "StartEvent",
+        "event_info": "Initial trigger for sending algorithm recommendations",
+        "fields": []
+    },
+    "1": {
+        "id": 1,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "send_social_recommendations",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "receive_recommendation",
+        "from_action_id": 1,
+        "to_action_id": 2,
+        "event_name": "SocialRecommendationEvent",
+        "event_info": "Event to send recommendations from UserAgents to their followers UserAgents through social networks",
+        "fields": [
+            {
+                "name": "sender_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the user agent sending the recommendations."
+            },
+            {
+                "name": "receiver_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the follower, the user agent receiving the recommendations."
+            },
+            {
+                "name": "recommendations",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "Dictionary of note content pushed by social network."
+            }
+        ]
+    },
+    "2": {
+        "id": 2,
+        "from_agent_type": "RecommenderAgent",
+        "from_action_name": "send_algorithm_recommendations",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "receive_recommendation",
+        "from_action_id": 4,
+        "to_action_id": 2,
+        "event_name": "AlgorithmRecommendationEvent",
+        "event_info": "Event to send recommendations from RecommenderAgents to all UserAgents through recommendation algorithm",
+        "fields": [
+            {
+                "name": "sender_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the recommender agent sending the recommendations."
+            }, 
+            {
+                "name": "receiver_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the user agent receiving the recommendations."
+            },
+            {
+                "name": "recommendations",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "Dictionary of note content pushed by recommendation algorithm."
+            }
+        ]
+    },
+    "3": {
+        "id": 3,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "receive_recommendation",
+        "to_agent_type": "EnvAgent",
+        "to_action_name": "terminate",
+        "from_action_id": 2,
+        "to_action_id": -1,
+        "event_name": "RecommendationSpreadingEvent",
+        "event_info": "Event to terminate the simulation after UserAgents spreading recommendations",
+        "fields": [
+            {
+                "name": "user_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the user receiving the recommendations."
+            },
+            {
+                "name": "comment_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the comment replying to the note being recommended."
+            },
+            {
+                "name": "note_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the note being recommended and has been replied to."
+            },
+            {
+                "name": "parent_comment_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the parent comment of the comment replying to the note being recommended."
+            },
+            {
+                "name": "comment_content",
+                "type": "string",
+                "default_value": "",
+                "description": "The content of the comment replying to the note being recommended."
+            }
+        ]
+    },
+    "4": {
+        "id": 4,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "receive_recommendation",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "handle_mention",
+        "from_action_id": 2,
+        "to_action_id": 3,
+        "event_name": "MentionEvent",
+        "event_info": "Event",
+        "fields": [
+            {
+                "name": "note_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the note being mentioned."
+            },
+            {
+                "name": "comment_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the comment being mentioned."
+            },
+            {
+                "name": "comment_content",
+                "type": "string",
+                "default_value": "",
+                "description": "The content of the comment being mentioned."
+            },
+            {
+                "name": "mentioner_id", 
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the user mentioning the current user."
+            },
+            {
+                "name": "mentioner_nickname",
+                "type": "string",
+                "default_value": "",
+                "description": "The nickname of the user mentioning the current user."
+            },
+            {
+                "name": "mention_type",
+                "type": "string",
+                "default_value": "",
+                "description": "The type of the mention. Can be 'at', 'reply'."
+            }
+        ]
+    },
+    "5": {
+        "id": 5,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "handle_mention",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "handle_mention",
+        "from_action_id": 3,
+        "to_action_id": 3,
+        "event_name": "ReplyMentionEvent",
+        "event_info": "Event sent when a user replies to a mention, triggering another mention notification to the mentioned user",
+        "fields": [
+            {
+                "name": "note_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the note being mentioned."
+            },
+            {
+                "name": "comment_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the comment being mentioned."
+            },
+            {
+                "name": "comment_content",
+                "type": "string",
+                "default_value": "",
+                "description": "The content of the comment being mentioned."
+            },
+            {
+                "name": "mentioner_id", 
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the user mentioning the current user."
+            },
+            {
+                "name": "mentioner_nickname",
+                "type": "string",
+                "default_value": "",
+                "description": "The nickname of the user mentioning the current user."
+            },
+            {
+                "name": "mention_type",
+                "type": "string",
+                "default_value": "",
+                "description": "The type of the mention. Can be 'at', 'reply'."
+            }
+        ]
+    },
+    "6": {
+        "id": 6,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "handle_mention",
+        "to_agent_type": "EnvAgent",
+        "to_action_name": "terminate",
+        "from_action_id": 3,
+        "to_action_id": -1,
+        "event_name": "MentionSpreadingEvent",
+        "event_info": "Event to terminate the simulation after UserAgents spreading mentions",
+        "fields": [
+            {
+                "name": "user_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the user replying to the mention."
+            },
+            {
+                "name": "comment_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the comment replying to the mention."
+            },
+            {
+                "name": "note_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the note being replied to."
+            },
+            {
+                "name": "parent_comment_id",
+                "type": "string",
+                "default_value": "",
+                "description": "The unique identifier of the parent comment of the comment being replied to."
+            },
+            {
+                "name": "comment_content",
+                "type": "string",
+                "default_value": "",
+                "description": "The content of the comment replying to the mention."
+            }
+        ]
+    }
+}
+
+

@@ -1,0 +1,164 @@
+{
+    "UserAgent": [
+        {
+            "id": 1,
+            "name": "send_social_recommendations",
+            "condition": "Triggered by StartEvent",
+            "description": "User agent selects newly published notes from content pool and pushes to its fans.",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "current_notes",
+                    "type": "dict",
+                    "context": "env",
+                    "description": "Dictionary of current notes published by the agent."
+                },
+                {
+                    "name": "fan_ids",
+                    "type": "list",
+                    "context": "env",
+                    "description": "List of fan IDs, used to find user agents to push notes to."
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "recommendations",
+                    "type": "dict",
+                    "context": "agent",
+                    "description": "Dictionary of note content pushed by social network."
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "name": "receive_recommendation",
+            "condition": "Triggered by SocialRecommendationEvent",
+            "description": "User agent receives notes from social network and recommendation algorithms, and decides to comment on the notes or not.",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "recommendations",
+                    "type": "dict",
+                    "context": "event",
+                    "description": "Dictionary of note content pushed by social network or recommendation algorithm."
+                },
+                {
+                    "name": "recommended_note_ids",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "List of note IDs has been recommended."
+                },
+                {
+                    "name": "follow_ids",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "List of follow IDs, used to find user agents can be mentioned on the notes."
+                },
+                {
+                    "name": "fan_ids",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "List of fan IDs, used to find user agents can be mentioned on the notes."
+                },
+                {
+                    "name": "current_timestamp",
+                    "type": "int",
+                    "context": "env",
+                    "description": "Current timestamp, used to generate comment ID."
+                },
+                {
+                    "name": "content_pool",
+                    "type": "dict",
+                    "context": "env",
+                    "description": "Available content pool containing all notes, used to get comments of the notes."
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "content_pool",
+                    "type": "dict",
+                    "context": "env",
+                    "description": "Updated content pool containing newly generated comments."
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "name": "handle_mention",
+            "condition": "Triggered by MentionEvent or ReplyMentionEvent",
+            "description": "User agent handles mention event, and decides to comment on the note or not.",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "mentions",
+                    "type": "dict",
+                    "context": "event",
+                    "description": "Dictionary of mentions."
+                },
+                {
+                    "name": "follow_ids",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "List of follow IDs, used to find user agents can be mentioned on the notes."
+                },
+                {
+                    "name": "fan_ids",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "List of fan IDs, used to find user agents can be mentioned on the notes."
+                },
+                {
+                    "name": "current_timestamp",
+                    "type": "int",
+                    "context": "env",
+                    "description": "Current timestamp, used to generate comment ID."
+                },
+                {
+                    "name": "content_pool",
+                    "type": "dict",
+                    "context": "env",
+                    "description": "Available content pool containing all notes, used to get comments of the notes."
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "content_pool",
+                    "type": "dict",
+                    "context": "env",
+                    "description": "Updated content pool containing newly generated comments."
+                }
+            ]
+        }
+    ],
+    "RecommenderAgent": [
+        {
+            "id": 4,
+            "name": "send_algorithm_recommendations",
+            "condition": "Triggered by StartEvent",
+            "description": "Recommendation algorithm agent actively generates recommended content for all users.",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "previous_notes",
+                    "type": "dict",
+                    "context": "env",
+                    "description": "Dictionary of previous notes published by the agent."
+                },
+                {
+                    "name": "current_notes",
+                    "type": "dict",
+                    "context": "env",
+                    "description": "Dictionary of current notes published by the agent."
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "recommendations",
+                    "type": "dict",
+                    "context": "agent",
+                    "description": "Dictionary of note content pushed by recommendation algorithm."
+                }
+            ]
+        }
+    ]
+}

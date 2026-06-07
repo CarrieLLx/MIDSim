@@ -1,0 +1,7 @@
+[
+    {
+        "source_agent": "UserAgent",
+        "target_agent": "UserAgent",
+        "direction": "bidirectional"
+    }
+]
