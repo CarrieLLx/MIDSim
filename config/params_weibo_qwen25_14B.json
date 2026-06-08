@@ -1,0 +1,50 @@
+{
+    "recommender": {
+        "recommendation_alpha": 0.2,
+        "search_alpha": 0.5,
+        "interest": {
+            "interest_k": 20,
+            "target_k": 1
+        }
+    },
+    "user": {
+        "default_algorithm_types": ["Interest Recommendation"],
+        "default_search_types": ["Relevant Search"],
+        "attention_budget": 10,
+        "social_recommendation_prob": 1,
+        "algorithmic_recommendation_prob": 1,
+        "activity_remap": {
+            "out_min": 0.4,
+            "out_max": 0.8
+        },
+        "stale_days": 3.0,
+        "social_feed_last_login_cap_days": 7.0,
+        "low_activity_memory_gate_threshold": 0.7,
+        "interaction_threshold": {
+            "same_targets": { "support": [1, 2], "probs": [0.99, 0.01] },
+            "diff_targets": { "support": [1, 2], "probs": [0.99, 0.01] },
+            "keep_following": { "support": [1, 2], "probs": [0.99, 0.01] }
+        }
+    },
+    "step15": {
+        "policy": "memory_nonempty,keyword,embedding",
+        "multi_combine": "or",
+        "keyword_enabled": true,
+        "embedding_enabled": true,
+        "min_common_tokens": 2,
+        "embed_threshold": 0.65,
+        "include_historical_summary": true,
+        "embedding_config_path": "",
+        "embed_max_chars": 400,
+        "embed_max_chunks": 12,
+        "embed_chunk_agg": "mean"
+    },
+    "simulator": {
+        "max_span_days": 24.0,
+        "max_step": 8,
+        "timestamp_schedule_type": "power",
+        "timestamp_power_p": 1.6,
+        "timestamp_sigmoid_scale": 1.2,
+        "timestamp_sigmoid_center_ratio": 0.5
+    }
+}

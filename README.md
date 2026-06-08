@@ -45,13 +45,6 @@ Make sure `config_name` values referenced in scenario configs match entries in `
 
 Simulation backbones are stored under the project-root `datasets/` directory. See [Datasets](#datasets) for layout and setup.
 
-At minimum, after cloning, fetch backbone data with Git LFS:
-
-```bash
-git lfs install
-git lfs pull
-```
-
 Run simulations from the **project root** so relative paths inside `env_data.json` (e.g. `datasets/rednote/embeddings/...`) resolve correctly.
 
 ### 4. Install dependencies
@@ -148,7 +141,7 @@ MIDSim uses two different `datasets` paths:
 | `datasets/` (project root) | **Input** — static backbone data for each platform (posts, users, embeddings) |
 | `src/envs/<env>/runs/<timestamp>/datasets/` | **Output** — per-round snapshots exported during a run |
 
-The root `datasets/` directory contains platform backbones (large `UserAgent.json` files are tracked via Git LFS). Clone with `git lfs pull` to fetch them.
+The root `datasets/` directory contains platform backbones for Rednote, Twitter, and Weibo.
 
 ### Directory layout
 
@@ -157,7 +150,7 @@ datasets/
 ├── rednote/
 │   ├── env_data.json                              # seed posts / content pool
 │   ├── UserAgent.json                             # user profiles & social graph
-│   ├── RecommenderAgent.json                      # recommender configs & stats
+│   ├── Algorithm.json                      # recommender configs & stats
 │   └── embeddings/
 │       └── bge-base-zh-v1.5_embeddings.json       # precomputed post embeddings
 ├── twitter/
@@ -172,7 +165,7 @@ Each platform directory contains the same four components:
 |------|-------------|
 | `env_data.json` | Initial simulation state: `content_pool` (seed posts/tweets/notes), timestamps, and `reference_embedding_path` for similarity metrics |
 | `UserAgent.json` | User agent profiles (nickname, interests, activity level, follow/fan IDs, etc.) |
-| `RecommenderAgent.json` | Recommender agent definitions (algorithm type, limits, platform-specific ranking statistics) |
+| `Algorithm.json` | Recommender agent definitions (algorithm type, limits, platform-specific ranking statistics) |
 | `embeddings/bge-base-zh-v1.5_embeddings.json` | Precomputed BGE embeddings keyed by post ID, used for comment/topic similarity metrics |
 
 ### Scenario mapping
@@ -187,19 +180,13 @@ Each directory is self-contained: agent profiles, initial content pool, and prec
 
 Default agent counts in `config/config_*.json`:
 
-| Scenario | UserAgent | RecommenderAgent |
+| Scenario | UserAgent | Algorithm |
 |----------|-----------|------------------|
 | Rednote | 1476 | 7 |
 | Twitter | 1067 | 7 |
 | Weibo | 130 | 7 |
 
 ### Setup checklist
-
-```bash
-# After clone, fetch datasets (including LFS-tracked UserAgent.json)
-git lfs install
-git lfs pull
-```
 
 If you maintain a separate data mirror, the repo also includes `hfd.sh` as a generic Hugging Face download helper:
 
@@ -217,6 +204,9 @@ MIDSim/
 │   ├── config_rednote.json
 │   ├── config_twitter.json
 │   ├── config_weibo.json
+│   ├── params_rednote_qwen25_14B.json   # Experiment params (referenced by main config)
+│   ├── params_twitter_qwen25_14B.json
+│   ├── params_weibo_qwen25_14B.json
 │   └── model_config.json            # LLM / embedding endpoints
 ├── datasets/                        # Input backbones (see Datasets section)
 │   ├── rednote/
@@ -231,7 +221,7 @@ MIDSim/
 │       ├── midsim_rednote/
 │       ├── midsim_twitter/
 │       └── midsim_weibo/
-│           └── code/                # SimEnv, UserAgent, RecommenderAgent, ...
+│           └── code/                # SimEnv, UserAgent, Algorithm, ...
 ├── hfd.sh                           # Hugging Face download helper
 ├── setup.py
 ├── README.md                        # English docs
@@ -249,6 +239,103 @@ Typical fields:
 - `simulator.environment.interval`: simulated time between rounds (seconds)
 - `agent.profile`: agent counts and profile/schema paths
 - `agent.memory`: short-term / long-term memory settings
+- `simulator.environment.additional_config.params_path`: path to experiment params JSON (e.g. `config/params_rednote_qwen25_14B.json`)
+
+### Experiment params (`config/params_*.json`)
+
+Scenario-specific experiment parameters, loaded at startup into `midsim_params` on the environment. Referenced from each main config via `additional_config.params_path`. The CLI command stays the same; edit the params file to tune behavior without changing code.
+
+Example (`config/params_rednote_qwen25_14B.json`):
+
+```json
+{
+  "exposure": {
+    "social": { "probability": 1 },
+    "recommendation": {
+      "probability": 1,
+      "types": ["Interest Recommendation"],
+      "alpha": 0.2,
+      "interest_recommendation": { "interest_k": 20, "target_k": 1 }
+    },
+    "search": {
+      "types": ["Relevant Search"],
+      "alpha": 0.5
+    },
+    "notification": { "attention_budget": 10 }
+  },
+  "user": {
+    "own_note_cap_days": 7.0,
+    "memory_similarity": {
+      "policy": "memory_nonempty,keyword,embedding",
+      "multi_combine": "or",
+      "keyword_enabled": true,
+      "embedding_enabled": true,
+      "min_common_tokens": 2,
+      "embed_threshold": 0.65,
+      "include_historical_summary": true,
+      "embedding_config_path": "",
+      "embed_max_chars": 400,
+      "embed_max_chunks": 12,
+      "embed_chunk_agg": "mean"
+    },
+    "freshness": {
+      "stale_days": 7.0,
+      "low_activity_time_module_threshold": 0.75
+    },
+    "activity": {
+      "remap": { "out_min": 0.4, "out_max": 0.8 },
+      "low_activity_memory_gate_threshold": 0.65
+    },
+    "interaction_threshold": {
+      "same_targets": { "support": [1, 2, 3, 4], "probs": [0.8, 0.1, 0.07, 0.03] },
+      "diff_targets": { "support": [1, 2, 3, 4, 5], "probs": [0.7, 0.2, 0.08, 0.02, 0.01] },
+      "keep_following": { "support": [0, 1], "probs": [0.9784, 0.0252] }
+    }
+  },
+  "simulator": {
+    "max_span_days": 24.0,
+    "max_step": 8,
+    "timestamp_schedule_type": "power",
+    "timestamp_power_p": 1.6,
+    "timestamp_sigmoid_scale": 1.2,
+    "timestamp_sigmoid_center_ratio": 0.5
+  }
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `exposure.social.probability` | Probability of sending a social recommendation event when following-feed content exists |
+| `exposure.recommendation.probability` | Per-algorithm-type probability of requesting algorithmic recommendations |
+| `exposure.recommendation.types` | Recommendation algorithm types requested by each user agent per round |
+| `exposure.recommendation.alpha` | Bernoulli continuation probability for recommendation feed depth |
+| `exposure.recommendation.interest_recommendation.interest_k` | Max candidates from user candidate pool for interest (LLM) recommendation |
+| `exposure.recommendation.interest_recommendation.target_k` | Max candidates from current feed for interest (LLM) recommendation |
+| `exposure.search.types` | Search algorithm types used when the user searches |
+| `exposure.search.alpha` | Bernoulli continuation probability for search result depth |
+| `exposure.notification.attention_budget` | Max @ mentions processed per round; excess mentions are randomly subsampled |
+| `user.own_note_cap_days` | Max days to cap own-note / social-feed time lower bound; 0 disables |
+| `user.memory_similarity.policy` | Memory similarity gate policies (`memory_nonempty` / `keyword` / `embedding`, comma-separated) |
+| `user.memory_similarity.multi_combine` | Multi-policy combine: `or` (any) or `and` (all) |
+| `user.memory_similarity.keyword_enabled` / `embedding_enabled` | Enable keyword overlap / embedding similarity branches |
+| `user.memory_similarity.min_common_tokens` | Min shared tokens between topic and memory |
+| `user.memory_similarity.embed_threshold` | Cosine similarity threshold for embedding branch |
+| `user.memory_similarity.include_historical_summary` | Append `historical_summary` to memory side text |
+| `user.memory_similarity.embedding_config_path` | Embedding config path; empty uses `config/model_config.json` |
+| `user.memory_similarity.embed_max_chars` / `embed_max_chunks` / `embed_chunk_agg` | Long-text embedding chunking and aggregation |
+| `user.freshness.stale_days` | Days threshold for freshness gate staleness coaching |
+| `user.freshness.low_activity_time_module_threshold` | Optional activity ceiling for time-staleness coaching |
+| `user.activity.remap.out_min` / `out_max` | Linear remap of profile `activity_level` into `[out_min, out_max]` |
+| `user.activity.low_activity_memory_gate_threshold` | Activity ceiling for strict memory gate coaching |
+| `user.interaction_threshold.*` | Interaction budget sampling via `support` and `probs` |
+| `simulator.max_step` | Total simulation rounds (passed as `StartEvent.max_step`) |
+| `simulator.max_span_days` | Total simulation span in days (sum cap for per-round window lengths) |
+| `simulator.timestamp_schedule_type` | Per-round window length schedule: `power` or `sigmoid` |
+| `simulator.timestamp_power_p` | Power-law schedule exponent (when `schedule_type=power`) |
+| `simulator.timestamp_sigmoid_scale` | Sigmoid schedule scale (when `schedule_type=sigmoid`) |
+| `simulator.timestamp_sigmoid_center_ratio` | Sigmoid inflection ratio (0–1) |
+
+Profile field `limit` and internal caps (recommendation ≤ 15, search ≤ 50) are fixed in code, not in params.
 
 ### Models (`config/model_config.json`)
 

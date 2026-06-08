@@ -34941,22 +34941,7 @@
     },
     {
         "id": "search_agent_0001",
-        "type": "Random Search",
-        "limit": "5"
-    },
-    {
-        "id": "search_agent_0002",
-        "type": "Hot Search",
-        "limit": "5"
-    },
-    {
-        "id": "search_agent_0003",
         "type": "Relevant Search",
-        "limit": "5"
-    },
-    {
-        "id": "search_agent_0004",
-        "type": "LLM Search",
         "limit": "5"
     }
 ]

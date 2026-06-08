@@ -11,7 +11,8 @@
             "collection_interval": 3000,
             "additional_config": {
                 "export_event_flow": true,
-                "event_flow_output_file": "event_flow.json"
+                "event_flow_output_file": "event_flow.json",
+                "params_path": "config/params_twitter_qwen25_14B.json"
             }
         }
     },
@@ -22,10 +23,10 @@
                 "profile_path": "UserAgent.json",
                 "schema_path": "UserAgent.json"
             },
-            "RecommenderAgent": {
+            "Algorithm": {
                 "count": 7,
-                "profile_path": "RecommenderAgent.json",
-                "schema_path": "RecommenderAgent.json"
+                "profile_path": "Algorithm.json",
+                "schema_path": "Algorithm.json"
             }
         },
         "planning": "COTPlanning",

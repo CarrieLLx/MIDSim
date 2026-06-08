@@ -1,6 +1,5 @@
 from typing import Any, List, Optional, Callable, Dict, Tuple, Set
 from collections import defaultdict
-import csv
 import json
 import os
 import asyncio
@@ -14,61 +13,12 @@ from onesim.planning import PlanningBase
 from onesim.events import Event
 from onesim.relationship import RelationshipManager
 from .events import *
-from .metrics.comment_similarity import (
-    cosine_similarity,
-    get_embeddings,
-    load_embedding_config,
-)
-from .step15_topic_gate import _tokenize, load_step15_gate_config
+from .embedding_client import cosine_similarity, get_embeddings, load_embedding_config
+from onesim.utils.midsim_params import recommender_sampling_params, interest_recommendation_candidate_limits, memory_similarity_gate_params
+from .user_agent_gates import MemorySimilarityGate
 
-# 默认 7 天评论数分布 CSV（与 schema 说明一致）
-_ICLR_DEFAULT_COMMENT_DIST_CSV = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "..",
-    "profile",
-    "data",
-    "comment_count_dist_7d_note_dedup.csv",
-)
-
-
-class RecommenderAgent(GeneralAgent):
-    """推荐算法智能体：支持随机推荐和热点推荐"""
-
-    # 随机推荐：对每条候选帖以 p=1/(MAU×月均发帖) 做伯努利试验，抽中则收录直至 limit；见 _random_recommendation。
-    # 另：w=(1/MAU)×avg_posts 仍可用于其它说明，与 p 数值不同（p=1/分母，w=avg/MAU）。
-    # 月活、月均发帖量仅来自 profile：random_rec_mau、random_rec_avg_posts_per_user_month；不读环境变量。
-    # 未配置或非法时回退到下方类常量（非环境变量）。
-    _RANDOM_REC_MAU_DEFAULT = 240_000_000
-    _RANDOM_REC_AVG_POSTS_PER_USER_MONTH_DEFAULT = 1.1182
-
-    def _parse_positive_float(self, raw: Any, fallback: float) -> float:
-        if raw is None or (isinstance(raw, str) and not raw.strip()):
-            return fallback
-        try:
-            return float(raw)
-        except (TypeError, ValueError):
-            return fallback
-
-    def _random_rec_mau_avg_posts(self) -> Tuple[float, float]:
-        """profile: random_rec_mau、random_rec_avg_posts_per_user_month；与 w 公式共用。"""
-        mau = float(RecommenderAgent._RANDOM_REC_MAU_DEFAULT)
-        avg_posts = float(RecommenderAgent._RANDOM_REC_AVG_POSTS_PER_USER_MONTH_DEFAULT)
-        if self.profile is not None:
-            mau = self._parse_positive_float(
-                self.profile.get_data("random_rec_mau", None),
-                mau,
-            )
-            avg_posts = self._parse_positive_float(
-                self.profile.get_data("random_rec_avg_posts_per_user_month", None),
-                avg_posts,
-            )
-        if mau <= 0:
-            mau = float(RecommenderAgent._RANDOM_REC_MAU_DEFAULT)
-        return mau, avg_posts
-
-    def _random_rec_per_note_weight(self) -> float:
-        mau, avg_posts = self._random_rec_mau_avg_posts()
-        return (1.0 / mau) * avg_posts
+class Algorithm(GeneralAgent):
+    """Platform Algorithm"""
 
     def __init__(self,
                  sys_prompt: str | None = None,
@@ -80,10 +30,10 @@ class RecommenderAgent(GeneralAgent):
                  relationship_manager: RelationshipManager=None) -> None:
         super().__init__(sys_prompt, model_config_name, event_bus_queue, profile, memory, planning, relationship_manager)
         self.register_event("StartEvent", "update_current_notes")
-        self.register_event("GetAlgorithmRecomendationEvent", "send_algorithm_recommendations")
-        self.register_event("SearchEvent", "send_search_recommendations")
+        self.register_event("GetAlgorithmRecomendationEvent", "send_recommendation_results")
+        self.register_event("GetSearchResultEvent", "send_search_results")
         
-        # type字段值到算法名称的映射
+        # Recommendation algorithm mapping
         self.type_to_algorithm: Dict[str, str] = {
             "Random Recommendation": "random",
             "Hot Recommendation": "hot",
@@ -98,24 +48,18 @@ class RecommenderAgent(GeneralAgent):
         self.default_algorithm = "hot"
         self._comment_count_dist_7d_cache: Optional[Dict[int, int]] = None
 
-        # type字段值到算法名称的映射
+        # Search algorithm mapping
         self.type_to_search: Dict[str, str] = {
-            "Random Search": "random",
-            "Hot Search": "hot",
             "Relevant Search": "relevant",
-            "LLM Search": "llm",
         }
         
         self.search_algorithms: Dict[str, Callable] = {
-            "random": self._random_search,
-            "hot": self._hot_search,
             "relevant": self._relevant_search,
-            "llm": self._llm_search,
         }
         self.default_search = "relevant"
 
     def _parse_comment_count_dist_rows(self, rows: Any) -> Dict[int, int]:
-        """将 profile 中的列表或类似结构解析为 comment_count -> post_count。"""
+        """Parse a list (or similar structure) from profile into comment_count -> post_count."""
         out: Dict[int, int] = {}
         if not isinstance(rows, list):
             return out
@@ -136,101 +80,26 @@ class RecommenderAgent(GeneralAgent):
             out[cc] = out.get(cc, 0) + pc
         return out
 
-    def _read_comment_count_dist_csv(self, path: str) -> Dict[int, int]:
-        out: Dict[int, int] = {}
-        if not path or not os.path.isfile(path):
-            return out
-        try:
-            with open(path, "r", encoding="utf-8-sig", newline="") as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    if not row:
-                        continue
-                    raw_cc = row.get("comment_count")
-                    raw_pc = row.get("post_count")
-                    if raw_cc is None or raw_pc is None:
-                        continue
-                    try:
-                        cc = int(float(str(raw_cc).strip()))
-                        pc = int(float(str(raw_pc).strip()))
-                    except (TypeError, ValueError):
-                        continue
-                    if pc <= 0:
-                        continue
-                    out[cc] = out.get(cc, 0) + pc
-        except OSError as e:
-            logger.warning(f"Failed to read comment_count dist CSV {path}: {e}")
-        return out
-
-    def _get_comment_count_dist_7d_map(self) -> Dict[int, int]:
-        """
-        7 天去重帖子的评论数分布（与站外/历史分布一起参与热点排序）。
-        优先使用 profile.comment_count_dist_7d；若为空则从 CSV 读取。
-        CSV 路径：profile.comment_count_dist_7d_csv（非空则用之），否则用内置默认路径；不读环境变量。
-        """
-        if self._comment_count_dist_7d_cache is not None:
-            return self._comment_count_dist_7d_cache
-
-        merged: Dict[int, int] = {}
-        if self.profile is not None:
-            raw = self.profile.get_data("comment_count_dist_7d", [])
-            merged.update(self._parse_comment_count_dist_rows(raw))
-        if not merged:
-            csv_path = _ICLR_DEFAULT_COMMENT_DIST_CSV
-            if self.profile is not None:
-                raw_path = self.profile.get_data("comment_count_dist_7d_csv", None)
-                if isinstance(raw_path, str) and raw_path.strip():
-                    csv_path = os.path.abspath(os.path.expanduser(raw_path.strip()))
-            merged = self._read_comment_count_dist_csv(csv_path)
-        self._comment_count_dist_7d_cache = merged
-        return merged
-
     async def update_current_notes(self, event: Event) -> None:
-        """
-        更新当前笔记
-        """
+        """Update current notes."""
         current_notes = event.current_notes
         if not isinstance(current_notes, dict) or not current_notes:
             logger.warning("No current notes found")
         self.profile.update_data("current_notes", current_notes)
         self._comment_count_dist_7d_cache = None
 
-    def _calculate_popularity(self, note: Dict[str, Any]) -> float:
-        """
-        内容热度：优先使用 SimEnv 在每步写入的 ``popularity``（滑动时间窗内评论数）；
-        无该字段时退化为 ``comment_count``（全量评论数）。
-        """
-        if isinstance(note, dict) and "popularity" in note:
-            raw = note.get("popularity")
-            try:
-                return float(raw) if raw is not None else 0.0
-            except (TypeError, ValueError):
-                return 0.0
-        comment_count = note.get("comment_count", 0)
-        return float(comment_count) if isinstance(comment_count, (int, float)) else 0.0
-
     def _sample_recommendation_limit_bernoulli(self, alpha: float, max_limit: int = 3) -> int:
-        """
-        使用“继续概率为 alpha”的伯努利衰减，采样本轮推荐数量。
-
-        建模含义：每次已经推荐 1 屏后，用户以概率 alpha 决定继续往下看下一屏；
-        连续继续下去的次数决定最终推荐数量（上限为 max_limit）。
-
-        例如 max_limit=3 时：
-          P(1) = 1 - alpha
-          P(2) = alpha * (1 - alpha)
-          P(3) = alpha^2
-        """
+        """Sample recommendation limit with Bernoulli distribution."""
         try:
             alpha = float(alpha)
         except (TypeError, ValueError):
             alpha = 0.5
 
-        # alpha 约束到 [0, 1]
+        # Constrain alpha to [0, 1]
         alpha = max(0.0, min(1.0, alpha))
         max_limit = max(1, int(max_limit))
 
-        # 至少推 1 个；之后最多再推 max_limit-1 个
+        # At least 1 recommendation; then at most max_limit-1 recommendations
         limit = 1
         for _ in range(max_limit - 1):
             if random.random() < alpha:
@@ -239,25 +108,53 @@ class RecommenderAgent(GeneralAgent):
                 break
         return limit
 
-    def _random_recommendation(self, recommended_note_ids: List[str], contents: Dict[str, Dict[str, Any]], current_timestamp: float, limit: int = 10) -> Dict[str, Dict[str, Any]]:
-        """
-        随机推荐：遍历候选池中每条帖（排除已推荐），对每条独立做一次伯努利试验。
+    # ---------- Random recommendation ----------
+    _RANDOM_REC_MAU_DEFAULT = 240_000_000   # Default Monthly Active Users (MAU)
+    _RANDOM_REC_AVG_POSTS_PER_USER_MONTH_DEFAULT = 1.1182   # Default avg posts per user per month
 
-        单次「抽中」概率 p = 1 / (MAU × 每用户月均发帖数)，分母来自 profile ``random_rec_mau``、
-        ``random_rec_avg_posts_per_user_month``。抽不中则试下一条；收录满 ``limit`` 条即停止。
-        遍历顺序为打乱后的 note_ids，避免 dict 键序偏置。
-        """
+    def _parse_positive_float(self, raw: Any, fallback: float) -> float:
+        if raw is None or (isinstance(raw, str) and not raw.strip()):
+            return fallback
+        try:
+            return float(raw)
+        except (TypeError, ValueError):
+            return fallback
+
+    def _random_rec_mau_avg_posts(self) -> Tuple[float, float]:
+        """profile: random_rec_mau and random_rec_avg_posts_per_user_month."""
+        mau = float(Algorithm._RANDOM_REC_MAU_DEFAULT)
+        avg_posts = float(Algorithm._RANDOM_REC_AVG_POSTS_PER_USER_MONTH_DEFAULT)
+        if self.profile is not None:
+            mau = self._parse_positive_float(
+                self.profile.get_data("random_rec_mau", None),
+                mau,
+            )
+            avg_posts = self._parse_positive_float(
+                self.profile.get_data("random_rec_avg_posts_per_user_month", None),
+                avg_posts,
+            )
+        if mau <= 0:
+            mau = float(Algorithm._RANDOM_REC_MAU_DEFAULT)
+        return mau, avg_posts
+
+    def _random_rec_per_note_weight(self) -> float:
+        mau, avg_posts = self._random_rec_mau_avg_posts()
+        return (1.0 / mau) * avg_posts
+
+    def _random_recommendation(self, recommended_note_ids: List[str], contents: Dict[str, Dict[str, Any]], current_timestamp: float, limit: int = 10) -> Dict[str, Dict[str, Any]]:
+        """Random recommendation, sample with equal probability (1/(MAU×avg)) from candidate pool."""
         if not contents:
             return {}
-
         note_ids = list(contents.keys())
         if not note_ids:
             return {}
-
+        
+        # Filter out recommended notes
         note_ids = [note_id for note_id in note_ids if note_id not in recommended_note_ids]
         if not note_ids:
             return {}
 
+        # Count denominator, p = 1 / (MAU × avg)
         mau, avg_posts = self._random_rec_mau_avg_posts()
         denom = mau * avg_posts
         if denom <= 0:
@@ -277,64 +174,65 @@ class RecommenderAgent(GeneralAgent):
                 break
             ok = random.random() < p_hit
             if log_each:
-                logger.debug(
-                    "random_rec 帖 {}: Bernoulli(p=1/(MAU×avg)={:.6e}) => {}",
-                    nid,
-                    p_hit,
-                    "hit" if ok else "miss",
-                )
+                logger.debug("random_rec note {}: Bernoulli(p=1/(MAU×avg)={:.6e}) => {}", nid, p_hit, "hit" if ok else "miss")
             if ok:
                 selected.append(nid)
 
         w = self._random_rec_per_note_weight()
-        logger.debug(
-            "random recommendation: MAU={:.4g} avg_posts={:.6g} => p=1/(MAU×avg)={:.6e}; "
-            "候选 N={} 上限 limit={} => 本轮收录 {} 条；w=(1/MAU)×avg={:.6e}",
-            mau,
-            avg_posts,
-            p_hit,
-            len(note_ids),
-            limit,
-            len(selected),
-            w,
-        )
+        logger.debug( "random recommendation: MAU={:.4g} avg_posts={:.6g} => p=1/(MAU×avg)={:.6e}; weight=(1/MAU)×avg={:.6e}",
+            mau, avg_posts, p_hit, len(note_ids), limit, len(selected), w)
         return {note_id: contents[note_id] for note_id in selected}
     
+    # ---------- Hot recommendation ----------
+    def _get_comment_count_dist_7d_map(self) -> Dict[int, int]:
+        """Get comment count distribution map for hot recommendation."""
+        if self._comment_count_dist_7d_cache is not None:
+            return self._comment_count_dist_7d_cache
+
+        merged: Dict[int, int] = {}
+        if self.profile is not None:
+            raw = self.profile.get_data("comment_count_dist_7d", [])
+            merged.update(self._parse_comment_count_dist_rows(raw))
+        self._comment_count_dist_7d_cache = merged
+        return merged
+
+    def _calculate_popularity(self, note: Dict[str, Any]) -> float:
+        """Calculate note popularity: use SimEnv's popularity (comment count in sliding window) if available, otherwise use comment_count."""
+        if isinstance(note, dict) and "popularity" in note:
+            raw = note.get("popularity")
+            try:
+                return float(raw) if raw is not None else 0.0
+            except (TypeError, ValueError):
+                return 0.0
+        comment_count = note.get("comment_count", 0)
+        return float(comment_count) if isinstance(comment_count, (int, float)) else 0.0
+
     def _hot_recommendation(self, recommended_note_ids: List[str], contents: Dict[str, Dict[str, Any]], current_timestamp: float, limit: int = 10) -> Dict[str, Dict[str, Any]]:
-        """
-        热点推荐：考虑 ``contents`` 中全部候选（排除已推荐）。
-
-        - 真实帖热度：``_calculate_popularity``（优先 SimEnv 的 ``popularity``，否则 ``comment_count``）。
-        - 若配置了 ``comment_count_dist_7d``（或 CSV）：按评论数分桶放置「虚拟帖」占位，与真实帖
-          在同一整数桶内 shuffle 后，按桶键降序串联；全局前 ``limit`` 个位置中只输出真实 note_id。
-          虚拟桶键来自经验评论数分布，真实帖桶键来自上述热度，二者在同一排序轴上竞争占位。
-        - 若无分布配置：对全部候选打乱后按热度降序取前 ``limit`` 条。
-
-        ``current_timestamp`` 保留签名以兼容调用方。
-        """
+        """Hot recommendation: mix candidate note popularity with experience comment count distribution, and take the high-popularity notes."""
         if not contents:
             return {}
-
-        eligible: Dict[str, Dict[str, Any]] = {}
-        for note_id, note in contents.items():
-            if note_id in recommended_note_ids or not isinstance(note, dict):
-                continue
-            eligible[note_id] = note
-
-        if not eligible:
+        note_ids = list(contents.keys())
+        if not note_ids:
             return {}
 
+        # Filter out recommended notes
+        note_ids = [note_id for note_id in note_ids if note_id not in recommended_note_ids]
+        if not note_ids:
+            return {}
+
+        # Get comment count distribution map
         dist_map = self._get_comment_count_dist_7d_map()
         if not dist_map:
             notes_with_popularity: List[Tuple[str, Dict[str, Any], float]] = []
-            for note_id, note in eligible.items():
+            for note_id in note_ids:
+                note = contents[note_id]
                 popularity = self._calculate_popularity(note)
                 notes_with_popularity.append((note_id, note, popularity))
             random.shuffle(notes_with_popularity)
             notes_with_popularity.sort(key=lambda x: x[2], reverse=True)
             return {note_id: note for note_id, note, _ in notes_with_popularity[:limit]}
 
-        # 同一整数桶：虚拟帖（None，桶键=经验评论数）与真实 note（桶键=当前热度）混洗后按桶键降序串联
+        # Mix candidate notes with experience comment count distribution, and sort by popularity
         buckets: Dict[int, List[Optional[str]]] = defaultdict(list)
         for cc, cnt in dist_map.items():
             try:
@@ -343,8 +241,8 @@ class RecommenderAgent(GeneralAgent):
                 continue
             for _ in range(max(0, n)):
                 buckets[cc].append(None)
-        for note_id, note in eligible.items():
-            p = int(self._calculate_popularity(note))
+        for note_id in note_ids:
+            p = int(self._calculate_popularity(contents[note_id]))
             buckets[p].append(note_id)
 
         merged: List[Optional[str]] = []
@@ -353,35 +251,15 @@ class RecommenderAgent(GeneralAgent):
             random.shuffle(row)
             merged.extend(row)
 
+        # Get top notes by popularity
         top_slice = merged[: max(0, limit)]
         chosen_ids = [x for x in top_slice if x is not None]
-        return {nid: eligible[nid] for nid in chosen_ids if nid in eligible}
-    
-    def _top_hot_notes(
-        self,
-        recommended_note_ids: List[str],
-        contents: Dict[str, Dict[str, Any]],
-        top_k: int = 100,
-    ) -> List[Tuple[str, Dict[str, Any], float]]:
-        """取热度最高的 top_k 条（过滤掉已推荐过的）。"""
-        if not contents:
-            return []
-        rows: List[Tuple[str, Dict[str, Any], float]] = []
-        for note_id, note in contents.items():
-            if note_id in recommended_note_ids or not isinstance(note, dict):
-                continue
-            popularity = self._calculate_popularity(note)
-            rows.append((note_id, note, popularity))
-        random.shuffle(rows)
-        rows.sort(key=lambda x: x[2], reverse=True)
-        return rows[:top_k]
+        return {nid: contents[nid] for nid in chosen_ids if nid in contents}
 
+    # ---------- Interest recommendation ----------
     @staticmethod
     def _interest_interleave_pool_for_prompt(pool_ids: List[str], pool_set: Set[str]) -> List[str]:
-        """
-        在调用大模型**之前**，将 candidate_pool 与 current_feed 两路 id 交错排列，
-        避免 observation 里同源笔记成片连续；不改变集合内容，只改展示顺序。
-        """
+        """Interleave candidate_pool and current_feed ids."""
         ordered = [str(x).strip() for x in pool_ids if x]
         a = [x for x in ordered if x in pool_set]
         b = [x for x in ordered if x not in pool_set]
@@ -402,7 +280,7 @@ class RecommenderAgent(GeneralAgent):
 
     @staticmethod
     def _historical_summary_head_tail(text: Any) -> str:
-        """historical_summary 超过 100 字符时保留前 50 与后 50，中间「…」；否则返回 strip 后的全文。"""
+        """Truncate historical_summary to 100 characters, and keep the first 50 and last 50 characters with "…" in between."""
         if text is None:
             return ""
         s = str(text).strip()
@@ -414,27 +292,17 @@ class RecommenderAgent(GeneralAgent):
     def _compact_user_profile_for_interest_rec(
         user_profile: Optional[Dict[str, Any]],
     ) -> Dict[str, Any]:
-        """从事件携带的 user_profile 中抽取兴趣排序相关字段，并截断过长文本以控制 prompt 体积。
-        historical_summary 超过 100 字时保留前 50 字与后 50 字，中间以「…」连接。
-        """
+        """Construct input profile for interest recommendation."""
         if not user_profile or not isinstance(user_profile, dict):
             return {}
-        keys = (
-            "id",
-            "nickname",
-            "gender",
-            "description",
-            "location",
-            "interest_tags",
-            "historical_summary",
-        )
+        keys = ("id", "nickname", "gender", "description", "location", "interest_tags", "historical_summary")
         out: Dict[str, Any] = {}
         for k in keys:
             if k not in user_profile:
                 continue
             v = user_profile[k]
             if k == "historical_summary":
-                v = RecommenderAgent._historical_summary_head_tail(v)
+                v = Algorithm._historical_summary_head_tail(v)
             elif k == "description" and isinstance(v, str) and len(v) > 400:
                 v = v[:400] + "…"
             out[k] = v
@@ -449,13 +317,7 @@ class RecommenderAgent(GeneralAgent):
         candidate_note_ids: Optional[List[str]] = None,
         user_profile: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Dict[str, Any]]:
-        """
-        兴趣推荐（LLM 重排序）：两路候选合并后一次性排序（输入顺序可由 ``_interest_interleave_pool_for_prompt`` 交错，仅影响 observation）。
-        按该顺序取前 ``limit`` 个 id；再**仅**保留其中在 ``contents``（current_notes）里存在的条目并返回（只在兴趣池、不在 contents 的丢弃）。
-        若最终没有任何条在 contents 中命中，返回空字典即可。
-
-        ``user_profile`` 来自 ``GetAlgorithmRecomendationEvent`` / ``SearchEvent``，用于个性化排序（兴趣标签、简介、历史摘要等）。
-        """
+        """Interest recommendation: mix target list with candidate pool, and use LLM to re-rank."""
         interest_pool: Dict[str, Dict[str, Any]] = {}
         if self.profile is not None:
             raw_ip = self.profile.get_data("interest_recommendation_content_pool", None)
@@ -474,51 +336,34 @@ class RecommenderAgent(GeneralAgent):
             c = contents.get(sid) if isinstance(contents, dict) else None
             return c if isinstance(c, dict) else None
 
+        # Get candidate note ids
         candidate_note_ids = list(candidate_note_ids) if candidate_note_ids else []
-        recommended_set: Set[str] = {str(x).strip() for x in recommended_note_ids if x}
+        interest_k, target_k = await interest_recommendation_candidate_limits(self)
 
-        # 两路候选：candidate_pool 侧至多 interest_k 条；current_feed 侧至多 target_k 条（与 limit 解耦，供 LLM 全排序后再截断前 limit 条）。
-        interest_k = 20
-        # target_k = 10
-        target_k = 1
-
-        # --- candidate_pool：来自 profile 侧候选 id，在 interest_pool 或 contents 中可解析且未在已推荐集合中 ---
         ids_for_user: List[str] = []
         if candidate_note_ids:
             ids_for_user = [str(x).strip() for x in candidate_note_ids if x]
         ids_for_user = [
             nid for nid in ids_for_user
             if _resolve_note(nid) is not None
-            and nid not in recommended_set
+            and nid not in recommended_note_ids
         ]
         random.shuffle(ids_for_user)
         pool_sample: List[str] = ids_for_user[:interest_k]
         pool_set: Set[str] = set(pool_sample)
 
-        # --- current_feed：contents 全量中未推荐的笔记，与候选池去重后至多 target_k 条 ---
-        feed_candidates: List[str] = []
-        for nid, note in contents.items():
-            sid = str(nid).strip()
-            if sid in recommended_set:
-                continue
-            if not isinstance(note, dict):
-                continue
-            feed_candidates.append(sid)
-        seen: Set[str] = set(pool_sample)
-        feed_eligible = [sid for sid in feed_candidates if sid not in seen]
+        # Construct current feed note ids
+        feed_note_ids = list(contents.keys()) if contents else []
+        feed_note_ids = [note_id for note_id in feed_note_ids if note_id not in recommended_note_ids]
+        feed_eligible = [note_id for note_id in feed_note_ids if note_id not in pool_set]
         random.shuffle(feed_eligible)
         feed_sample: List[str] = feed_eligible[:target_k]
 
+        # Mix candidate pool and current feed
         pool_ids: List[str] = list(pool_sample) + feed_sample
         if not pool_ids:
             return {}
-        # 仅在大模型输入前重排 observation 中的顺序，不在模型输出后改序（可用 ONESIM_REC_INTERLEAVE_INPUT=0 关闭）
-        if os.environ.get("ONESIM_REC_INTERLEAVE_INPUT", "1").strip().lower() not in (
-            "0",
-            "false",
-            "no",
-            "off",
-        ):
+        if os.environ.get("ONESIM_REC_INTERLEAVE_INPUT", "1").strip().lower() not in ("0", "false", "no", "off"):
             pool_ids = self._interest_interleave_pool_for_prompt(pool_ids, pool_set)
 
         def _make_candidate_payload(
@@ -529,7 +374,6 @@ class RecommenderAgent(GeneralAgent):
                 note = _resolve_note(note_id)
                 if not isinstance(note, dict):
                     continue
-                popularity = self._calculate_popularity(note)
                 out.append({
                     "note_id": note_id,
                     "title": note.get("title", ""),
@@ -538,8 +382,7 @@ class RecommenderAgent(GeneralAgent):
                 })
             return out
 
-        # instruction + observation 总长度上限，避免超出模型上下文。
-        # 默认按 Qwen2.5-7B 等约 32K token 上下文粗算（中文约 1.5–2 字/token，本段为主输入时约 4.5–5 万字符量级仍较安全；若同一请求还叠了很长 system/记忆请调低或设环境变量）。
+        # Construct prompt and avoid context overflow
         max_prompt_chars = int(
             os.environ.get("ONESIM_RECOMMENDER_INTEREST_MAX_PROMPT_CHARS", "48000")
         )
@@ -592,27 +435,17 @@ class RecommenderAgent(GeneralAgent):
                 break
             if len(pool_ids) > 1:
                 pool_ids.pop()
-                logger.warning(
-                    f"Interest recommendation prompt over budget ({total_len} > {max_prompt_chars} chars): "
-                    f"dropped last candidate, {len(pool_ids)} left"
-                )
+                logger.warning(f"Interest recommendation prompt over budget ({total_len} > {max_prompt_chars} chars): dropped last candidate, {len(pool_ids)} left")
                 continue
             if desc_max > 200:
                 desc_max = max(200, desc_max // 2)
-                logger.warning(
-                    f"Interest recommendation prompt over budget: shrinking desc cap to {desc_max} chars"
-                )
+                logger.warning(f"Interest recommendation prompt over budget: shrinking desc cap to {desc_max} chars")
                 continue
             if desc_max > 80:
                 desc_max = 80
-                logger.warning(
-                    "Interest recommendation prompt over budget: shrinking desc cap to 80 chars"
-                )
+                logger.warning("Interest recommendation prompt over budget: shrinking desc cap to 80 chars")
                 continue
-            logger.error(
-                f"Interest recommendation: prompt still {total_len} chars "
-                f"(limit {max_prompt_chars}); proceeding anyway"
-            )
+            logger.error(f"Interest recommendation: prompt still {total_len} chars (limit {max_prompt_chars}); proceeding anyway")
             break
 
         contents_d: Dict[str, Dict[str, Any]] = (
@@ -622,9 +455,10 @@ class RecommenderAgent(GeneralAgent):
         ordered_ids: List[str] = []
         pool_set_all: Set[str] = set(pool_ids)
         try:
+            # Generate recommendation
             response = await self.generate_recommendation(instruction, observation)
 
-            # 顺序与模型 ranked_note_ids 一致；不要求同时出现在兴趣池与 contents
+            # Get ranked note ids
             raw_ids = response.get("ranked_note_ids")
             if raw_ids is None:
                 raw_ids = response.get("selected_note_ids", [])
@@ -635,7 +469,7 @@ class RecommenderAgent(GeneralAgent):
                         note_id
                         and note_id in pool_set_all
                         and _resolve_note(note_id) is not None
-                        and note_id not in recommended_set
+                        and note_id not in recommended_note_ids
                         and note_id not in ordered_ids
                     ):
                         ordered_ids.append(note_id)
@@ -644,12 +478,13 @@ class RecommenderAgent(GeneralAgent):
             logger.warning(f"LLM interest recommendation failed: {e}")
             return {}
 
+        # Get top note ids
         if not ordered_ids:
             return {}
-
         top_ids = ordered_ids[: max(0, int(limit))]
-        logger.info(f"RecommenderAgent {self.profile_id} length of top_ids: {len(top_ids)}")
+        logger.info(f"Algorithm length of top_ids: {len(top_ids)}")
 
+        # Filter target notes from ranked result
         def _note_from_contents_only(sid: str) -> Optional[Dict[str, Any]]:
             if sid in contents_d:
                 v = contents_d.get(sid)
@@ -665,19 +500,15 @@ class RecommenderAgent(GeneralAgent):
             n = _note_from_contents_only(sid)
             if n is not None:
                 out[sid] = n
-        logger.info(f"RecommenderAgent {self.profile_id} length of out: {len(out)}")
+        logger.info(f"Algorithm length of out: {len(out)}")
         return out
 
-    async def send_algorithm_recommendations(self, event: Event) -> List[Event]:
-        """
-        发送算法推荐
-        """
-        # 获取当前时间步
+    async def send_recommendation_results(self, event: Event) -> List[Event]:
+        """Send recommendation results."""
+        # Get current timestamp
         current_timestamp = event.timestamp
 
-        # 获取内容池
-        logger.info(f"RecommenderAgent {self.profile_id} start getting previous and current notes")
-        
+        # Get content pool
         current_notes = {}
         if self.profile is not None:
             current_notes = self.profile.get_data("current_notes", {})
@@ -687,50 +518,37 @@ class RecommenderAgent(GeneralAgent):
             logger.warning("No current notes found from profile/event")
             return []
 
-        # 校验：本推荐器 profile 的 type 须与请求事件携带的 type 一致（用户侧期望的算法类型）
+        # Check algorithm type
         expected_type = getattr(event, "type", None)
         type_value = await self.get_data("type", "")
         exp_s = str(expected_type).strip() if expected_type is not None else ""
         got_s = str(type_value).strip() if type_value is not None else ""
         if exp_s != got_s:
-            # 旧事件未带 algorithm_type 时 event.type 为空，仅信任本推荐器 profile.type
             if not exp_s and got_s:
                 logger.debug(
-                    f"RecommenderAgent {self.profile_id}: event.type 为空，按本智能体 type={got_s!r} 处理"
+                    f"Algorithm: event.type is empty, process with type={got_s!r}"
                 )
             else:
                 raise ValueError(
-                    f"RecommenderAgent {self.profile_id}: 推荐算法 type 不一致 — "
-                    f"本智能体 get_data('type')={got_s!r}, 事件 event.type={exp_s!r}, "
+                    f"Algorithm: recommendation algorithm type mismatch — "
+                    f"this agent get_data('type')={got_s!r}, event.type={exp_s!r}, "
                     f"from_agent_id={getattr(event, 'from_agent_id', '')!r}"
                 )
 
-        # 将 type 字段值映射到算法名称
+        # Get recommendation algorithm function
         algorithm_name = self.type_to_algorithm.get(type_value, self.default_algorithm)
         if algorithm_name not in self.recommendation_algorithms:
             algorithm_name = self.default_algorithm
             logger.warning(f"Unknown recommendation algorithm type '{type_value}', using default: {self.default_algorithm}")
-        
-        # 获取推荐算法函数
+
         recommendation_func = self.recommendation_algorithms[algorithm_name]
 
-        # 伯努利衰减采样参数：
-        # - alpha：优先取每个 user_agent 的 activity_level（0~1），找不到则退化到全局默认
-        # - max_limit：最多推荐多少条（默认 3，对应你说的 1~3 区间）
-        max_limit = await self.get_data("limit", 15)
-        try:
-            max_limit = max(15, min(15, int(float(max_limit))))
-        except (TypeError, ValueError):
-            max_limit = 15
-
-        # alpha = await self.get_data("alpha", 0.5)
-        # alpha = 0.8
-        alpha = 0.2
-        
-        # 所有用户共用同一个 alpha -> 推荐数量服从同一分布
+        # Bernoulli sampling
+        alpha, max_limit = await recommender_sampling_params(self, mode="recommendation")
         recommendation_limit = self._sample_recommendation_limit_bernoulli(alpha, max_limit=max_limit)
-        logger.info(f"RecommenderAgent {self.profile_id} recommendation_limit: {recommendation_limit}")
+        logger.info(f"Algorithm recommendation_limit: {recommendation_limit}")
 
+        # Get candidate note ids by user
         by_user: Dict[str, Any] = {}
         if self.profile is not None:
             raw_map = self.profile.get_data("candidate_note_ids_by_user", {})
@@ -749,8 +567,10 @@ class RecommenderAgent(GeneralAgent):
             if isinstance(raw_list, list):
                 candidate_note_ids = [str(x).strip() for x in raw_list if x]
 
+        # Get recommended note ids
         recommended_note_ids = list(event.recommended_note_ids)
 
+        # Get user profile
         user_profile_raw = getattr(event, "user_profile", None)
         user_profile: Dict[str, Any] = (
             user_profile_raw if isinstance(user_profile_raw, dict) else {}
@@ -793,9 +613,10 @@ class RecommenderAgent(GeneralAgent):
         )
         return [recommendation_event]
 
+    # ---------- Search algorithm ----------
     @staticmethod
     def _search_note_ids(current_notes: Dict[str, Dict[str, Any]]) -> List[str]:
-        """内容池中可作为搜索候选的 note_id（值为 dict 的条目）。"""
+        """Get note ids that can be used as search candidates from content pool."""
         out: List[str] = []
         for nid, note in (current_notes or {}).items():
             if not isinstance(note, dict):
@@ -807,7 +628,7 @@ class RecommenderAgent(GeneralAgent):
 
     @staticmethod
     def _note_text_for_search(note: Dict[str, Any], max_len: int = 1200) -> str:
-        """拼接标题、正文与标签为检索用文本，并截断到 max_len。"""
+        """Concatenate title, description and tags for search, and truncate to max_len."""
         title = str(note.get("title", "") or "")
         desc = str(note.get("desc", "") or "")
         tags = note.get("tags_list")
@@ -818,31 +639,13 @@ class RecommenderAgent(GeneralAgent):
         s = f"{title}\n{desc}\n{tg}".strip()
         return s if len(s) <= max_len else s[:max_len]
 
-    def _derive_search_query(self, user_profile: Dict[str, Any], search_query: str) -> str:
-        """LLM 搜索用的查询串：优先用户显式关键词，否则从画像兴趣/简介/历史摘要拼接（摘要过长时头尾各 50 字）。"""
-        q = (search_query or "").strip()
-        if q:
-            return q[:100]
-        parts: List[str] = []
-        if isinstance(user_profile, dict):
-            for k in ("interest_tags", "description", "historical_summary"):
-                v = user_profile.get(k)
-                if v is None:
-                    continue
-                if k == "historical_summary":
-                    parts.append(self._historical_summary_head_tail(v))
-                else:
-                    parts.append(str(v).strip())
-        joined = "\n".join(parts).strip()
-        return joined[:4000]
-
     def _random_search(
         self,
         current_notes: Dict[str, Dict[str, Any]],
         current_timestamp: float,
         limit: int,
     ) -> Dict[str, Dict[str, Any]]:
-        """随机搜索：在候选笔记中打乱顺序后取前 limit 条（与热度、语义无关）。"""
+        """Random search：shuffle candidate notes and take top limit notes."""
         if not current_notes or limit <= 0:
             return {}
         note_ids = list(current_notes.keys())
@@ -850,28 +653,48 @@ class RecommenderAgent(GeneralAgent):
         picked = note_ids[:limit]
         return {nid: current_notes[nid] for nid in picked if nid in current_notes}
 
-    def _hot_search(
+    def _keyword_search(
         self,
         current_notes: Dict[str, Dict[str, Any]],
         current_timestamp: float,
         limit: int,
+        *,
+        search_query: str = "",
     ) -> Dict[str, Dict[str, Any]]:
-        """热度搜索：按 `_calculate_popularity` 得分降序取前 limit 条；同分顺序经 shuffle 后再 sort 打散。"""
+        """Keyword search：query Jaccard similarity with note text."""
         if not current_notes or limit <= 0:
             return {}
-        rows: List[Tuple[str, Dict[str, Any], float]] = []
-        for nid in current_notes.keys():
+        cands = self._search_note_ids(current_notes)
+        if not cands:
+            return {}
+
+        query = (search_query or "").strip()[:4000]
+        if not query:
+            sub_notes = {nid: current_notes[nid] for nid in cands if nid in current_notes}
+            return self._random_search(sub_notes, current_timestamp, limit)
+
+        qt = MemorySimilarityGate.tokenize(query)
+        scored: List[Tuple[str, float]] = []
+        for nid in cands:
             note = current_notes.get(nid)
             if not isinstance(note, dict):
                 continue
-            pop = self._calculate_popularity(note)
-            rows.append((nid, note, pop))
-        random.shuffle(rows)
-        rows.sort(key=lambda x: x[2], reverse=True)
-        out: Dict[str, Dict[str, Any]] = {}
-        for nid, note, _ in rows[:limit]:
-            out[nid] = note
-        return out
+            text = self._note_text_for_search(note, max_len=2000)
+            nt = MemorySimilarityGate.tokenize(text)
+            if not qt or not nt:
+                scored.append((nid, 0.0))
+                continue
+            inter = len(qt & nt)
+            union = len(qt | nt)
+            j = (inter / union) if union else 0.0
+            scored.append((nid, j))
+        random.shuffle(scored)
+        scored.sort(key=lambda x: x[1], reverse=True)
+        return {
+            nid: current_notes[nid]
+            for nid, _ in scored[:limit]
+            if nid in current_notes
+        }
 
     def _relevant_search_sync(
         self,
@@ -880,42 +703,26 @@ class RecommenderAgent(GeneralAgent):
         limit: int,
         *,
         search_query: str,
+        embedding_config_path: str,
     ) -> Dict[str, Dict[str, Any]]:
-        """相关搜索（同步）：查询与笔记分别 embedding，按余弦相似度排序；失败或空查询则走关键词 Jaccard 或退化为热度。"""
+        """Relevant search：query and note embedding, cosine similarity sort."""
         if not current_notes or limit <= 0:
             return {}
+
+        # Get searchable candidate ids
         cands = self._search_note_ids(current_notes)
         if not cands:
             return {}
 
+        # Get search query
         query = (search_query or "").strip()[:4000]
         if not query.strip():
             sub_notes = {nid: current_notes[nid] for nid in cands if nid in current_notes}
-            return self._hot_search(sub_notes, current_timestamp, limit)
+            return self._random_search(sub_notes, current_timestamp, limit)
 
-        def _keyword_scores() -> List[Tuple[str, float]]:
-            qt = _tokenize(query)
-            scored: List[Tuple[str, float]] = []
-            for nid in cands:
-                note = current_notes.get(nid)
-                if not isinstance(note, dict):
-                    continue
-                text = self._note_text_for_search(note, max_len=2000)
-                nt = _tokenize(text)
-                if not qt or not nt:
-                    scored.append((nid, 0.0))
-                    continue
-                inter = len(qt & nt)
-                union = len(qt | nt)
-                j = (inter / union) if union else 0.0
-                scored.append((nid, j))
-            random.shuffle(scored)
-            scored.sort(key=lambda x: x[1], reverse=True)
-            return scored
-
+        # Batch embedding, query vector vs note vector cosine similarity
         try:
-            cfg = load_step15_gate_config()
-            base_url, model_name = load_embedding_config(cfg.embedding_config_path)
+            base_url, model_name = load_embedding_config(embedding_config_path)
             texts = [query[:2000]]
             for nid in cands:
                 note = current_notes.get(nid)
@@ -926,7 +733,7 @@ class RecommenderAgent(GeneralAgent):
                 )
             vecs = get_embeddings(base_url, model_name, texts)
             if not vecs or len(vecs) != len(texts):
-                raise ValueError("embedding 返回长度与输入不一致")
+                raise ValueError("embedding return length does not match input")
             vq = vecs[0]
             scored: List[Tuple[str, float]] = []
             for i, nid in enumerate(cands):
@@ -938,12 +745,12 @@ class RecommenderAgent(GeneralAgent):
             return {nid: current_notes[nid] for nid, _ in top if nid in current_notes}
         except Exception as e:
             logger.warning(f"Relevant search embedding failed, fallback to keyword: {e}")
-            kw = _keyword_scores()
-            return {
-                nid: current_notes[nid]
-                for nid, _ in kw[:limit]
-                if nid in current_notes
-            }
+            return self._keyword_search(
+                current_notes,
+                current_timestamp,
+                limit,
+                search_query=query,
+            )
 
     async def _relevant_search(
         self,
@@ -952,108 +759,24 @@ class RecommenderAgent(GeneralAgent):
         limit: int,
         *,
         search_query: str,
+        embedding_config_path: str,
     ) -> Dict[str, Dict[str, Any]]:
-        """相关搜索（异步）：在线程池中执行 `_relevant_search_sync`，避免阻塞事件循环。"""
+        """Relevant search：query and note embedding, cosine similarity sort."""
         return await asyncio.to_thread(
             self._relevant_search_sync,
             current_notes,
             current_timestamp,
             limit,
             search_query=search_query,
+            embedding_config_path=embedding_config_path,
         )
 
-    async def _llm_search(
-        self,
-        current_notes: Dict[str, Dict[str, Any]],
-        current_timestamp: float,
-        limit: int,
-        *,
-        user_profile: Dict[str, Any],
-        search_query: str,
-    ) -> Dict[str, Dict[str, Any]]:
-        """LLM 搜索：将画像、查询意图与最多 300 条候选摘要交给模型，解析 `ranked_note_ids` 取前 limit 条。"""
-        if not current_notes or limit <= 0:
-            return {}
-        cands = self._search_note_ids(current_notes)
-        if not cands:
-            return {}
-        query = self._derive_search_query(user_profile, search_query)
-
-        compact: List[Dict[str, Any]] = []
-        for nid in cands[:300]:
-            n = current_notes.get(nid)
-            if not isinstance(n, dict):
-                continue
-            compact.append({
-                "note_id": nid,
-                "title": str(n.get("title", "") or ""),
-                "desc": str(n.get("desc", "") or "")[:100],
-                "tags_list": n.get("tags_list", [])[:20]
-                if isinstance(n.get("tags_list"), list)
-                else [],
-                "comment_count": n.get("comment_count", 0),
-            })
-
-        profile_compact: Dict[str, Any] = {}
-        if isinstance(user_profile, dict):
-            for k in (
-                "id",
-                "nickname",
-                "interest_tags",
-                "description",
-                "historical_summary",
-            ):
-                if k in user_profile:
-                    val = user_profile.get(k)
-                    if k == "historical_summary":
-                        val = self._historical_summary_head_tail(val)
-                    profile_compact[k] = val
-
-        instruction = """你是搜索排序助手。根据「用户画像」「搜索关键词/意图」与候选笔记列表，输出按**与本次搜索相关性**从高到低排序的 note_id 列表（JSON）。
-        只考虑语义相关性与用户意图匹配，不要编造列表外的 id。
-        请严格返回 JSON：
-        {
-        "ranked_note_ids": ["id1", "id2", ...]
-        }
-        约束：ranked_note_ids 中的每个 id 必须来自候选中的 note_id，不重复，不要求覆盖全部候选。"""
-
-        observation = (
-            f"搜索关键词/意图（若为空则结合画像理解）：\n{query or '(空，请结合用户画像推断可能兴趣)'}\n\n"
-            f"用户画像（节选）：\n{json.dumps(profile_compact, ensure_ascii=False)}\n\n"
-            f"候选笔记：\n{json.dumps(compact, ensure_ascii=False)}"
-        )
-
-        pool_set = set(cands)
-        ordered: List[str] = []
-        try:
-            response = await self.generate_recommendation(instruction, observation)
-            raw_ids = response.get("ranked_note_ids")
-            if raw_ids is None:
-                raw_ids = response.get("selected_note_ids", [])
-            if isinstance(raw_ids, list):
-                for note_id in raw_ids:
-                    sid = str(note_id).strip()
-                    if sid and sid in pool_set and sid not in ordered:
-                        ordered.append(sid)
-        except Exception as e:
-            logger.warning(f"LLM search ranking failed: {e}")
-            return {}
-
-        if not ordered:
-            return {}
-        top_ids = ordered[:limit]
-        return {nid: current_notes[nid] for nid in top_ids if nid in current_notes}
-  
-    async def send_search_recommendations(self, event: Event) -> List[Event]:
-        """
-        处理 SearchEvent：按 profile.type 映射到 random / hot / relevant / llm 搜索，将结果封装为 AlgorithmRecommendationEvent 返回。
-        """
-        # 获取当前时间步
+    async def send_search_results(self, event: Event) -> List[Event]:
+        """Generate search results."""
+        # Get current timestamp
         current_timestamp = event.timestamp
 
-        # 获取内容池
-        logger.info(f"RecommenderAgent {self.profile_id} start getting previous and current notes")
-        
+        # Get content pool
         current_notes = {}
         if self.profile is not None:
             current_notes = self.profile.get_data("current_notes", {})
@@ -1063,25 +786,22 @@ class RecommenderAgent(GeneralAgent):
             logger.warning("No current notes found from profile/event")
             return []
 
-        # 校验：本推荐器 profile 的 type 须与请求事件携带的 type 一致（用户侧期望的算法类型）
+        # Check search algorithm type
         expected_type = getattr(event, "type", None)
         type_value = await self.get_data("type", "")
         exp_s = str(expected_type).strip() if expected_type is not None else ""
         got_s = str(type_value).strip() if type_value is not None else ""
         if exp_s != got_s:
-            # 旧事件未带 algorithm_type 时 event.type 为空，仅信任本推荐器 profile.type
             if not exp_s and got_s:
-                logger.debug(
-                    f"RecommenderAgent {self.profile_id}: event.type 为空，按本智能体 type={got_s!r} 处理"
-                )
+                logger.debug(f"Algorithm: event.type is empty, process with type={got_s!r}")
             else:
                 raise ValueError(
-                    f"RecommenderAgent {self.profile_id}: 推荐算法 type 不一致 — "
-                    f"本智能体 get_data('type')={got_s!r}, 事件 event.type={exp_s!r}, "
+                    f"Algorithm: search algorithm type mismatch — "
+                    f"this agent get_data('type')={got_s!r}, event.type={exp_s!r}, "
                     f"from_agent_id={getattr(event, 'from_agent_id', '')!r}"
                 )
 
-        # 将 type 字段值映射到搜索算法名称（与推荐算法的 type 字符串不同，如 LLM Search）
+        # Map type value to search algorithm name
         algorithm_name = self.type_to_search.get(type_value, self.default_search)
         if algorithm_name not in self.search_algorithms:
             algorithm_name = self.default_search
@@ -1091,46 +811,26 @@ class RecommenderAgent(GeneralAgent):
 
         search_func = self.search_algorithms[algorithm_name]
 
-        max_limit = await self.get_data("limit", 15)
-        try:
-            max_limit = max(1, min(50, int(float(max_limit))))
-        except (TypeError, ValueError):
-            max_limit = 15
-
-        alpha = 0.5
+        # Bernoulli sampling
+        alpha, max_limit = await recommender_sampling_params(self, mode="search")
         recommendation_limit = self._sample_recommendation_limit_bernoulli(alpha, max_limit=max_limit)
         top_k = max(1, min(max_limit, recommendation_limit))
         logger.info(
-            f"RecommenderAgent {self.profile_id} search algorithm={algorithm_name}, "
+            f"Algorithm search algorithm={algorithm_name}, "
             f"max_limit={max_limit}, sampled top_k={top_k}"
         )
 
         search_query = str(getattr(event, "search_query", "") or "")
+        cfg = MemorySimilarityGate.load_config(await memory_similarity_gate_params(self))
 
-        if algorithm_name == "llm":
-            user_profile_raw = getattr(event, "user_profile", None)
-            user_profile: Dict[str, Any] = (
-                user_profile_raw if isinstance(user_profile_raw, dict) else {}
-            )
-            search_results = await search_func(
-                current_notes,
-                current_timestamp,
-                top_k,
-                user_profile=user_profile,
-                search_query=search_query,
-            )
-        elif algorithm_name == "relevant":
+        search_results: Dict[str, Dict[str, Any]] = {}
+        if algorithm_name == "relevant":
             search_results = await search_func(
                 current_notes,
                 current_timestamp,
                 top_k,
                 search_query=search_query,
-            )
-        else:
-            search_results = search_func(
-                current_notes,
-                current_timestamp,
-                top_k,
+                embedding_config_path=cfg.embedding_config_path,
             )
 
         if not search_results:
@@ -1142,7 +842,7 @@ class RecommenderAgent(GeneralAgent):
             f"search results: {len(search_results)}"
         )
 
-        search_event = SearchRecommendationEvent(
+        search_event = SearchResultEvent(
             from_agent_id=self.profile_id,
             to_agent_id=event.from_agent_id,
             timestamp=current_timestamp,

@@ -4,271 +4,375 @@
         "from_agent_type": "EnvAgent",
         "from_action_name": "start",
         "to_agent_type": "UserAgent",
-        "to_action_name": "send_social_recommendations",
+        "to_action_name": "get_exposure_stream",
         "from_action_id": 0,
         "to_action_id": 1,
         "event_name": "StartEvent",
-        "event_info": "Initial trigger for sending social recommendations",
-        "fields": []
+        "event_info": "Begin step: build algorithm/social/mention/keep-following exposure for each UserAgent",
+        "fields": [
+            {
+                "name": "timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Current simulation time (ms)."
+            },
+            {
+                "name": "timestamp_duration",
+                "type": "int",
+                "default_value": "0",
+                "description": "Width of the next note window (ms)."
+            },
+            {
+                "name": "simulation_cap_timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Hard upper bound of simulation timeline (ms)."
+            },
+            {
+                "name": "current_step",
+                "type": "int",
+                "default_value": "1",
+                "description": "1-based simulation step index."
+            },
+            {
+                "name": "max_step",
+                "type": "int",
+                "default_value": "8",
+                "description": "Total configured steps."
+            },
+            {
+                "name": "current_notes",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "Notes with post time in [timestamp, timestamp+duration) subset of content_pool."
+            },
+            {
+                "name": "mentions",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "Pending mention_pool entries for target user, enriched with note snapshots."
+            }
+        ]
     },
     "-2": {
         "id": -2,
         "from_agent_type": "EnvAgent",
         "from_action_name": "start",
-        "to_agent_type": "RecommenderAgent",
-        "to_action_name": "send_algorithm_recommendations",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "generate_memory_from_own_notes",
         "from_action_id": 0,
-        "to_action_id": 4,
+        "to_action_id": 2,
         "event_name": "StartEvent",
-        "event_info": "Initial trigger for sending algorithm recommendations",
+        "event_info": "Same StartEvent payload; triggers self-memory and optional own-note supplementary comments",
+        "fields": []
+    },
+    "-3": {
+        "id": -3,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "Algorithm",
+        "to_action_name": "update_current_notes",
+        "from_action_id": 0,
+        "to_action_id": 5,
+        "event_name": "StartEvent",
+        "event_info": "StartEvent for recommender Algorithm agents (recomment_agent_*): sync current_notes",
         "fields": []
     },
     "1": {
         "id": 1,
         "from_agent_type": "UserAgent",
-        "from_action_name": "send_social_recommendations",
-        "to_agent_type": "UserAgent",
-        "to_action_name": "receive_recommendation",
+        "from_action_name": "get_exposure_stream",
+        "to_agent_type": "Algorithm",
+        "to_action_name": "send_recommendation_results",
         "from_action_id": 1,
-        "to_action_id": 2,
-        "event_name": "SocialRecommendationEvent",
-        "event_info": "Event to send recommendations from UserAgents to their followers UserAgents through social networks",
+        "to_action_id": 6,
+        "event_name": "GetAlgorithmRecomendationEvent",
+        "event_info": "User pulls algorithm feed (hot/random/interest) on demand",
         "fields": [
             {
-                "name": "sender_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the user agent sending the recommendations."
+                "name": "timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Simulation time (ms)."
             },
             {
-                "name": "receiver_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the follower, the user agent receiving the recommendations."
+                "name": "timestamp_duration",
+                "type": "int",
+                "default_value": "0",
+                "description": "Step window duration (ms)."
             },
             {
-                "name": "recommendations",
+                "name": "current_step",
+                "type": "int",
+                "default_value": "1",
+                "description": "Current step."
+            },
+            {
+                "name": "max_step",
+                "type": "int",
+                "default_value": "8",
+                "description": "Max steps."
+            },
+            {
+                "name": "user_profile",
                 "type": "dict",
                 "default_value": "{}",
-                "description": "Dictionary of note content pushed by social network."
+                "description": "Requesting UserAgent profile (include_private=True)."
+            },
+            {
+                "name": "current_notes",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "Candidate notes for recommendation."
+            },
+            {
+                "name": "recommended_note_ids",
+                "type": "list",
+                "default_value": "[]",
+                "description": "Already recommended note IDs for deduplication."
+            },
+            {
+                "name": "algorithm_type",
+                "type": "string",
+                "default_value": "",
+                "description": "Random Recommendation | Hot Recommendation | Interest Recommendation (stored as event.type)."
             }
         ]
     },
     "2": {
         "id": 2,
-        "from_agent_type": "RecommenderAgent",
-        "from_action_name": "send_algorithm_recommendations",
+        "from_agent_type": "Algorithm",
+        "from_action_name": "send_recommendation_results",
         "to_agent_type": "UserAgent",
         "to_action_name": "receive_recommendation",
-        "from_action_id": 4,
-        "to_action_id": 2,
+        "from_action_id": 6,
+        "to_action_id": 3,
         "event_name": "AlgorithmRecommendationEvent",
-        "event_info": "Event to send recommendations from RecommenderAgents to all UserAgents through recommendation algorithm",
+        "event_info": "Algorithm returns recommended notes to requesting user",
         "fields": [
             {
-                "name": "sender_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the recommender agent sending the recommendations."
-            }, 
+                "name": "timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Simulation time (ms)."
+            },
             {
-                "name": "receiver_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the user agent receiving the recommendations."
+                "name": "timestamp_duration",
+                "type": "int",
+                "default_value": "0",
+                "description": "Step window duration (ms)."
+            },
+            {
+                "name": "current_step",
+                "type": "int",
+                "default_value": "1",
+                "description": "Current step."
+            },
+            {
+                "name": "max_step",
+                "type": "int",
+                "default_value": "8",
+                "description": "Max steps."
             },
             {
                 "name": "recommendations",
                 "type": "dict",
                 "default_value": "{}",
-                "description": "Dictionary of note content pushed by recommendation algorithm."
+                "description": "note_id -> note dict recommended by algorithm."
             }
         ]
     },
     "3": {
         "id": 3,
         "from_agent_type": "UserAgent",
-        "from_action_name": "receive_recommendation",
-        "to_agent_type": "EnvAgent",
-        "to_action_name": "terminate",
-        "from_action_id": 2,
-        "to_action_id": -1,
-        "event_name": "RecommendationSpreadingEvent",
-        "event_info": "Event to terminate the simulation after UserAgents spreading recommendations",
+        "from_action_name": "get_exposure_stream",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "receive_recommendation",
+        "from_action_id": 1,
+        "to_action_id": 3,
+        "event_name": "SocialRecommendationEvent",
+        "event_info": "Follow-feed notes from followed authors since last_login_timestamp",
         "fields": [
             {
-                "name": "user_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the user receiving the recommendations."
+                "name": "timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Simulation time (ms)."
             },
             {
-                "name": "comment_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the comment replying to the note being recommended."
+                "name": "timestamp_duration",
+                "type": "int",
+                "default_value": "0",
+                "description": "Step window duration (ms)."
             },
             {
-                "name": "note_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the note being recommended and has been replied to."
+                "name": "current_step",
+                "type": "int",
+                "default_value": "1",
+                "description": "Current step."
             },
             {
-                "name": "parent_comment_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the parent comment of the comment replying to the note being recommended."
+                "name": "max_step",
+                "type": "int",
+                "default_value": "8",
+                "description": "Max steps."
             },
             {
-                "name": "comment_content",
-                "type": "string",
-                "default_value": "",
-                "description": "The content of the comment replying to the note being recommended."
+                "name": "recommendations",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "note_id -> note dict from social follow graph."
             }
         ]
     },
     "4": {
         "id": 4,
         "from_agent_type": "UserAgent",
-        "from_action_name": "receive_recommendation",
+        "from_action_name": "get_exposure_stream",
         "to_agent_type": "UserAgent",
-        "to_action_name": "handle_mention",
-        "from_action_id": 2,
+        "to_action_name": "receive_recommendation",
+        "from_action_id": 1,
         "to_action_id": 3,
-        "event_name": "MentionEvent",
-        "event_info": "Event",
+        "event_name": "KeepFollowingEvent",
+        "event_info": "Re-expose notes the user chose to keep following from a prior LLM decision",
         "fields": [
             {
-                "name": "note_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the note being mentioned."
-            },
-            {
-                "name": "comment_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the comment being mentioned."
-            },
-            {
-                "name": "comment_content",
-                "type": "string",
-                "default_value": "",
-                "description": "The content of the comment being mentioned."
-            },
-            {
-                "name": "mentioner_id", 
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the user mentioning the current user."
-            },
-            {
-                "name": "mentioner_nickname",
-                "type": "string",
-                "default_value": "",
-                "description": "The nickname of the user mentioning the current user."
-            },
-            {
-                "name": "mention_type",
-                "type": "string",
-                "default_value": "",
-                "description": "The type of the mention. Can be 'at', 'reply'."
+                "name": "recommendations",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "note_id -> note dict for keep_following_note_ids."
             }
         ]
     },
     "5": {
         "id": 5,
         "from_agent_type": "UserAgent",
-        "from_action_name": "handle_mention",
+        "from_action_name": "get_exposure_stream",
         "to_agent_type": "UserAgent",
         "to_action_name": "handle_mention",
-        "from_action_id": 3,
-        "to_action_id": 3,
-        "event_name": "ReplyMentionEvent",
-        "event_info": "Event sent when a user replies to a mention, triggering another mention notification to the mentioned user",
+        "from_action_id": 1,
+        "to_action_id": 4,
+        "event_name": "MentionEvent",
+        "event_info": "Deliver pending @/comment/reply notifications (after attention_budget sampling)",
         "fields": [
             {
-                "name": "note_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the note being mentioned."
-            },
-            {
-                "name": "comment_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the comment being mentioned."
-            },
-            {
-                "name": "comment_content",
-                "type": "string",
-                "default_value": "",
-                "description": "The content of the comment being mentioned."
-            },
-            {
-                "name": "mentioner_id", 
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the user mentioning the current user."
-            },
-            {
-                "name": "mentioner_nickname",
-                "type": "string",
-                "default_value": "",
-                "description": "The nickname of the user mentioning the current user."
-            },
-            {
-                "name": "mention_type",
-                "type": "string",
-                "default_value": "",
-                "description": "The type of the mention. Can be 'at', 'reply'."
+                "name": "mentions",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "comment_id -> mention payload with enriched note snapshot."
             }
         ]
     },
     "6": {
         "id": 6,
         "from_agent_type": "UserAgent",
-        "from_action_name": "handle_mention",
+        "from_action_name": "receive_recommendation",
+        "to_agent_type": "Algorithm",
+        "to_action_name": "send_search_results",
+        "from_action_id": 3,
+        "to_action_id": 7,
+        "event_name": "GetSearchResultEvent",
+        "event_info": "User LLM requested search for more information",
+        "fields": [
+            {
+                "name": "user_profile",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "Requesting user profile."
+            },
+            {
+                "name": "search_query",
+                "type": "string",
+                "default_value": "",
+                "description": "Search keyword from LLM."
+            },
+            {
+                "name": "algorithm_type",
+                "type": "string",
+                "default_value": "",
+                "description": "Relevant Search (stored as event.type)."
+            }
+        ]
+    },
+    "7": {
+        "id": 7,
+        "from_agent_type": "Algorithm",
+        "from_action_name": "send_search_results",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "receive_recommendation",
+        "from_action_id": 7,
+        "to_action_id": 3,
+        "event_name": "SearchResultEvent",
+        "event_info": "Search results returned as a recommendation batch",
+        "fields": [
+            {
+                "name": "recommendations",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "note_id -> note dict from search ranking."
+            }
+        ]
+    },
+    "8": {
+        "id": 8,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "receive_recommendation",
         "to_agent_type": "EnvAgent",
         "to_action_name": "terminate",
         "from_action_id": 3,
         "to_action_id": -1,
-        "event_name": "MentionSpreadingEvent",
-        "event_info": "Event to terminate the simulation after UserAgents spreading mentions",
+        "event_name": "RecommendationSpreadingEvent",
+        "event_info": "Step completion signal after recommendation-channel interaction (not simulation exit)",
         "fields": [
             {
-                "name": "user_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the user replying to the mention."
+                "name": "timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Simulation time (ms)."
             },
             {
-                "name": "comment_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the comment replying to the mention."
+                "name": "current_step",
+                "type": "int",
+                "default_value": "1",
+                "description": "Current step."
             },
             {
-                "name": "note_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the note being replied to."
+                "name": "max_step",
+                "type": "int",
+                "default_value": "8",
+                "description": "Max steps."
+            }
+        ]
+    },
+    "9": {
+        "id": 9,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "handle_mention",
+        "to_agent_type": "EnvAgent",
+        "to_action_name": "terminate",
+        "from_action_id": 4,
+        "to_action_id": -1,
+        "event_name": "MentionSpreadingEvent",
+        "event_info": "Step completion signal after mention-channel interaction",
+        "fields": [
+            {
+                "name": "timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Simulation time (ms)."
             },
             {
-                "name": "parent_comment_id",
-                "type": "string",
-                "default_value": "",
-                "description": "The unique identifier of the parent comment of the comment being replied to."
+                "name": "current_step",
+                "type": "int",
+                "default_value": "1",
+                "description": "Current step."
             },
             {
-                "name": "comment_content",
-                "type": "string",
-                "default_value": "",
-                "description": "The content of the comment replying to the mention."
+                "name": "max_step",
+                "type": "int",
+                "default_value": "8",
+                "description": "Max steps."
             }
         ]
     }
 }
-
-

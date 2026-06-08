@@ -2,75 +2,104 @@
     "UserAgent": [
         {
             "id": 1,
-            "name": "send_social_recommendations",
+            "name": "get_exposure_stream",
             "condition": "Triggered by StartEvent",
-            "description": "User agent selects newly published notes from content pool and pushes to its fans.",
+            "description": "Per simulation step: request algorithm recommendations (GetAlgorithmRecomendationEvent), deliver pending mentions (MentionEvent), replay keep-following notes (KeepFollowingEvent), and build social feed from followed authors (SocialRecommendationEvent). Updates last_login_timestamp on profile.",
             "type": "OR",
             "required_variables": [
                 {
                     "name": "current_notes",
                     "type": "dict",
-                    "context": "env",
-                    "description": "Dictionary of current notes published by the agent."
+                    "context": "event",
+                    "description": "Notes visible in the current time window (from StartEvent / env.current_notes)."
                 },
                 {
-                    "name": "fan_ids",
+                    "name": "mentions",
+                    "type": "dict",
+                    "context": "event",
+                    "description": "Pending @/comment/reply notifications for this user (from env.mention_pool via StartEvent)."
+                },
+                {
+                    "name": "follow_ids",
                     "type": "list",
-                    "context": "env",
-                    "description": "List of fan IDs, used to find user agents to push notes to."
+                    "context": "agent",
+                    "description": "Followed user IDs for social feed filtering."
+                },
+                {
+                    "name": "recommended_note_ids",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "Note IDs already seen; used to skip duplicates in social feed."
+                },
+                {
+                    "name": "keep_following_note_ids",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "Note IDs to re-expose next round after LLM keep-following decision."
                 }
             ],
             "output_updates": [
                 {
-                    "name": "recommendations",
-                    "type": "dict",
+                    "name": "last_login_timestamp",
+                    "type": "int",
                     "context": "agent",
-                    "description": "Dictionary of note content pushed by social network."
+                    "description": "Updated after social feed scan."
                 }
             ]
         },
         {
             "id": 2,
+            "name": "generate_memory_from_own_notes",
+            "condition": "Triggered by StartEvent",
+            "description": "Reflect on own notes published in the current window: generate self-memory via LLM and optionally add supplementary comments on own posts (no mention notifications).",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "current_notes",
+                    "type": "dict",
+                    "context": "event",
+                    "description": "Current note window; filtered to notes authored by this user."
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "content_pool",
+                    "type": "dict",
+                    "context": "env",
+                    "description": "May gain new self-comments via AddCommentEvent."
+                }
+            ]
+        },
+        {
+            "id": 3,
             "name": "receive_recommendation",
-            "condition": "Triggered by SocialRecommendationEvent",
-            "description": "User agent receives notes from social network and recommendation algorithms, and decides to comment on the notes or not.",
+            "condition": "Triggered by SocialRecommendationEvent, AlgorithmRecommendationEvent, SearchResultEvent, or KeepFollowingEvent",
+            "description": "Consume recommended notes from social/algorithm/search/keep-following channels; run UserAgentGates + LLM to decide comments, @mentions, keep-following, and search; write comments to content_pool and mention_pool.",
             "type": "OR",
             "required_variables": [
                 {
                     "name": "recommendations",
                     "type": "dict",
                     "context": "event",
-                    "description": "Dictionary of note content pushed by social network or recommendation algorithm."
+                    "description": "Batch of note_id -> note dict from the incoming recommendation event."
                 },
                 {
                     "name": "recommended_note_ids",
                     "type": "list",
                     "context": "agent",
-                    "description": "List of note IDs has been recommended."
+                    "description": "Historical recommended note IDs on profile."
                 },
                 {
                     "name": "follow_ids",
                     "type": "list",
                     "context": "agent",
-                    "description": "List of follow IDs, used to find user agents can be mentioned on the notes."
+                    "description": "For mentionable-user resolution."
                 },
                 {
                     "name": "fan_ids",
-                    "type": "list",    
+                    "type": "list",
                     "context": "agent",
-                    "description": "List of fan IDs, used to find user agents can be mentioned on the notes."
-                },
-                {
-                    "name": "current_timestamp",
-                    "type": "int",
-                    "context": "env",
-                    "description": "Current timestamp, used to generate comment ID."
-                },
-                {
-                    "name": "content_pool",
-                    "type": "dict",
-                    "context": "env",
-                    "description": "Available content pool containing all notes, used to get comments of the notes."
+                    "description": "For mentionable-user resolution."
                 }
             ],
             "output_updates": [
@@ -78,46 +107,58 @@
                     "name": "content_pool",
                     "type": "dict",
                     "context": "env",
-                    "description": "Updated content pool containing newly generated comments."
+                    "description": "New comments appended under note_id.comments."
+                },
+                {
+                    "name": "mention_pool",
+                    "type": "dict",
+                    "context": "env",
+                    "description": "Notifications for authors and @ targets."
+                },
+                {
+                    "name": "recommended_note_ids",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "Updated after viewing recommendations."
+                },
+                {
+                    "name": "recommended_note_ids_by_channel",
+                    "type": "dict",
+                    "context": "agent",
+                    "description": "Per-channel step snapshots for metrics."
+                },
+                {
+                    "name": "keep_following_note_ids",
+                    "type": "list",
+                    "context": "agent",
+                    "description": "At most one note ID carried to next round."
                 }
             ]
         },
         {
-            "id": 3,
+            "id": 4,
             "name": "handle_mention",
-            "condition": "Triggered by MentionEvent or ReplyMentionEvent",
-            "description": "User agent handles mention event, and decides to comment on the note or not.",
+            "condition": "Triggered by MentionEvent",
+            "description": "Process @/comment/reply notifications: LLM decides whether to reply; writes comments and updates mention_pool; may trigger search.",
             "type": "OR",
             "required_variables": [
                 {
                     "name": "mentions",
                     "type": "dict",
                     "context": "event",
-                    "description": "Dictionary of mentions."
+                    "description": "comment_id -> {note, comment_id, comment_content, mentioner_id, mentioner_nickname, mention_type}."
                 },
                 {
                     "name": "follow_ids",
                     "type": "list",
                     "context": "agent",
-                    "description": "List of follow IDs, used to find user agents can be mentioned on the notes."
+                    "description": "For relationship hints and @ resolution."
                 },
                 {
                     "name": "fan_ids",
-                    "type": "list",    
+                    "type": "list",
                     "context": "agent",
-                    "description": "List of fan IDs, used to find user agents can be mentioned on the notes."
-                },
-                {
-                    "narme": "current_timestamp",
-                    "type": "int",
-                    "context": "env",
-                    "description": "Current timestamp, used to generate comment ID."
-                },
-                {
-                    "name": "content_pool",
-                    "type": "dict",
-                    "context": "env",
-                    "description": "Available content pool containing all notes, used to get comments of the notes."
+                    "description": "For relationship hints and @ resolution."
                 }
             ],
             "output_updates": [
@@ -125,42 +166,127 @@
                     "name": "content_pool",
                     "type": "dict",
                     "context": "env",
-                    "description": "Updated content pool containing newly generated comments."
+                    "description": "Reply comments added via AddCommentEvent."
+                },
+                {
+                    "name": "mention_pool",
+                    "type": "dict",
+                    "context": "env",
+                    "description": "Processed mentions removed; new notifications added."
+                },
+                {
+                    "name": "mentioned_note_ids_by_channel",
+                    "type": "dict",
+                    "context": "agent",
+                    "description": "Per mention_type step snapshots for metrics."
                 }
             ]
         }
     ],
-    "RecommenderAgent": [
+    "Algorithm": [
         {
-            "id": 4,
-            "name": "send_algorithm_recommendations",
-            "condition": "Triggered by StartEvent",
-            "description": "Recommendation algorithm agent actively generates recommended content for all users.",
+            "id": 5,
+            "name": "update_current_notes",
+            "condition": "Triggered by StartEvent (recomment_agent_* only)",
+            "description": "Sync Algorithm profile current_notes from StartEvent for hot/random/interest recommendation and search candidate pools.",
             "type": "OR",
             "required_variables": [
                 {
-                    "name": "previous_notes",
-                    "type": "dict",
-                    "context": "env",
-                    "description": "Dictionary of previous notes published by the agent."
-                },
-                {
                     "name": "current_notes",
                     "type": "dict",
-                    "context": "env",
-                    "description": "Dictionary of current notes published by the agent."
+                    "context": "event",
+                    "description": "Current note window from StartEvent."
                 }
             ],
             "output_updates": [
                 {
-                    "name": "recommendations",
+                    "name": "current_notes",
                     "type": "dict",
                     "context": "agent",
-                    "description": "Dictionary of note content pushed by recommendation algorithm."
+                    "description": "Algorithm profile mirror of env current_notes."
                 }
             ]
+        },
+        {
+            "id": 6,
+            "name": "send_recommendation_results",
+            "condition": "Triggered by GetAlgorithmRecomendationEvent",
+            "description": "Run hot / random / interest recommendation for requesting user; return AlgorithmRecommendationEvent with sampled note batch.",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "current_notes",
+                    "type": "dict",
+                    "context": "event",
+                    "description": "Candidate note pool for this step."
+                },
+                {
+                    "name": "user_profile",
+                    "type": "dict",
+                    "context": "event",
+                    "description": "Requesting UserAgent profile payload."
+                },
+                {
+                    "name": "recommended_note_ids",
+                    "type": "list",
+                    "context": "event",
+                    "description": "Notes already recommended to this user (dedup input)."
+                },
+                {
+                    "name": "type",
+                    "type": "string",
+                    "context": "event",
+                    "description": "Algorithm type: Random Recommendation | Hot Recommendation | Interest Recommendation."
+                },
+                {
+                    "name": "candidate_note_ids_by_user",
+                    "type": "dict",
+                    "context": "agent",
+                    "description": "Interest recommendation per-user candidate lists."
+                }
+            ],
+            "output_updates": [
+                {
+                    "name": "recommended_note_ids_by_user",
+                    "type": "dict",
+                    "context": "agent",
+                    "description": "Tracks notes pushed per user."
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "name": "send_search_results",
+            "condition": "Triggered by GetSearchResultEvent",
+            "description": "Run relevant search over current_notes for the query; return SearchResultEvent.",
+            "type": "OR",
+            "required_variables": [
+                {
+                    "name": "current_notes",
+                    "type": "dict",
+                    "context": "agent",
+                    "description": "Search corpus."
+                },
+                {
+                    "name": "user_profile",
+                    "type": "dict",
+                    "context": "event",
+                    "description": "Requesting user profile."
+                },
+                {
+                    "name": "search_query",
+                    "type": "string",
+                    "context": "event",
+                    "description": "Keyword from UserAgent LLM decision."
+                },
+                {
+                    "name": "type",
+                    "type": "string",
+                    "context": "event",
+                    "description": "Search type, e.g. Relevant Search."
+                }
+            ],
+            "output_updates": []
         }
     ]
 }
-
-

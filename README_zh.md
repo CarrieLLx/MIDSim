@@ -45,13 +45,6 @@ cd MIDSim
 
 仿真所需的骨干数据存放在项目根目录的 `datasets/` 下。目录结构与说明见 [数据集](#数据集)。
 
-克隆后请先拉取 Git LFS 中的骨干数据：
-
-```bash
-git lfs install
-git lfs pull
-```
-
 请在**项目根目录**下启动仿真，以便 `env_data.json` 中的相对路径（如 `datasets/rednote/embeddings/...`）能正确解析。
 
 ### 4. 安装依赖
@@ -147,7 +140,7 @@ MIDSim 中有两处名为 `datasets` 的路径，含义不同：
 | `datasets/`（项目根目录） | **输入** — 各平台的静态骨干数据（帖子、用户、Embedding） |
 | `src/envs/<env>/runs/<timestamp>/datasets/` | **输出** — 仿真过程中按轮导出的快照 |
 
-根目录 `datasets/` 包含各平台骨干数据（较大的 `UserAgent.json` 通过 Git LFS 管理）。克隆后请执行 `git lfs pull` 拉取大文件。
+根目录 `datasets/` 包含 Rednote、Twitter、Weibo 各平台的骨干数据。
 
 ### 目录结构
 
@@ -156,7 +149,7 @@ datasets/
 ├── rednote/
 │   ├── env_data.json                              # 种子帖子 / 内容池
 │   ├── UserAgent.json                             # 用户画像与社交关系
-│   ├── RecommenderAgent.json                      # 推荐器配置与统计
+│   ├── Algorithm.json                      # 推荐器配置与统计
 │   └── embeddings/
 │       └── bge-base-zh-v1.5_embeddings.json       # 预计算的帖子 Embedding
 ├── twitter/
@@ -171,7 +164,7 @@ datasets/
 |------|------|
 | `env_data.json` | 初始仿真状态：`content_pool`（种子帖/推文/笔记）、时间戳，以及用于相似度指标的 `reference_embedding_path` |
 | `UserAgent.json` | 用户智能体画像（昵称、兴趣、活跃度、关注/粉丝 ID 等） |
-| `RecommenderAgent.json` | 推荐智能体定义（算法类型、召回上限、平台相关排序统计） |
+| `Algorithm.json` | 推荐智能体定义（算法类型、召回上限、平台相关排序统计） |
 | `embeddings/bge-base-zh-v1.5_embeddings.json` | 以帖子 ID 为键的 BGE 预计算向量，用于评论/话题相似度等指标 |
 
 ### 场景与目录对应
@@ -186,19 +179,13 @@ datasets/
 
 `config/config_*.json` 中的默认智能体数量：
 
-| 场景 | UserAgent | RecommenderAgent |
+| 场景 | UserAgent | Algorithm |
 |------|-----------|------------------|
 | Rednote | 1476 | 7 |
 | Twitter | 1067 | 7 |
 | Weibo | 130 | 7 |
 
 ### 准备步骤
-
-```bash
-# 克隆后拉取 datasets（含 LFS 管理的 UserAgent.json）
-git lfs install
-git lfs pull
-```
 
 若使用独立数据镜像，也可通过仓库自带的 `hfd.sh` 从 Hugging Face 下载：
 
@@ -216,6 +203,9 @@ MIDSim/
 │   ├── config_rednote.json
 │   ├── config_twitter.json
 │   ├── config_weibo.json
+│   ├── params_rednote_qwen25_14B.json   # 实验参数（由主 config 引用）
+│   ├── params_twitter_qwen25_14B.json
+│   ├── params_weibo_qwen25_14B.json
 │   └── model_config.json            # LLM / Embedding 端点
 ├── datasets/                        # 输入骨干数据（见「数据集」）
 │   ├── rednote/
@@ -230,7 +220,7 @@ MIDSim/
 │       ├── midsim_rednote/
 │       ├── midsim_twitter/
 │       └── midsim_weibo/
-│           └── code/                # SimEnv、UserAgent、RecommenderAgent 等
+│           └── code/                # SimEnv、UserAgent、Algorithm 等
 ├── hfd.sh                           # Hugging Face 下载辅助脚本
 ├── setup.py
 ├── README.md                        # 英文说明
@@ -247,6 +237,103 @@ MIDSim/
 - `simulator.environment.interval`：轮次间隔（模拟时间，秒）
 - `agent.profile`：智能体数量与画像/ schema 路径
 - `agent.memory`：短期 / 长期记忆设置
+- `simulator.environment.additional_config.params_path`：实验参数文件路径（如 `config/params_rednote_qwen25_14B.json`）
+
+### 实验参数（`config/params_*.json`）
+
+各场景独立的实验参数，启动时加载到环境的 `midsim_params` 中。由主配置文件 `additional_config.params_path` 引用，**无需改 CLI 命令**，只改 params 文件即可调参。
+
+示例（`config/params_rednote_qwen25_14B.json`）：
+
+```json
+{
+  "exposure": {
+    "social": { "probability": 1 },
+    "recommendation": {
+      "probability": 1,
+      "types": ["Interest Recommendation"],
+      "alpha": 0.2,
+      "interest_recommendation": { "interest_k": 20, "target_k": 1 }
+    },
+    "search": {
+      "types": ["Relevant Search"],
+      "alpha": 0.5
+    },
+    "notification": { "attention_budget": 10 }
+  },
+  "user": {
+    "own_note_cap_days": 7.0,
+    "memory_similarity": {
+      "policy": "memory_nonempty,keyword,embedding",
+      "multi_combine": "or",
+      "keyword_enabled": true,
+      "embedding_enabled": true,
+      "min_common_tokens": 2,
+      "embed_threshold": 0.65,
+      "include_historical_summary": true,
+      "embedding_config_path": "",
+      "embed_max_chars": 400,
+      "embed_max_chunks": 12,
+      "embed_chunk_agg": "mean"
+    },
+    "freshness": {
+      "stale_days": 7.0,
+      "low_activity_time_module_threshold": 0.75
+    },
+    "activity": {
+      "remap": { "out_min": 0.4, "out_max": 0.8 },
+      "low_activity_memory_gate_threshold": 0.65
+    },
+    "interaction_threshold": {
+      "same_targets": { "support": [1, 2, 3, 4], "probs": [0.8, 0.1, 0.07, 0.03] },
+      "diff_targets": { "support": [1, 2, 3, 4, 5], "probs": [0.7, 0.2, 0.08, 0.02, 0.01] },
+      "keep_following": { "support": [0, 1], "probs": [0.9784, 0.0252] }
+    }
+  },
+  "simulator": {
+    "max_span_days": 24.0,
+    "max_step": 8,
+    "timestamp_schedule_type": "power",
+    "timestamp_power_p": 1.6,
+    "timestamp_sigmoid_scale": 1.2,
+    "timestamp_sigmoid_center_ratio": 0.5
+  }
+}
+```
+
+| 字段 | 说明 |
+|------|------|
+| `exposure.social.probability` | 有关注流内容时发送社交推荐事件的概率 |
+| `exposure.recommendation.probability` | 每种算法推荐请求独立触发的概率 |
+| `exposure.recommendation.types` | 每轮用户请求的推荐算法类型列表 |
+| `exposure.recommendation.alpha` | 推荐流深度的伯努利继续概率 |
+| `exposure.recommendation.interest_recommendation.interest_k` | 兴趣推荐（LLM）从用户候选池抽取的上限 |
+| `exposure.recommendation.interest_recommendation.target_k` | 兴趣推荐（LLM）从当前信息流抽取的上限 |
+| `exposure.search.types` | 用户搜索时使用的搜索算法类型列表 |
+| `exposure.search.alpha` | 搜索结果深度的伯努利继续概率 |
+| `exposure.notification.attention_budget` | 每轮最多处理的 @ 提及数，超出则随机抽样 |
+| `user.own_note_cap_days` | 自有笔记/关注流时间下界最多回溯天数；0 表示不截断 |
+| `user.memory_similarity.policy` | Memory 相似度门控注入策略（`memory_nonempty` / `keyword` / `embedding` 等，逗号分隔） |
+| `user.memory_similarity.multi_combine` | 多策略合成：`or`（任一命中）或 `and`（全部命中） |
+| `user.memory_similarity.keyword_enabled` / `embedding_enabled` | 是否启用关键词重叠 / 向量相似度分支 |
+| `user.memory_similarity.min_common_tokens` | 话题与 memory 共同词下限 |
+| `user.memory_similarity.embed_threshold` | 向量相似度余弦阈值 |
+| `user.memory_similarity.include_historical_summary` | memory 侧是否拼上 `historical_summary` |
+| `user.memory_similarity.embedding_config_path` | Embedding 配置路径；空则用 `config/model_config.json` |
+| `user.memory_similarity.embed_max_chars` / `embed_max_chunks` / `embed_chunk_agg` | 长文本 embedding 切分与聚合 |
+| `user.freshness.stale_days` | 时效门控判定内容「时效已弱」的天数阈值 |
+| `user.freshness.low_activity_time_module_threshold` | （可选）低活跃度下才注入时间 coaching 的阈值 |
+| `user.activity.remap.out_min` / `out_max` | 将 profile `activity_level` 线性重映射到 `[out_min, out_max]` |
+| `user.activity.low_activity_memory_gate_threshold` | 低活跃度下启用严格 memory 门控的 `activity_level` 上限 |
+| `user.interaction_threshold.*` | 互动强度采样：`support` 与 `probs` 数组 |
+| `simulator.max_step` | 仿真总轮数（写入 `StartEvent.max_step`） |
+| `simulator.max_span_days` | 仿真总时间跨度（天），各轮时间窗长度之和的上界 |
+| `simulator.timestamp_schedule_type` | 各轮时间窗长度分配方式：`power` 或 `sigmoid` |
+| `simulator.timestamp_power_p` | 幂函数调度指数（`schedule_type=power` 时生效） |
+| `simulator.timestamp_sigmoid_scale` | Sigmoid 调度平滑参数（`schedule_type=sigmoid` 时生效） |
+| `simulator.timestamp_sigmoid_center_ratio` | Sigmoid 拐点位置比例（0–1） |
+
+profile 中的 `limit` 以及代码内的上下界（推荐 ≤ 15、搜索 ≤ 50）不在 params 里配置。
 
 ### 模型配置（`config/model_config.json`）
 

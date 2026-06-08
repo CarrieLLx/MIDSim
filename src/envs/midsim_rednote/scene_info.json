@@ -1,39 +1,39 @@
 {
   "domain": "Sociology",
-  "scene_name": "multi-channel_information_diffusion",
+  "scene_name": "midsim_rednote",
   "odd_protocol": {
     "overview": {
-      "system_goal": "Simulate multi-channel information diffusion in social networks through social relationships and recommendation algorithms, analyzing the impact of different recommendation strategies on network evolution.",
-      "agent_types": "Useragent, Recommenderagent",
-      "environment_description": "Agents are connected by social relationships, and each agent can receive content from different kinds of recommendation systems and social networks.",
-      "workflow_structure": "From the start, through sequential agent interactions, and ends when the condition is met."
+      "system_goal": "Simulate Xiaohongshu-style multi-channel information diffusion: users receive content via algorithm feeds, social follow graph, search, and @/comment/reply notifications; LLM agents decide short-form comments under memory/activity/freshness gates.",
+      "agent_types": "UserAgent, Algorithm",
+      "environment_description": "Shared content_pool of notes with nested comments; mention_pool queues notifications per user; time advances in scheduled day slices with current_notes windows.",
+      "workflow_structure": "Each step: EnvAgent StartEvent → UserAgent (exposure + self-memory) + Algorithm (sync notes) → on-demand recommendation/search → comment & mention side-effects → step advance."
     },
     "design_concepts": {
-      "interaction_patterns": "Recommendation algorithms and social networks recommend content to users in parallel. Users make decisions based on recommendations and can further spread information through mentions.",
-      "communication_protocols": "RecommenderAgent recommends content to all UserAgents in each round. If a UserAgent publishes new content, it recommends to all fans. Information can be further spread through mentions.",
-      "decision_mechanisms": "Decision factors include the overlap between notes and interests, social relationships, and activity levels.",
-      "execution_flow": "Start → RecommenderAgent && UserAgent → UserAgent [→ UserAgent]...[→ UserAgent] → End"
+      "interaction_patterns": "Pull-based algorithm recommendations (GetAlgorithmRecomendationEvent), probabilistic social follow feed, mention delivery via mention_pool, optional search continuation, keep-following re-exposure.",
+      "communication_protocols": "Comments and mention_pool updates use AddCommentEvent / MentionPoolUpdateEvent RPC to SimEnv (async, not in workflow graph). RecommendationSpreadingEvent / MentionSpreadingEvent mark handler completion.",
+      "decision_mechanisms": "UserAgentGates: memory similarity, freshness, activity level, interaction threshold sampling; LLM JSON decisions for comment/reply/@/search/keep-following.",
+      "execution_flow": "StartEvent → get_exposure_stream ∥ generate_memory_from_own_notes; StartEvent → Algorithm.update_current_notes; exposure → {AlgorithmRecommendationEvent|SocialRecommendationEvent|KeepFollowingEvent|SearchResultEvent} → receive_recommendation; exposure → MentionEvent → handle_mention"
     },
     "details": {
-      "agent_behaviors": "Recommendation algorithms recommend content to all UserAgents. If a UserAgent publishes new content, it recommends to all fans. UserAgents receiving messages must decide in the current round whether to comment or mention others. All mentions are also processed in the current round.",
-      "decision_algorithms": "Algorithms consider the overlap between notes and interests, social relationships, and activity levels to determine what actions agents should take.",
-      "specific_constraints": "Initialization involves creating a specified number of agents and loading their profile information. The environment also needs to be updated, retrieving previous_notes and current_notes from content_pool for specified time periods, and updating current_timestep.",
-      "process_sequence": "1) Start initialization, 2) Recommendation algorithms recommend content to all UserAgents, and UserAgents with new content recommend to all fans, 3) UserAgents receiving messages must decide in the current round whether to comment or mention others, 4) If receiving a mention, choose whether to reply, 5) After all agents act, check termination conditions, 6) Either terminate or start the next round."
+      "agent_behaviors": "UserAgent scans follow feed since last_login_timestamp, requests algorithm types from params_rednote_qwen25_14B.json, processes mention_pool with attention_budget cap, and runs receive_recommendation / handle_mention with chunked LLM calls. Algorithm agents run hot/random/interest recommenders and relevant search.",
+      "decision_algorithms": "Hot: popularity + 7d comment distribution; Random: MAU-weighted sampling; Interest: embedding similarity + candidate_note_ids_by_user; Search: embedding relevance to query.",
+      "specific_constraints": "current_notes = notes with time < min(current_timestamp + timestamp_duration, simulation_cap); comments in prompts truncated to top sub_comment_count; simulation capped by max_span_days and max_step from params.",
+      "process_sequence": "1) Load content_pool & profiles; 2) For each step broadcast StartEvent; 3) User exposure + memory; 4) Algorithm/on-demand feeds; 5) LLM comment decisions → content_pool & mention_pool; 6) Mention handling; 7) Advance timestamp, rebuild current_notes, save channel snapshots & metrics."
     }
   },
   "agent_types": {
-    "UserAgent": "Represents homogeneous users in social networks, with attributes such as id, nickname, gender, description, ip_location, follow_count, fan_count, interaction, user interest tag list(interest_tags), activity level and etc.",
-    "RecommenderAgent": "Represents recommendation systems. Includes hot topic recommendation, interest-based recommendation, and random recommendation."
+    "UserAgent": "Xiaohongshu user with profile (nickname, interest_tags, activity_level, follow_ids/fan_ids), memory, recommended_note_ids_by_channel, mentioned_note_ids_by_channel, keep_following_note_ids.",
+    "Algorithm": "Platform recommender/search agents: recomment_agent_0001 (random), recomment_agent_0002 (hot), recomment_agent_0003 (interest), search_agent_0001 (relevant search)."
   },
   "portrait": {
     "UserAgent": 1476,
-    "RecommenderAgent": 7
+    "Algorithm": 4
   },
   "metrics": [
     {
       "id": "comment_generation",
       "name": "Comment Generation Over Time",
-      "description": "Tracks the number of comments generated over time to measure information diffusion activity. The x-axis represents time steps, and the y-axis represents the total number of comments at the current time step.",
+      "description": "Total comment count in content_pool per monitor tick; line chart over simulation steps.",
       "visualization_type": "line",
       "update_interval": 5,
       "function_name": "calculate_comment_generation",
@@ -45,12 +45,12 @@
           "required": true
         }
       ],
-      "calculation_logic": "Retrieve content_pool from environment data and count the total number of comments in all notes' comments dictionaries. Each call returns the total number of comments at the current time step. The monitoring system automatically records the time series and plots a line chart."
+      "calculation_logic": "Sum len(note.comments) across content_pool."
     },
     {
       "id": "comment_volume_realtime",
       "name": "Comment Volume Real Time",
-      "description": "按评论 timestamp（真实时间）统计：上图累计评论量（折线+标记），下图各时间桶内条数（柱状图，柱宽等于桶宽、左右相接）；横轴为真实时间，非仿真步。",
+      "description": "By comment timestamp (real time): cumulative comment count line + per-bin histogram; x-axis is UTC wall time, not simulation step.",
       "visualization_type": "line",
       "update_interval": 5,
       "function_name": "calculate_comment_volume_realtime",
@@ -62,12 +62,12 @@
           "required": true
         }
       ],
-      "calculation_logic": "Collect all comment timestamps from content_pool, sort, histogram with adaptive bin count; monitor: cumulative line+markers + touching bar histogram per raw_data._viz_kind comment_realtime."
+      "calculation_logic": "Collect comment timestamps via to_sim_time_ms; adaptive histogram; raw_data._viz_kind comment_realtime."
     },
     {
       "id": "comment_top_vs_reply_over_time",
       "name": "Comment Top-Level vs Reply Over Time",
-      "description": "每个采样步：统计 content_pool 中无父评论（顶层）与有父评论（回复）的条数随时间变化；导出为上下两张折线图。",
+      "description": "Per tick: count top-level comments (empty parent_comment_id) vs replies.",
       "visualization_type": "line",
       "update_interval": 5,
       "function_name": "calculate_comment_top_vs_reply_over_time",
@@ -79,15 +79,38 @@
           "required": true
         }
       ],
-      "calculation_logic": "Count comments with empty parent_comment_id vs non-empty; returns two scalars per tick for dual line subplots."
+      "calculation_logic": "Two scalars per tick for dual subplot export."
     },
     {
-      "id": "comment_count_frequency",
-      "name": "Comment Count Frequency",
-      "description": "Two line charts (markers): (1) X = total comments per user (0,1,2,…), denominator = users appearing as note author or commenter in content_pool; Y = % with exactly k comments. (2) X = comments under each note (0,1,2,…), Y = % of all notes. Exports *_commenting_users.png and *_notes.png.",
+      "id": "user_comment_count_frequency",
+      "name": "User Comment Count Frequency",
+      "description": "Distribution of total comments per user (k=0,1,2,…); denominator = registered_user_agent_ids or pool authors∪commenters.",
       "visualization_type": "line",
       "update_interval": 5,
-      "function_name": "calculate_comment_count_frequency",
+      "function_name": "calculate_user_comment_count_frequency",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "registered_user_agent_ids",
+          "source_type": "env",
+          "path": "registered_user_agent_ids",
+          "required": false
+        }
+      ],
+      "calculation_logic": "Histogram of per-user comment totals; raw_data._viz_kind user_comment_count_freq_bar."
+    },
+    {
+      "id": "note_comment_count_frequency",
+      "name": "Note Comment Count Frequency",
+      "description": "Distribution of comment counts under each note; denominator = all notes in content_pool.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_note_comment_count_frequency",
       "variables": [
         {
           "name": "content_pool",
@@ -96,12 +119,12 @@
           "required": true
         }
       ],
-      "calculation_logic": "Distribution of per-user total comment counts (denominator: note authors ∪ commenters in pool; k=0 included) and per-note comment counts (denominator: all notes); values as percentages; monitor plots as line+marker PNGs; raw_data._viz_kind comment_count_freq_bar; n_users_in_pool."
+      "calculation_logic": "Histogram of per-note comment counts; raw_data._viz_kind note_comment_count_freq_bar."
     },
     {
       "id": "posting_user_comment_behavior",
       "name": "Posting User Comment Behavior",
-      "description": "每个采样时刻：列出所有发过帖的用户，统计其本帖一跳/本帖回复/他帖评论条数；导出 metrics 图时在同目录写入表格 CSV；并追加写入 metrics 目录下 posting_user_comment_behavior/snapshots.jsonl（含 simulation_step）。",
+      "description": "Per tick: for each note author, count own-note top-level, own-note replies, and comments on others' notes; exports CSV + JSONL snapshots.",
       "visualization_type": "line",
       "update_interval": 5,
       "function_name": "calculate_posting_user_comment_behavior",
@@ -113,12 +136,12 @@
           "required": true
         }
       ],
-      "calculation_logic": "Per posting user: own-note top-level, own-note replies, on others' notes; plot export writes users table as CSV; JSONL snapshots per monitor tick."
+      "calculation_logic": "Returns {users: [...]} table; monitor writes CSV and posting_user_comment_behavior/snapshots.jsonl."
     },
     {
       "id": "comment_similarity",
       "name": "Comment Similarity",
-      "description": "BGE 向量相似度均值：生成评论与参考评论按 (note_id, user_id) 对齐后，计算 mean(cosine_similarity)。需环境提供 reference_json_path 或 reference_comments。",
+      "description": "Mean cosine similarity between generated comment embeddings and corresponding note embeddings (BGE via embedding_client).",
       "visualization_type": "line",
       "update_interval": 5,
       "function_name": "calculate_comment_similarity",
@@ -136,15 +159,53 @@
           "required": false
         },
         {
-          "name": "reference_comments",
+          "name": "note_embeddings_path",
           "source_type": "env",
-          "path": "reference_comments",
+          "path": "reference_embedding_path",
           "required": false
         }
       ],
-      "calculation_logic": "从 content_pool 提取生成评论，从 reference_json_path 或 reference_comments 读取参考评论，按 (note_id, user_id) 配对后调用 BGE embedding 算均值。若无参考或无配对则返回 None。"
+      "calculation_logic": "Embed each generated comment text; compare to precomputed note embedding from reference_embedding_path; return mean cosine or None if unavailable."
+    },
+    {
+      "id": "comment_diversity",
+      "name": "Comment Diversity",
+      "description": "Lexical/semantic diversity of generated comments: TTR, Distinct-2/3, 1-Self-BLEU, Div_sem (pairwise BGE distance). Embeds every comment; raw_data includes _comment_embeddings and content_pool_with_embeddings.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_comment_diversity",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Pool all comment texts (strip @); compute diversity metrics; embed via embedding_client; raw_data._viz_kind comment_diversity."
+    },
+    {
+      "id": "comment_max_reference_similarity",
+      "name": "Comment Max Reference Similarity",
+      "description": "Reference-driven max cosine: each reference comment vs all simulated comments under the same note_id, then mean over matched references (see evaluate_max_reference_cosine_batch.py).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_comment_max_reference_similarity",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "reference_comments_csv_path",
+          "source_type": "env",
+          "path": "reference_comments_csv_path",
+          "required": false
+        }
+      ],
+      "calculation_logic": "Load reference CSV by note_id; embed reference & generated comments; mean of max cosine per reference row."
     }
   ]
 }
-
-
