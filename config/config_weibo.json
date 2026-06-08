@@ -24,7 +24,7 @@
                 "schema_path": "UserAgent.json"
             },
             "Algorithm": {
-                "count": 7,
+                "count": 4,
                 "profile_path": "Algorithm.json",
                 "schema_path": "Algorithm.json"
             }

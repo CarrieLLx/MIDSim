@@ -182,9 +182,9 @@ Default agent counts in `config/config_*.json`:
 
 | Scenario | UserAgent | Algorithm |
 |----------|-----------|------------------|
-| Rednote | 1476 | 7 |
-| Twitter | 1067 | 7 |
-| Weibo | 130 | 7 |
+| Rednote | 1476 | 4 |
+| Twitter | 1067 | 4 |
+| Weibo | 130 | 4 |
 
 ### Setup checklist
 
