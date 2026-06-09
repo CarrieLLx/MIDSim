@@ -20,6 +20,7 @@ from onesim.distribution.agent_allocator import AgentAllocator
 from onesim.distribution.master import MasterNode
 import asyncio
 from onesim.config import SimulatorConfig, AgentConfig, AgentMemoryConfig
+from onesim.agent.locale import get_general_agent_locale, resolve_general_agent_locale
 
 class AgentFactory:
     def __init__(self, simulator_config: SimulatorConfig, model_config_name: str, env_path: str, agent_config: Optional[AgentConfig] = None) -> None:
@@ -94,6 +95,15 @@ class AgentFactory:
                 logger.error(f"Error loading schema for {agent_type}: {e}. Skipping.")
 
         return schemas
+
+    def _ensure_general_agent_locale(self) -> str:
+        locale = resolve_general_agent_locale(
+            agent_config=self.agent_config,
+            simulator_config=self.simulator_config,
+            env_path=self.env_path,
+        )
+        logger.info(f"GeneralAgent locale: {locale}")
+        return locale
 
     def load_agent_module_from_file(self, agent_type: str):
         """Load agent class from file"""
@@ -253,7 +263,8 @@ class AgentFactory:
                     "model_config_name": self.model_config_name,
                     "memory_config": memory_config,
                     "planning_config": planning_config,
-                    "relationships": agent_relationships
+                    "relationships": agent_relationships,
+                    "general_agent_locale": get_general_agent_locale(),
                 }
                 all_agent_configs.append(agent_config)
                 self.profile_id2agent[agent_id] = agent_config
@@ -476,6 +487,8 @@ class AgentFactory:
 
     async def create_agents(self) -> Dict[str, Dict[str, Any]]:
         """Main method to create all agents"""
+        self._ensure_general_agent_locale()
+
         # Check if we're running in distributed mode
         node = get_node()
         is_master = node and node.role == NodeRole.MASTER

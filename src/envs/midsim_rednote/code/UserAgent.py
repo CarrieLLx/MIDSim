@@ -5,7 +5,7 @@ import os
 import re
 import time
 
-# SimEnv 对 mention_pool / 评论等更新使用全局锁串行化，高并发下排队可能超过 30s
+# SimEnv uses global lock to serialize environment updates, queueing may exceed 30s in high concurrency
 _ENV_ASYNC_OP_TIMEOUT = float(os.environ.get("ONESIM_ENV_ASYNC_OP_TIMEOUT", "120"))
 
 from grpc import Future
@@ -37,9 +37,10 @@ from .metrics.channel_snapshots import (
     record_recommendations_by_source_step,
 )
 from .utils import (
+    format_historical_summary,
     generate_comment_id,
-    note_post_time_in_window,
-    random_comment_timestamp,
+    time_in_window,
+    generate_comment_timestamp,
     resolve_parent_comment_entry,
 )
 
@@ -70,13 +71,19 @@ class UserAgent(GeneralAgent):
         # Map algorithm type to recommender agent ID
         self.recommender_map: Dict[str, str] = {
             "Random Recommendation": "recomment_agent_0001",
-            "Hot Recommendation": "recomment_agent_0002",
+            "Popularity Recommendation": "recomment_agent_0002",
             "Interest Recommendation": "recomment_agent_0003",
         }
         self.search_map: Dict[str, str] = {
             "Relevant Search": "search_agent_0001",
         }
         self._recommendation_earliest_post_anchor_ms: Optional[float] = None
+
+    async def _is_official_by_agent_field(self) -> Optional[bool]:
+        """Check if the account is official by agent field."""
+        is_official = self.profile.get_data("is_official", False)
+
+        return True if is_official else False
 
     async def _should_activate_this_round(self, current_step: int, max_step: int) -> bool:
         """Decide whether to activate based on activity_level and power law upper bound: p_t = min(activity_level, upper_t)."""
@@ -110,8 +117,6 @@ class UserAgent(GeneralAgent):
         
         # Create a unique request ID
         request_id = f"agent_env_update_mention_pool_req_{time.time()}_{id(self)}"
-
-        # Create a Future to receive the response
         future = asyncio.Future()
         self._mention_pool_update_futures[request_id] = future
 
@@ -132,30 +137,25 @@ class UserAgent(GeneralAgent):
         lock = await get_lock(lock_id)
 
         try:
-            # Get the lock before sending the update
             async with lock:
-                # Put the update request event into the event bus queue
                 from onesim.events import get_event_bus
                 event_bus = get_event_bus()
                 await event_bus.dispatch_event(mention_pool_update_event)
 
-                # Wait for the response (with timeout)
-                try:
-                    if hasattr(self, '_sync_event'):
-                        await asyncio.wait_for(self._sync_event.wait(), timeout=_ENV_ASYNC_OP_TIMEOUT)
-                        return await future
-                    else:
-                        return await asyncio.wait_for(future, timeout=_ENV_ASYNC_OP_TIMEOUT)
-                except asyncio.TimeoutError:
-                    logger.warning(
-                        f"Environment mention_pool update timeout: {key} "
-                    )
-                    self._mention_pool_update_futures.pop(request_id, None)
-                    return False
-                except Exception as e:
-                    logger.error(f"Error updating environment mention_pool: {e}")
-                    self._mention_pool_update_futures.pop(request_id, None)
-                    return False
+            try:
+                if hasattr(self, '_sync_event'):
+                    await asyncio.wait_for(self._sync_event.wait(), timeout=_ENV_ASYNC_OP_TIMEOUT)
+                    return await future
+                else:
+                    return await asyncio.wait_for(future, timeout=_ENV_ASYNC_OP_TIMEOUT)
+            except asyncio.TimeoutError:
+                logger.warning(f"Environment mention_pool update timeout: {key}")
+                self._mention_pool_update_futures.pop(request_id, None)
+                return False
+            except Exception as e:
+                logger.error(f"Error updating environment mention_pool: {e}")
+                self._mention_pool_update_futures.pop(request_id, None)
+                return False
         except Exception as e:
             logger.error(f"Error getting environment mention_pool update lock: {e}")
             return False
@@ -188,6 +188,10 @@ class UserAgent(GeneralAgent):
             logger.info(f"Step {current_step}/{max_step}: UserAgent {self.profile_id} is not activated in this round")
             return []
         logger.info(f"Step {current_step}/{max_step}: UserAgent {self.profile_id} is activated in this round")
+
+        if (await self._is_official_by_agent_field()) is True:
+            logger.info(f"Step {current_step}/{max_step}: UserAgent {self.profile_id} detected official account by agent field, skip exposure stream")
+            return []
 
         events: List[Event] = []
 
@@ -503,7 +507,7 @@ class UserAgent(GeneralAgent):
             hi = lo + dur_ms
         if hi <= lo:
             return []
-        own_notes = [(nid, n) for nid, n in own_notes if note_post_time_in_window(n, lo, hi)]
+        own_notes = [(nid, n) for nid, n in own_notes if time_in_window(n, lo, hi)]
 
         if not own_notes:
             return []
@@ -682,7 +686,7 @@ class UserAgent(GeneralAgent):
                 note_id,
                 {
                     "comment_id": comment_id,
-                    "timestamp": random_comment_timestamp(note, current_ts, duration),
+                    "timestamp": generate_comment_timestamp(note, current_ts, duration),
                     "ip_location": ip_location,
                     "note_id": note_id,
                     "user_id": user_id,
@@ -730,10 +734,7 @@ class UserAgent(GeneralAgent):
         """Add the note_ids of the current recommendations to profile.recommended_note_ids."""
         if not recommendations:
             return
-        
-        # Get the set of recommended content IDs (from profile)
         recommended_note_ids = set(self.profile.get_data("recommended_note_ids", [])) if self.profile else set()
-        
         new_note_ids = []
         for note_id in recommendations.keys():
             new_note_ids.append(note_id)
@@ -749,15 +750,6 @@ class UserAgent(GeneralAgent):
         fan_ids: List[str]
     ) -> Dict[str, Any]:
         """Get the mentionable users list (including follows, fans, and mutual)"""
-
-        def _clip_summary(text: Any) -> str:
-            if text is None:
-                return ""
-            s = str(text)
-            if len(s) <= 100:
-                return s
-            return s[:50] + "…" + s[-50:]
-
         mentionable_info = {
             "follows": [],  # Follows list
             "fans": [],  # Fans list
@@ -770,9 +762,6 @@ class UserAgent(GeneralAgent):
         
         # Calculate mutual (intersection)
         mutual_ids = follow_ids & fan_ids
-        
-        # Build the mapping from user ID to nickname
-        user_info = {}
         
         if not self.relationship_manager:
             logger.warning("RelationshipManager is not initialized")
@@ -789,7 +778,7 @@ class UserAgent(GeneralAgent):
             if rel and rel.target_info and isinstance(rel.target_info, dict):
                 info = dict(rel.target_info)
                 if "historical_summary" in info:
-                    info["historical_summary"] = _clip_summary(info.get("historical_summary"))
+                    info["historical_summary"] = format_historical_summary(info.get("historical_summary"))
                 hn = info.get("historical_notes")
                 if isinstance(hn, dict) and len(hn) > 2:
                     items = list(hn.items())[:2]
@@ -803,7 +792,7 @@ class UserAgent(GeneralAgent):
             if rel and rel.target_info and isinstance(rel.target_info, dict):
                 info = dict(rel.target_info)
                 if "historical_summary" in info:
-                    info["historical_summary"] = _clip_summary(info.get("historical_summary"))
+                    info["historical_summary"] = format_historical_summary(info.get("historical_summary"))
                 hn = info.get("historical_notes")
                 if isinstance(hn, dict) and len(hn) > 2:
                     items = list(hn.items())[:2]
@@ -817,7 +806,7 @@ class UserAgent(GeneralAgent):
             if rel and rel.target_info and isinstance(rel.target_info, dict):
                 info = dict(rel.target_info)
                 if "historical_summary" in info:
-                    info["historical_summary"] = _clip_summary(info.get("historical_summary"))
+                    info["historical_summary"] = format_historical_summary(info.get("historical_summary"))
                 hn = info.get("historical_notes")
                 if isinstance(hn, dict) and len(hn) > 2:
                     items = list(hn.items())[:2]
@@ -1162,7 +1151,7 @@ class UserAgent(GeneralAgent):
                         
                         success = await self.add_env_comments(note_id, {
                             "comment_id": comment_id,
-                            "timestamp": random_comment_timestamp(
+                            "timestamp": generate_comment_timestamp(
                                 note, window_start_ms, window_duration_ms
                             ),
                             "ip_location": ip_location,
@@ -1222,7 +1211,7 @@ class UserAgent(GeneralAgent):
                     
                     success = await self.add_env_comments(note_id, {
                         "comment_id": comment_id,
-                        "timestamp": random_comment_timestamp(
+                        "timestamp": generate_comment_timestamp(
                             note, window_start_ms, window_duration_ms
                         ),
                         "ip_location": ip_location,
@@ -1258,10 +1247,8 @@ class UserAgent(GeneralAgent):
 
                 # Send MentionEvent to the users mentioned
                 if mentioned_user_ids:
-                    # Create MentionEvent for each mentioned user
                     for mentioned_user_id in mentioned_user_ids:
-                        if mentioned_user_id and mentioned_user_id != user_id:  # Do not send reminder to yourself
-                            # Create @ event, send to the mentioned user
+                        if mentioned_user_id and mentioned_user_id != user_id:  
                             success = await self.update_env_mention_pool(f"{mentioned_user_id}.{comment_id}", {
                                 "action": "add",
                                 "mention_message": {
@@ -1321,11 +1308,10 @@ class UserAgent(GeneralAgent):
             logger.info(f"Step {current_step}/{max_step}: UserAgent {self.profile_id} handle mention but is not activated this round")
             return []
 
-        # 获取提醒信息
+        # Get the reminder information
         mentions = getattr(event, "mentions", {}) or {}
         if not mentions:
             return []
-
         logger.info(f"Step {current_step}/{max_step}: UserAgent {self.profile_id} receive mention event, length of mentions: {len(mentions)}")
 
         # Get the list of users that can be @
@@ -1402,7 +1388,7 @@ class UserAgent(GeneralAgent):
             getattr(event, "timestamp", 0),
         )
 
-        # 构建观察信息
+        # Build the observation information
         observation_parts = []
         for i, entry in enumerate(mention_entries):
             observation_parts.append(f"""## 提醒 {i + 1}
@@ -1549,13 +1535,9 @@ class UserAgent(GeneralAgent):
         try:
             response = await self.generate_reaction(instruction, observation)
         except (ValueError, json.JSONDecodeError) as e:
-            logger.warning(
-                f"Step {current_step}/{max_step}: UserAgent {self.profile_id} handle_mention "
-            )
+            logger.warning(f"Step {current_step}/{max_step}: UserAgent {self.profile_id} handle_mention")
         except Exception as e:
-            logger.error(
-                f"Step {current_step}/{max_step}: UserAgent {self.profile_id} handle_mention "
-            )
+            logger.error(f"Step {current_step}/{max_step}: UserAgent {self.profile_id} handle_mention ")
 
         response = self._normalize_llm_reaction(response)
         events_to_send = []
@@ -1611,7 +1593,7 @@ class UserAgent(GeneralAgent):
                 else:
                     self.profile.update_data("keep_following_note_ids", [])
 
-        # Handle the reply decision
+        # Handle the comment decision
         decisions = response.get("decisions", [])
         if not isinstance(decisions, list):
             return events_to_send
@@ -1641,7 +1623,6 @@ class UserAgent(GeneralAgent):
                 should_comment = decision.get("comment", False)
                 parent_comment_id = decision.get("parent_comment_id")
                 comment_content = decision.get("comment_content", "")
-
                 if not note_id or not should_comment:
                     continue
 
@@ -1695,7 +1676,7 @@ class UserAgent(GeneralAgent):
                     comment_id = generate_comment_id()
                     success = await self.add_env_comments(note_id, {
                         "comment_id": comment_id,
-                        "timestamp": random_comment_timestamp(
+                        "timestamp": generate_comment_timestamp(
                             mention_note, mention_window_start_ms, mention_window_duration_ms
                         ),
                         "ip_location": ip_location,
@@ -1750,7 +1731,7 @@ class UserAgent(GeneralAgent):
                     comment_id = generate_comment_id()
                     success = await self.add_env_comments(note_id, {
                         "comment_id": comment_id,
-                        "timestamp": random_comment_timestamp(
+                        "timestamp": generate_comment_timestamp(
                             mention_note, mention_window_start_ms, mention_window_duration_ms
                         ),
                         "ip_location": ip_location,

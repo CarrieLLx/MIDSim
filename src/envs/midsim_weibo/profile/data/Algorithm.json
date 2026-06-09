@@ -8,9 +8,9 @@
     },
     {
         "id": "recomment_agent_0002",
-        "type": "Hot Recommendation",
+        "type": "Popularity Recommendation",
         "limit": "5",
-        "repost_count_dist_7d": [
+        "popularity_distribution": [
             {
                 "repost_count": 0,
                 "post_count": 204935
@@ -8395,22 +8395,7 @@
     },
     {
         "id": "search_agent_0001",
-        "type": "Random Search",
-        "limit": "5"
-    },
-    {
-        "id": "search_agent_0002",
-        "type": "Hot Search",
-        "limit": "5"
-    },
-    {
-        "id": "search_agent_0003",
         "type": "Relavent Search",
-        "limit": "5"
-    },
-    {
-        "id": "search_agent_0004",
-        "type": "LLM Search",
         "limit": "5"
     }
 ]

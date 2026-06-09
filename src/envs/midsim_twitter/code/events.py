@@ -91,7 +91,7 @@ class StartEvent(Event):
         self.mentions = mentions
 
 class SocialRecommendationEvent(Event):
-    """社交推荐事件"""
+    """Social recommendation event"""
     def __init__(self, 
         from_agent_id: str, 
         to_agent_id: str, 
@@ -109,7 +109,7 @@ class SocialRecommendationEvent(Event):
         self.recommendations = recommendations
 
 class KeepFollowingEvent(Event):
-    """保持关注事件"""
+    """Keep following event"""
     def __init__(self,
         from_agent_id: str,
         to_agent_id: str,
@@ -127,7 +127,7 @@ class KeepFollowingEvent(Event):
         self.recommendations = recommendations
 
 class AlgorithmRecommendationEvent(Event):
-    """算法推荐事件"""
+    """Algorithm recommendation event"""
     def __init__(self, 
         from_agent_id: str, 
         to_agent_id: str, 
@@ -145,7 +145,7 @@ class AlgorithmRecommendationEvent(Event):
         self.recommendations = recommendations
 
 class GetAlgorithmRecomendationEvent(Event):
-    """用户请求算法推荐事件（携带用户画像与指定算法类型）"""
+    """User request algorithm recommendation event"""
     def __init__(self,
         from_agent_id: str,
         to_agent_id: str,
@@ -168,8 +168,8 @@ class GetAlgorithmRecomendationEvent(Event):
         self.recommended_tweet_ids = recommended_tweet_ids
         self.type = algorithm_type
 
-class SearchEvent(Event):
-    """用户请求搜索事件（携带用户画像与指定搜索类型）"""
+class GetSearchResultEvent(Event):
+    """User request search event"""
     def __init__(self,
         from_agent_id: str,
         to_agent_id: str,
@@ -190,8 +190,8 @@ class SearchEvent(Event):
         self.type = algorithm_type
         self.search_keyword = search_keyword
 
-class SearchRecommendationEvent(Event):
-    """搜索推荐事件"""
+class SearchResultEvent(Event):
+    """Search result event"""
     def __init__(self, 
         from_agent_id: str, 
         to_agent_id: str, 
@@ -209,7 +209,7 @@ class SearchRecommendationEvent(Event):
         self.recommendations = recommendations
 
 class RecommendationSpreadingEvent(Event):
-    """传播内容更新事件"""
+    """Recommendation spreading event"""
     def __init__(self,
         from_agent_id: str,
         to_agent_id: str,
@@ -225,7 +225,7 @@ class RecommendationSpreadingEvent(Event):
         self.max_step = max_step
 
 class MentionEvent(Event):
-    """@提醒事件，当用户被@、被评论或被回复时发送"""
+    """@ mention event, sent when user is @, commented or replied to"""
     def __init__(self,
         from_agent_id: str,
         to_agent_id: str,
@@ -243,7 +243,7 @@ class MentionEvent(Event):
         self.mentions = mentions
 
 class MentionSpreadingEvent(Event):
-    """提醒传播内容更新事件"""
+    """Mention spreading event"""
     def __init__(self,
         from_agent_id: str,
         to_agent_id: str,

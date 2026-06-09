@@ -1,9 +1,9 @@
 {
   "current_timestamp": 1764291145000,
   "timestamp_duration": 0,
-  "current_notes": {},
   "mention_pool": {},
   "reference_embedding_path": "datasets/weibo/embeddings/bge-base-zh-v1.5_embeddings.json",
+  "reference_csv_path": "datasets/weibo/reposts.csv",
   "content_pool": {
     "5237758266442267": {
       "blog_id": "5237758266442267",
@@ -12,7 +12,10 @@
       "user_id": "2199733231",
       "nickname": "陈怡然-杜克大学",
       "ip_location": "美国",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5237898580330277": {
       "blog_id": "5237898580330277",
@@ -21,7 +24,10 @@
       "user_id": "5703921756",
       "nickname": "新智元",
       "ip_location": "",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5238250453337506": {
       "blog_id": "5238250453337506",
@@ -30,7 +36,10 @@
       "user_id": "1917491813",
       "nickname": "刘群MT-to-Death",
       "ip_location": "广东",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5238005488943273": {
       "blog_id": "5238005488943273",
@@ -39,7 +48,10 @@
       "user_id": "6045441276",
       "nickname": "blackorbird",
       "ip_location": "中国香港",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5237877883011247": {
       "blog_id": "5237877883011247",
@@ -48,7 +60,10 @@
       "user_id": "2194035935",
       "nickname": "蚁工厂",
       "ip_location": "山东",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5238365286042451": {
       "blog_id": "5238365286042451",
@@ -57,7 +72,10 @@
       "user_id": "7559472847",
       "nickname": "虾仁芝麻卷·",
       "ip_location": "北京",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5237856090195839": {
       "blog_id": "5237856090195839",
@@ -66,7 +84,10 @@
       "user_id": "7841338587",
       "nickname": "本诺__",
       "ip_location": "上海",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5238082921305119": {
       "blog_id": "5238082921305119",
@@ -75,7 +96,10 @@
       "user_id": "5097794776",
       "nickname": "研究生自救指南",
       "ip_location": "浙江",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5242376845265639": {
       "blog_id": "5242376845265639",
@@ -84,7 +108,10 @@
       "user_id": "6444741184",
       "nickname": "林亦LYi",
       "ip_location": "广东",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5252433156769242": {
       "blog_id": "5252433156769242",
@@ -93,7 +120,10 @@
       "user_id": "2483199840",
       "nickname": "三冘齿",
       "ip_location": "澳大利亚",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5244848534717728": {
       "blog_id": "5244848534717728",
@@ -102,7 +132,10 @@
       "user_id": "2427364747",
       "nickname": "中国科学报",
       "ip_location": "北京",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5241588731348466": {
       "blog_id": "5241588731348466",
@@ -111,7 +144,10 @@
       "user_id": "1738690784",
       "nickname": "麻省理工科技评论",
       "ip_location": "",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5239119076658552": {
       "blog_id": "5239119076658552",
@@ -120,7 +156,10 @@
       "user_id": "3996876140",
       "nickname": "机器之心Pro",
       "ip_location": "",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5239052867731687": {
       "blog_id": "5239052867731687",
@@ -129,7 +168,10 @@
       "user_id": "7375146638",
       "nickname": "深圳卫视科创最前沿",
       "ip_location": "",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5238497235699749": {
       "blog_id": "5238497235699749",
@@ -138,7 +180,10 @@
       "user_id": "5225635912",
       "nickname": "Lorkhan_",
       "ip_location": "瑞典",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5238310436867670": {
       "blog_id": "5238310436867670",
@@ -147,7 +192,10 @@
       "user_id": "7880893146",
       "nickname": "编辑苗子",
       "ip_location": "湖北",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5237906563924066": {
       "blog_id": "5237906563924066",
@@ -156,7 +204,10 @@
       "user_id": "6105753431",
       "nickname": "量子位",
       "ip_location": "",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5238040551489798": {
       "blog_id": "5238040551489798",
@@ -165,7 +216,10 @@
       "user_id": "1798528990",
       "nickname": "C号地雷",
       "ip_location": "美国",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5237786417824494": {
       "blog_id": "5237786417824494",
@@ -174,7 +228,10 @@
       "user_id": "5646147583",
       "nickname": "掌门人xyz",
       "ip_location": "美国",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5239759777564872": {
       "blog_id": "5239759777564872",
@@ -183,7 +240,10 @@
       "user_id": "1027417317",
       "nickname": "李自然说",
       "ip_location": "上海",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5238109937862881": {
       "blog_id": "5238109937862881",
@@ -192,7 +252,10 @@
       "user_id": "5040113420",
       "nickname": "我是個洋芋洋芋洋芋",
       "ip_location": "北京",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5237921271775472": {
       "blog_id": "5237921271775472",
@@ -201,7 +264,10 @@
       "user_id": "1904769205",
       "nickname": "知乎",
       "ip_location": "北京",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     },
     "5238070144145634": {
       "blog_id": "5238070144145634",
@@ -210,7 +276,13 @@
       "user_id": "1356831232",
       "nickname": "CodingDonkey920520",
       "ip_location": "江苏",
-      "reposts": {}
+      "repost_count": 0,
+      "repost_ids": [],
+      "reposted_blog_id": "",
+      "reposted_path": []
     }
-  }
+  },
+  "current_blogs": {},
+  "reference_csv_path": "",
+  "popularity_window_days": 7.0
 }

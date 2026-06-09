@@ -8,9 +8,9 @@
     },
     {
         "id": "recomment_agent_0002",
-        "type": "Hot Recommendation",
+        "type": "Popularity Recommendation",
         "limit": "5",
-        "comment_count_dist_7d": [
+        "popularity_distribution": [
             {
                 "comment_count": 0,
                 "post_count": 1625

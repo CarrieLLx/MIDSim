@@ -397,6 +397,12 @@ class WorkerNode(Node):
 
     def create_local_agents(self, agent_configs: List[Dict]) -> None:
         """Create local agent instances with pre-configured relationships"""
+        from onesim.agent.locale import set_general_agent_locale
+
+        locale = (agent_configs[0].get("general_agent_locale") if agent_configs else None)
+        if locale:
+            set_general_agent_locale(locale)
+
         env_name= agent_configs[0]["env"].split(os.sep)[-1]
         self.env_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'..', "envs", env_name)
         # Group configurations by agent type

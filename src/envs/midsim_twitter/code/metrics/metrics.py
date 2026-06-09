@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-多渠道信息传播模型的监控指标计算模块
-"""
 import os
 import sys
 _metrics_dir = os.path.dirname(os.path.abspath(__file__))
@@ -9,16 +6,26 @@ if _metrics_dir not in sys.path:
     sys.path.insert(0, _metrics_dir)
 try:
     from twitter_similarity import (
-        calculate_tweet_text_similarity,
+        calculate_text_similarity,
         count_direct_content_pool_tweets_for_monitor,
         count_direct_propagation_by_type,
         count_content_pool_tweets_for_monitor,
     )
 except ImportError:
-    calculate_tweet_text_similarity = None
+    calculate_text_similarity = None
     count_direct_content_pool_tweets_for_monitor = None
     count_direct_propagation_by_type = None
     count_content_pool_tweets_for_monitor = None
+
+try:
+    from embedding_metrics import calculate_text_max_reference_similarity
+except ImportError:
+    calculate_text_max_reference_similarity = None
+
+try:
+    from text_diversity import calculate_text_diversity
+except ImportError:
+    calculate_text_diversity = None
 
 from typing import Dict, Any, List, Optional, Union, Callable, Set, Tuple
 from collections import Counter, defaultdict
@@ -28,30 +35,24 @@ from onesim.monitor.utils import (
     safe_avg, safe_max, safe_min, safe_count, log_metric_error
 )
 
+try:
+    from ..utils import time_to_ms
+except ImportError:
+    from utils import time_to_ms
 
-def calculate_tweet_generation(data: Dict[str, Any]) -> Any:
-    """
-    计算指标: tweet_generation（Twitter：content_pool 中「传播类」推文条数）
 
-    仅统计转推 / 引用 / 回复（任一类对应 id 字段有值）；**所有原创推一律不计**。
-
-    依赖 data.content_pool。
-
-    「非二级」传播：父帖为原创（父帖的 retweeted_tweet_id / quoted_tweet_id /
-    replied_tweet_id / replyed_tweet_id 均为空）。**分类型**折线图见：
-    `calculate_direct_retweet_generation` / `calculate_direct_quote_generation` /
-    `calculate_direct_reply_generation`（scene_info.json 中 `direct_*_generation`，均为 line）。
-    """
+def calculate_diffusion_generation(data: Dict[str, Any]) -> Any:
+    """Calculate the number of tweets generated over time"""
     try:
         if not data or not isinstance(data, dict):
-            log_metric_error("tweet_pool_count", ValueError("无效的数据输入"), {"data": data})
+            log_metric_error("tweet_pool_count", ValueError("Invalid data input"), {"data": data})
             return 0
 
         content_pool = safe_get(data, "content_pool", {})
         if not isinstance(content_pool, dict):
             log_metric_error(
                 "tweet_pool_count",
-                ValueError("content_pool 不是字典格式"),
+                ValueError("content_pool is not a dict"),
                 {"content_pool_type": type(content_pool)},
             )
             return 0
@@ -66,7 +67,6 @@ def calculate_tweet_generation(data: Dict[str, Any]) -> Any:
                 count_content_pool_tweets_for_monitor(content_pool, current_ts)
             )
 
-        # 无 twitter_similarity 时退化：仅统计 dict 条目数
         return float(
             sum(1 for v in content_pool.values() if isinstance(v, dict))
         )
@@ -80,24 +80,17 @@ def calculate_tweet_generation(data: Dict[str, Any]) -> Any:
         return 0
 
 def calculate_direct_tweet_generation(data: Dict[str, Any]) -> Any:
-    """
-    计算指标: direct_tweet_generation（Twitter：content_pool 中「非二级传播」推文条数）
-
-    仅统计转推 / 引用 / 回复中，其父推文是原创推的条目（即父推文的
-    retweeted_tweet_id、quoted_tweet_id、replied_tweet_id 均为空）。
-
-    依赖 data.content_pool。
-    """
+    """Calculate the number of direct tweets generated over time"""
     try:
         if not data or not isinstance(data, dict):
-            log_metric_error("tweet_pool_count", ValueError("无效的数据输入"), {"data": data})
+            log_metric_error("tweet_pool_count", ValueError("Invalid data input"), {"data": data})
             return 0
 
         content_pool = safe_get(data, "content_pool", {})
         if not isinstance(content_pool, dict):
             log_metric_error(
                 "tweet_pool_count",
-                ValueError("content_pool 不是字典格式"),
+                ValueError("content_pool is not a dict"),
                 {"content_pool_type": type(content_pool)},
             )
             return 0
@@ -112,7 +105,6 @@ def calculate_direct_tweet_generation(data: Dict[str, Any]) -> Any:
                 count_direct_content_pool_tweets_for_monitor(content_pool, current_ts)
             )
 
-        # 无 twitter_similarity 时退化：返回 0（无法可靠识别父推文层级）
         return 0.0
 
     except Exception as e:
@@ -131,30 +123,8 @@ def _tweet_ref_str(v: Any) -> Optional[str]:
     return s if s else None
 
 
-def _tweet_time_to_ms(value: Any) -> Optional[float]:
-    """将 tweet 的 `time` 规范为毫秒（与微博 blog time 规则一致）。"""
-    if value is None or isinstance(value, bool):
-        return None
-    if isinstance(value, (int, float)):
-        x = float(value)
-        if x <= 0:
-            return None
-        if x < 1e11:
-            return x * 1000.0
-        return x
-    if isinstance(value, str):
-        s = value.strip()
-        if not s:
-            return None
-        try:
-            return _tweet_time_to_ms(float(s))
-        except ValueError:
-            return None
-    return None
-
-
 def _histogram_repost_times_ms(times_ms: List[float]) -> Tuple[List[float], List[int], str]:
-    """在真实时间跨度上等宽分箱（与微博 Repost Volume Real Time 一致）。"""
+    """Equal-width bins in real-time span."""
     if not times_ms:
         return [], [], ""
     lo, hi = min(times_ms), max(times_ms)
@@ -193,7 +163,7 @@ def _is_original_tweet_obj(tw: Dict[str, Any]) -> bool:
 
 
 def _immediate_parent_tweet_id(tw: Dict[str, Any]) -> Optional[str]:
-    """向上一跳：优先 retweet → quote → reply（与溯源顺序一致）。"""
+    """Immediate parent tweet id: prioritize retweet → quote → reply."""
     for key in ("retweeted_tweet_id", "quoted_tweet_id", "replied_tweet_id", "replyed_tweet_id"):
         s = _tweet_ref_str(tw.get(key))
         if s:
@@ -202,7 +172,7 @@ def _immediate_parent_tweet_id(tw: Dict[str, Any]) -> Optional[str]:
 
 
 def _is_user_propagation_entry(tweet_id: str, tw: Dict[str, Any]) -> bool:
-    """非原创传播帖（任一类父引用存在且非自指）。"""
+    """Non-original propagation tweet."""
     pid = _immediate_parent_tweet_id(tw)
     if not pid:
         return False
@@ -215,10 +185,7 @@ def _resolve_to_env_seed_root(
     seed_ids: Set[str],
     max_hops: int = 512,
 ) -> Optional[str]:
-    """
-    沿 retweet / quote / reply 父链向上追溯，直到落在 env_data 初始种子 id（seed_root_tweet_ids）上。
-    无法到达任一种子则返回 None。
-    """
+    """Trace up the retweet / quote / reply parent chain until reaching an env seed id (seed_root_tweet_ids)."""
     cur = str(tweet_id).strip()
     if not cur:
         return None
@@ -244,8 +211,8 @@ def _hop_depth_edges_to_env_seed(
     max_hops: int = 512,
 ) -> Optional[int]:
     """
-    根推文为第 0 跳：从当前帖沿父链（retweet → quote → reply）向上走到某一 env 种子根所需的**边数**，
-    即该传播帖的 hop_k 中的 k。无法到达任一种子则返回 None。
+    Root tweet is 0-hop: the number of edges required to reach an env seed root from the current tweet along the parent chain (retweet → quote → reply).
+    Return None if cannot reach any seed.
     """
     if not seed_ids:
         return None
@@ -267,19 +234,13 @@ def _hop_depth_edges_to_env_seed(
     return None
 
 
-def calculate_repost_hop_depth_over_time(data: Dict[str, Any]) -> Any:
-    """
-    与微博 Repost Hop Depth Over Time 对齐：按「跳数」统计 content_pool 中传播类帖子的条数。
-
-    跳数定义：从当前帖沿 retweeted_tweet_id / quoted_tweet_id / replied_tweet_id（及 replyed_tweet_id）
-    逐跳向上，直到落在 seed_root_tweet_ids 中的根推；根为第 0 跳，边数 k≥1 计入 hop_k。
-    仅统计可归因到 env 种子的传播帖；无法溯源到种子的条目不计入。
-    """
+def calculate_diffusion_hop_depth_over_time(data: Dict[str, Any]) -> Any:
+    """Count the number of propagation tweets in content_pool by hop depth."""
     default: Dict[str, Any] = {"hop_1": 0.0, "hop_2": 0.0, "hop_3": 0.0}
     try:
         if not data or not isinstance(data, dict):
             log_metric_error(
-                "repost_hop_depth_over_time",
+                "diffusion_hop_depth_over_time",
                 ValueError("invalid data"),
                 {"data": data},
             )
@@ -288,7 +249,7 @@ def calculate_repost_hop_depth_over_time(data: Dict[str, Any]) -> Any:
         content_pool = safe_get(data, "content_pool", {})
         if not isinstance(content_pool, dict):
             log_metric_error(
-                "repost_hop_depth_over_time",
+                "diffusion_hop_depth_over_time",
                 ValueError("content_pool is not a dict"),
                 {"content_pool_type": type(content_pool)},
             )
@@ -322,23 +283,15 @@ def calculate_repost_hop_depth_over_time(data: Dict[str, Any]) -> Any:
         return out
     except Exception as e:
         log_metric_error(
-            "repost_hop_depth_over_time",
+            "diffusion_hop_depth_over_time",
             e,
             {"data_keys": list(data.keys()) if isinstance(data, dict) else None},
         )
         return default
 
 
-def calculate_repost_volume_realtime(data: Dict[str, Any]) -> Any:
-    """
-    与微博 Repost Volume Real Time 同一契约（_viz_kind=repost_realtime）：
-
-    每条传播类推文用其 `time`（毫秒）作为事件时刻；排序后：
-    - 监控上子图 1：按时间累计传播条数（总量随真实时间变化）；
-    - 子图 2：等宽时间箱内条数（单位时间内的增量 / 强度）。
-
-    传播类：retweet / quote / reply（见 `_is_user_propagation_entry`）；需有效 `time`。
-    """
+def calculate_diffusion_volume_realtime(data: Dict[str, Any]) -> Any:
+    """Calculate the number of reposts generated over time"""
     empty: Dict[str, Any] = {
         "_viz_kind": "repost_realtime",
         "timestamps_ms": [],
@@ -350,7 +303,7 @@ def calculate_repost_volume_realtime(data: Dict[str, Any]) -> Any:
     try:
         if not data or not isinstance(data, dict):
             log_metric_error(
-                "repost_volume_realtime",
+                "diffusion_volume_realtime",
                 ValueError("invalid data"),
                 {"data": data},
             )
@@ -359,7 +312,7 @@ def calculate_repost_volume_realtime(data: Dict[str, Any]) -> Any:
         content_pool = safe_get(data, "content_pool", {})
         if not isinstance(content_pool, dict):
             log_metric_error(
-                "repost_volume_realtime",
+                "diffusion_volume_realtime",
                 ValueError("content_pool is not a dict"),
                 {"content_pool_type": type(content_pool)},
             )
@@ -371,7 +324,7 @@ def calculate_repost_volume_realtime(data: Dict[str, Any]) -> Any:
                 continue
             if not _is_user_propagation_entry(str(bid), blog):
                 continue
-            ms = _tweet_time_to_ms(blog.get("time"))
+            ms = time_to_ms(blog.get("time"))
             if ms is not None:
                 times_ms.append(ms)
 
@@ -387,119 +340,165 @@ def calculate_repost_volume_realtime(data: Dict[str, Any]) -> Any:
         }
     except Exception as e:
         log_metric_error(
-            "repost_volume_realtime",
+            "diffusion_volume_realtime",
             e,
             {"data_keys": list(data.keys()) if isinstance(data, dict) else None},
         )
         return empty
 
 
-def calculate_repost_count_frequency(data: Dict[str, Any]) -> Any:
-    """
-    与微博 Repost Count Frequency 同一套导出字段（_viz_kind=repost_count_freq_bar）：
+def _parse_seed_root_tweet_ids(data: Dict[str, Any]) -> Set[str]:
+    raw_seeds = safe_get(data, "seed_root_tweet_ids", None)
+    if raw_seeds is None:
+        raw_seeds = []
+    if not isinstance(raw_seeds, (list, tuple, set)):
+        raw_seeds = []
+    return {str(x).strip() for x in raw_seeds if str(x).strip()}
 
-    1) 对每个 env 种子根推：统计 content_pool 中可归因到该根下的**传播节点总数**（不含根自身），
-       横轴为传播数、纵轴为具有该传播数的根推条数。
-    2) 对每个在池中出现过的作者：统计其发布的、且可归因到任一 env 种子的传播帖条数，
-       横轴为该条数、纵轴为具有该条数的用户数。
 
-    溯源：quoted_tweet_id / retweeted_tweet_id / replied_tweet_id（及 replyed_tweet_id）逐跳向上，
-    直至命中 seed_root_tweet_ids（由 env 在加载 env_data.json 后写入，对应初始 content_pool 的 key）。
-    """
+def _collect_seed_root_propagation_stats(
+    content_pool: Dict[str, Any],
+    seed_ids: Set[str],
+) -> Tuple[List[int], Dict[str, int], Set[str]]:
+    pool_users: Set[str] = set()
+    user_prop_totals: Dict[str, int] = defaultdict(int)
+    for bid, b in content_pool.items():
+        if not isinstance(b, dict):
+            continue
+        uid = b.get("user_id")
+        if uid is None or str(uid).strip() == "":
+            continue
+        us = str(uid).strip()
+        pool_users.add(us)
+        if _is_user_propagation_entry(str(bid), b):
+            root = _resolve_to_env_seed_root(str(bid), content_pool, seed_ids)
+            if root is not None:
+                user_prop_totals[us] += 1
+
+    roots_in_pool = [s for s in sorted(seed_ids) if s in content_pool]
+    per_root_descendants: List[int] = []
+    for r in roots_in_pool:
+        n = 0
+        for bid, b in content_pool.items():
+            if not isinstance(b, dict):
+                continue
+            if str(bid) == r:
+                continue
+            if _resolve_to_env_seed_root(str(bid), content_pool, seed_ids) == r:
+                n += 1
+        per_root_descendants.append(n)
+
+    return per_root_descendants, user_prop_totals, pool_users
+
+
+def _count_frequency_histogram(
+    counts: List[int], denominator: int
+) -> Tuple[List[int], List[float], List[int]]:
+    if denominator <= 0:
+        return [], [], []
+    h = Counter(counts)
+    max_k = max(counts) if counts else 0
+    bins = list(range(0, max_k + 1))
+    raw = [h[k] for k in bins]
+    pct = [100.0 * c / denominator for c in raw]
+    return bins, pct, raw
+
+
+def calculate_user_diffusion_count_frequency(data: Dict[str, Any]) -> Any:
+    """Distribution of seed-attributed propagation entries per user (denominator: pool authors)."""
     empty: Dict[str, Any] = {
-        "_viz_kind": "repost_count_freq_bar",
-        "root_repost_bins": [],
-        "root_repost_counts": [],
-        "n_root_tweets": 0,
-        "user_repost_bins": [],
-        "user_repost_counts": [],
+        "_viz_kind": "user_repost_count_freq_bar",
+        "repost_bins": [],
+        "frequency_pct": [],
+        "raw_counts": [],
         "n_users_in_pool": 0,
+        "user_count_basis": "content_pool_presence",
     }
+    metric_id = "user_diffusion_count_frequency"
     try:
         if not data or not isinstance(data, dict):
-            log_metric_error(
-                "repost_count_frequency",
-                ValueError("invalid data"),
-                {"data": data},
-            )
+            log_metric_error(metric_id, ValueError("invalid data"), {"data": data})
             return empty
 
         content_pool = safe_get(data, "content_pool", {})
         if not isinstance(content_pool, dict):
             log_metric_error(
-                "repost_count_frequency",
+                metric_id,
                 ValueError("content_pool is not a dict"),
                 {"content_pool_type": type(content_pool)},
             )
             return empty
 
-        raw_seeds = safe_get(data, "seed_root_tweet_ids", None)
-        if raw_seeds is None:
-            raw_seeds = []
-        if not isinstance(raw_seeds, (list, tuple, set)):
-            raw_seeds = []
-        seed_ids: Set[str] = {str(x).strip() for x in raw_seeds if str(x).strip()}
-
-        pool_users: Set[str] = set()
-        user_prop_totals: Dict[str, int] = defaultdict(int)
-        for bid, b in content_pool.items():
-            if not isinstance(b, dict):
-                continue
-            uid = b.get("user_id")
-            if uid is None or str(uid).strip() == "":
-                continue
-            us = str(uid).strip()
-            pool_users.add(us)
-            if _is_user_propagation_entry(str(bid), b):
-                root = _resolve_to_env_seed_root(str(bid), content_pool, seed_ids)
-                if root is not None:
-                    user_prop_totals[us] += 1
-
+        seed_ids = _parse_seed_root_tweet_ids(data)
+        _per_root, user_prop_totals, pool_users = _collect_seed_root_propagation_stats(
+            content_pool, seed_ids
+        )
         n_pool_users = len(pool_users)
-        roots_in_pool = [s for s in sorted(seed_ids) if s in content_pool]
-        n_roots = len(roots_in_pool)
-        per_root_descendants: List[int] = []
-        for r in roots_in_pool:
-            n = 0
-            for bid, b in content_pool.items():
-                if not isinstance(b, dict):
-                    continue
-                if str(bid) == r:
-                    continue
-                if _resolve_to_env_seed_root(str(bid), content_pool, seed_ids) == r:
-                    n += 1
-            per_root_descendants.append(n)
-
-        if n_roots == 0 and n_pool_users == 0:
+        if n_pool_users == 0:
             return empty
 
-        rh = Counter(per_root_descendants)
-        max_k_root = max(per_root_descendants) if per_root_descendants else 0
-        root_bins = list(range(0, max_k_root + 1))
-        root_counts = [rh[k] for k in root_bins]
-
-        if n_pool_users > 0:
-            per_user = [user_prop_totals[u] for u in pool_users]
-            uh = Counter(per_user)
-            max_k_user = max(per_user) if per_user else 0
-            user_bins = list(range(0, max_k_user + 1))
-            user_counts = [uh[k] for k in user_bins]
-        else:
-            user_bins = []
-            user_counts = []
-
+        per_user_counts = [user_prop_totals.get(u, 0) for u in sorted(pool_users)]
+        bins, pct, raw = _count_frequency_histogram(per_user_counts, n_pool_users)
         return {
-            "_viz_kind": "repost_count_freq_bar",
-            "root_repost_bins": root_bins,
-            "root_repost_counts": root_counts,
-            "n_root_tweets": n_roots,
-            "user_repost_bins": user_bins,
-            "user_repost_counts": user_counts,
+            "_viz_kind": "user_repost_count_freq_bar",
+            "repost_bins": bins,
+            "frequency_pct": pct,
+            "raw_counts": raw,
             "n_users_in_pool": n_pool_users,
+            "user_count_basis": "content_pool_presence",
         }
     except Exception as e:
         log_metric_error(
-            "repost_count_frequency",
+            metric_id,
+            e,
+            {"data_keys": list(data.keys()) if isinstance(data, dict) else None},
+        )
+        return empty
+
+
+def calculate_root_diffusion_count_frequency(data: Dict[str, Any]) -> Any:
+    """Distribution of propagation nodes under each env seed root tweet."""
+    empty: Dict[str, Any] = {
+        "_viz_kind": "root_repost_count_freq_bar",
+        "repost_bins": [],
+        "frequency_pct": [],
+        "raw_counts": [],
+        "n_root_tweets": 0,
+    }
+    metric_id = "root_diffusion_count_frequency"
+    try:
+        if not data or not isinstance(data, dict):
+            log_metric_error(metric_id, ValueError("invalid data"), {"data": data})
+            return empty
+
+        content_pool = safe_get(data, "content_pool", {})
+        if not isinstance(content_pool, dict):
+            log_metric_error(
+                metric_id,
+                ValueError("content_pool is not a dict"),
+                {"content_pool_type": type(content_pool)},
+            )
+            return empty
+
+        seed_ids = _parse_seed_root_tweet_ids(data)
+        per_root_descendants, _user_totals, _pool_users = _collect_seed_root_propagation_stats(
+            content_pool, seed_ids
+        )
+        n_roots = len(per_root_descendants)
+        if n_roots == 0:
+            return empty
+
+        bins, pct, raw = _count_frequency_histogram(per_root_descendants, n_roots)
+        return {
+            "_viz_kind": "root_repost_count_freq_bar",
+            "repost_bins": bins,
+            "frequency_pct": pct,
+            "raw_counts": raw,
+            "n_root_tweets": n_roots,
+        }
+    except Exception as e:
+        log_metric_error(
+            metric_id,
             e,
             {"data_keys": list(data.keys()) if isinstance(data, dict) else None},
         )
@@ -507,15 +506,7 @@ def calculate_repost_count_frequency(data: Dict[str, Any]) -> Any:
 
 
 def calculate_user_received_propagation_frequency(data: Dict[str, Any]) -> Any:
-    """
-    用户「被直接传播」次数分布（不溯源、不沿父链向上累加）：
-
-    遍历 content_pool 中每条传播帖，仅根据其 **直接** 父 id：
-    retweeted_tweet_id、quoted_tweet_id、replied_tweet_id（及 replyed_tweet_id）在池中定位父帖，
-    将 +1 记到 **父帖作者** 上。同一子帖若同时填多类引用（极少见），则按字段分别各 +1。
-
-    横轴 k = 该用户收到的直接传播次数合计；纵轴 = 恰好为 k 次的用户数（含 k=0：池中出现过但未收到任何直接引用的作者）。
-    """
+    """Calculate the frequency of user received propagation counts"""
     empty: Dict[str, Any] = {
         "_viz_kind": "received_propagation_freq_bar",
         "user_received_bins": [],
@@ -599,19 +590,7 @@ def calculate_user_received_propagation_frequency(data: Dict[str, Any]) -> Any:
 
 
 def calculate_received_propagation_count_frequency(data: Dict[str, Any]) -> Any:
-    """
-    与 `calculate_repost_count_frequency` 同一套导出字段（_viz_kind=received_propagation_count_freq_bar），
-    双子图契约与 Repost Count Frequency 一致：
-
-    1) 根推：与 Repost Count Frequency 相同 —— 每个 env 种子根下可归因的**总节点数**（不含根自身），
-       横轴为传播数、纵轴为具有该传播数的根推条数。
-    2) 用户：对每个在池中出现过的作者，统计 **可归因到任一种子的传播帖** 中，有多少条的
-       **直接父帖**（`_immediate_parent_tweet_id`，与溯源顺序一致）由该用户发布 ——
-       即「在种子树内、一跳指向该用户帖」的被传播次数；横轴为该次数、纵轴为具有该次数的用户数（含 0）。
-
-    与「User Received Propagation Frequency」区别：本指标仅统计 **seed_root_tweet_ids** 溯源可达的
-    传播帖上的父边；与 Repost Count Frequency 用户图区别：彼处统计用户**发出**的传播帖条数，此处统计**收到**的一跳次数。
-    """
+    """    Calculate the frequency of received propagation counts"""
     empty: Dict[str, Any] = {
         "_viz_kind": "received_propagation_count_freq_bar",
         "root_repost_bins": [],
@@ -723,10 +702,7 @@ def calculate_received_propagation_count_frequency(data: Dict[str, Any]) -> Any:
 
 
 def _count_direct_by_type(content_pool: Dict[str, Any], propagation_type: str) -> float:
-    """
-    统计指定传播类型（retweet/quote/reply）的「非二级传播」条数：
-    当前 tweet 为该类型，且其父 tweet 为原创（父 tweet 的三类 ref id 均为空）。
-    """
+    """Calculate the number of non-secondary propagation tweets of a specified type (retweet/quote/reply)"""
     if not isinstance(content_pool, dict):
         return 0.0
 
@@ -758,10 +734,10 @@ def _count_direct_by_type(content_pool: Dict[str, Any], propagation_type: str) -
 
 
 def calculate_direct_retweet_generation(data: Dict[str, Any]) -> Any:
-    """统计非二级 retweet 条数（父 tweet 为原创：三类 ref id 均为空）。"""
+    """Calculate the number of non-secondary retweets"""
     try:
         if not data or not isinstance(data, dict):
-            log_metric_error("direct_retweet_generation", ValueError("无效的数据输入"), {"data": data})
+            log_metric_error("direct_retweet_generation", ValueError("Invalid data input"), {"data": data})
             return 0
         content_pool = safe_get(data, "content_pool", {})
         if count_direct_propagation_by_type is not None:
@@ -777,10 +753,10 @@ def calculate_direct_retweet_generation(data: Dict[str, Any]) -> Any:
 
 
 def calculate_direct_quote_generation(data: Dict[str, Any]) -> Any:
-    """统计非二级 quote 条数（父 tweet 为原创：三类 ref id 均为空）。"""
+    """Calculate the number of non-secondary quotes"""
     try:
         if not data or not isinstance(data, dict):
-            log_metric_error("direct_quote_generation", ValueError("无效的数据输入"), {"data": data})
+            log_metric_error("direct_quote_generation", ValueError("Invalid data input"), {"data": data})
             return 0
         content_pool = safe_get(data, "content_pool", {})
         if count_direct_propagation_by_type is not None:
@@ -796,10 +772,10 @@ def calculate_direct_quote_generation(data: Dict[str, Any]) -> Any:
 
 
 def calculate_direct_reply_generation(data: Dict[str, Any]) -> Any:
-    """统计非二级 reply 条数（父 tweet 为原创：三类 ref id 均为空）。"""
+    """Calculate the number of non-secondary replies"""
     try:
         if not data or not isinstance(data, dict):
-            log_metric_error("direct_reply_generation", ValueError("无效的数据输入"), {"data": data})
+            log_metric_error("direct_reply_generation", ValueError("Invalid data input"), {"data": data})
             return 0
         content_pool = safe_get(data, "content_pool", {})
         if count_direct_propagation_by_type is not None:
@@ -813,67 +789,9 @@ def calculate_direct_reply_generation(data: Dict[str, Any]) -> Any:
         )
         return 0
 
-def calculate_original_tweet_count(data: Dict[str, Any]) -> Any:
-    """
-    计算指标: original_tweet_count（Twitter：content_pool 中原创推文条数）
-
-    统计 retweeted_tweet_id、quoted_tweet_id、replied_tweet_id/replyed_tweet_id
-    均为空的条目数。
-    """
-    try:
-        if not data or not isinstance(data, dict):
-            log_metric_error("original_tweet_count", ValueError("无效的数据输入"), {"data": data})
-            return 0
-
-        content_pool = safe_get(data, "content_pool", {})
-        if not isinstance(content_pool, dict):
-            log_metric_error(
-                "original_tweet_count",
-                ValueError("content_pool 不是字典格式"),
-                {"content_pool_type": type(content_pool)},
-            )
-            return 0
-
-        def _is_empty_ref(v: Any) -> bool:
-            if v is None:
-                return True
-            if isinstance(v, str):
-                return (v.strip() == "")
-            return False
-
-        n = 0
-        for tw in content_pool.values():
-            if not isinstance(tw, dict):
-                continue
-            rid = tw.get("retweeted_tweet_id")
-            qid = tw.get("quoted_tweet_id")
-            repid = tw.get("replied_tweet_id")
-            repid2 = tw.get("replyed_tweet_id")
-            if _is_empty_ref(rid) and _is_empty_ref(qid) and _is_empty_ref(repid) and _is_empty_ref(repid2):
-                n += 1
-        return float(n)
-    except Exception as e:
-        log_metric_error(
-            "original_tweet_count",
-            e,
-            {"data_keys": list(data.keys()) if isinstance(data, dict) else None},
-        )
-        return 0
-
 
 def calculate_posting_root_author_repost_behavior(data: Dict[str, Any]) -> Any:
-    """
-    与微博 Root Author Self-Repost Behavior 相同契约：`{"users": [ {...}, ... ]}`。
-
-    根推文限定为 env 种子（seed_root_tweet_ids ∩ content_pool）。对每个**至少发过一条种子根推**的用户：
-    - root_post_count：其作为作者的种子根推条数；
-    - self_repost_hop_k：该用户在自己根推链路上的传播帖中，相对种子根为第 k 跳的条数（k≥1；一跳=直连根，多跳=k≥2）；
-    - self_propagation_one_hop / self_propagation_multi_hop：同上的一跳与多跳（≥2）汇总；
-    - repost_on_others_count：该用户作为根作者，在**他人根推**链路上的传播帖条数。
-
-    溯源：retweeted_tweet_id → quoted_tweet_id → replied_tweet_id / replyed_tweet_id 向上至 seed_root_tweet_ids；
-    跳数与 `calculate_repost_hop_depth_over_time` / `_hop_depth_edges_to_env_seed` 一致。
-    """
+    """Calculate the posting root author repost behavior"""
     empty: Dict[str, Any] = {"users": []}
     try:
         if not data or not isinstance(data, dict):
@@ -1014,31 +932,27 @@ def calculate_posting_root_author_repost_behavior(data: Dict[str, Any]) -> Any:
 
 # 指标函数字典，用于查找
 METRIC_FUNCTIONS = {
-    "calculate_tweet_generation": calculate_tweet_generation,
+    "calculate_diffusion_generation": calculate_diffusion_generation,
     "calculate_direct_tweet_generation": calculate_direct_tweet_generation,
     "calculate_direct_retweet_generation": calculate_direct_retweet_generation,
     "calculate_direct_quote_generation": calculate_direct_quote_generation,
     "calculate_direct_reply_generation": calculate_direct_reply_generation,
-    "calculate_original_tweet_count": calculate_original_tweet_count,
-    "calculate_repost_count_frequency": calculate_repost_count_frequency,
-    "calculate_repost_hop_depth_over_time": calculate_repost_hop_depth_over_time,
-    "calculate_repost_volume_realtime": calculate_repost_volume_realtime,
+    "calculate_user_diffusion_count_frequency": calculate_user_diffusion_count_frequency,
+    "calculate_root_diffusion_count_frequency": calculate_root_diffusion_count_frequency,
+    "calculate_diffusion_hop_depth_over_time": calculate_diffusion_hop_depth_over_time,
+    "calculate_diffusion_volume_realtime": calculate_diffusion_volume_realtime,
     "calculate_posting_root_author_repost_behavior": calculate_posting_root_author_repost_behavior,
     "calculate_user_received_propagation_frequency": calculate_user_received_propagation_frequency,
     "calculate_received_propagation_count_frequency": calculate_received_propagation_count_frequency,
 }
-if calculate_tweet_text_similarity is not None:
-    METRIC_FUNCTIONS["calculate_tweet_text_similarity"] = calculate_tweet_text_similarity
+if calculate_text_similarity is not None:
+    METRIC_FUNCTIONS["calculate_text_similarity"] = calculate_text_similarity
+if calculate_text_diversity is not None:
+    METRIC_FUNCTIONS["calculate_text_diversity"] = calculate_text_diversity
+if calculate_text_max_reference_similarity is not None:
+    METRIC_FUNCTIONS["calculate_text_max_reference_similarity"] = calculate_text_max_reference_similarity
 
 
 def get_metric_function(function_name: str) -> Optional[Callable]:
-    """
-    根据函数名获取对应的指标计算函数
-    
-    Args:
-        function_name: 函数名
-        
-    Returns:
-        指标计算函数或None
-    """
+    """Get the metric function by name"""
     return METRIC_FUNCTIONS.get(function_name)

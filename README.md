@@ -250,7 +250,7 @@ Example (`config/params_rednote_qwen25_14B.json`):
 ```json
 {
   "exposure": {
-    "social": { "probability": 1 },
+    "social": { "probability": 1, "social_feed_budget": 0 },
     "recommendation": {
       "probability": 1,
       "types": ["Interest Recommendation"],
@@ -266,17 +266,8 @@ Example (`config/params_rednote_qwen25_14B.json`):
   "user": {
     "own_note_cap_days": 7.0,
     "memory_similarity": {
-      "policy": "memory_nonempty,keyword,embedding",
-      "multi_combine": "or",
-      "keyword_enabled": true,
-      "embedding_enabled": true,
       "min_common_tokens": 2,
-      "embed_threshold": 0.65,
-      "include_historical_summary": true,
-      "embedding_config_path": "",
-      "embed_max_chars": 400,
-      "embed_max_chunks": 12,
-      "embed_chunk_agg": "mean"
+      "embed_threshold": 0.65
     },
     "freshness": {
       "stale_days": 7.0,
@@ -306,6 +297,7 @@ Example (`config/params_rednote_qwen25_14B.json`):
 | Field | Description |
 |-------|-------------|
 | `exposure.social.probability` | Probability of sending a social recommendation event when following-feed content exists |
+| `exposure.social.social_feed_budget` | Max items per round in the social following feed |
 | `exposure.recommendation.probability` | Per-algorithm-type probability of requesting algorithmic recommendations |
 | `exposure.recommendation.types` | Recommendation algorithm types requested by each user agent per round |
 | `exposure.recommendation.alpha` | Bernoulli continuation probability for recommendation feed depth |
@@ -315,19 +307,14 @@ Example (`config/params_rednote_qwen25_14B.json`):
 | `exposure.search.alpha` | Bernoulli continuation probability for search result depth |
 | `exposure.notification.attention_budget` | Max @ mentions processed per round; excess mentions are randomly subsampled |
 | `user.own_note_cap_days` | Max days to cap own-note / social-feed time lower bound; 0 disables |
-| `user.memory_similarity.policy` | Memory similarity gate policies (`memory_nonempty` / `keyword` / `embedding`, comma-separated) |
-| `user.memory_similarity.multi_combine` | Multi-policy combine: `or` (any) or `and` (all) |
-| `user.memory_similarity.keyword_enabled` / `embedding_enabled` | Enable keyword overlap / embedding similarity branches |
-| `user.memory_similarity.min_common_tokens` | Min shared tokens between topic and memory |
-| `user.memory_similarity.embed_threshold` | Cosine similarity threshold for embedding branch |
-| `user.memory_similarity.include_historical_summary` | Append `historical_summary` to memory side text |
-| `user.memory_similarity.embedding_config_path` | Embedding config path; empty uses `config/model_config.json` |
-| `user.memory_similarity.embed_max_chars` / `embed_max_chunks` / `embed_chunk_agg` | Long-text embedding chunking and aggregation |
+| `user.memory_similarity.min_common_tokens` | Memory gate: min shared tokens between topic and memory |
+| `user.memory_similarity.embed_threshold` | Memory gate: cosine similarity threshold for embedding branch |
 | `user.freshness.stale_days` | Days threshold for freshness gate staleness coaching |
 | `user.freshness.low_activity_time_module_threshold` | Optional activity ceiling for time-staleness coaching |
 | `user.activity.remap.out_min` / `out_max` | Linear remap of profile `activity_level` into `[out_min, out_max]` |
 | `user.activity.low_activity_memory_gate_threshold` | Activity ceiling for strict memory gate coaching |
-| `user.interaction_threshold.*` | Interaction budget sampling via `support` and `probs` |
+| `user.interaction_threshold.*` | Interaction budget sampling via `support` and `probs` (Twitter also has `propagation_type` / `mention_type`) |
+| `agent.general_agent_locale` | (Optional) GeneralAgent prompt locale: `zh` / `en` (Twitter defaults to `en`) |
 | `simulator.max_step` | Total simulation rounds (passed as `StartEvent.max_step`) |
 | `simulator.max_span_days` | Total simulation span in days (sum cap for per-round window lengths) |
 | `simulator.timestamp_schedule_type` | Per-round window length schedule: `power` or `sigmoid` |
@@ -335,7 +322,7 @@ Example (`config/params_rednote_qwen25_14B.json`):
 | `simulator.timestamp_sigmoid_scale` | Sigmoid schedule scale (when `schedule_type=sigmoid`) |
 | `simulator.timestamp_sigmoid_center_ratio` | Sigmoid inflection ratio (0–1) |
 
-Profile field `limit` and internal caps (recommendation ≤ 15, search ≤ 50) are fixed in code, not in params.
+Profile field `limit` and internal caps (recommendation ≤ 15, search ≤ 50) are fixed in code, not in params. Advanced `memory_similarity` keys (`policy`, `multi_combine`, chunking, etc.) fall back to code defaults in each env's `user_agent_gates.py` and usually need not appear in params.
 
 ### Models (`config/model_config.json`)
 

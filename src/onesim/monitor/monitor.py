@@ -27,7 +27,13 @@ from .metric import (
 
 from loguru import logger
 
-from .utils import create_line_chart_option, create_pie_chart_option, create_bar_chart_option, create_time_series_chart_option
+from .utils import (
+    create_line_chart_option,
+    create_pie_chart_option,
+    create_bar_chart_option,
+    create_time_series_chart_option,
+    summarize_metric_result_for_log,
+)
 
 
 class DataCollector:
@@ -243,7 +249,7 @@ class MetricProcessor:
             
         elif viz_type == "pie":
             # 饼图处理 - Expects dict {category: value} or list [(cat, val), ...]
-            # calculate_comment_source_mix 等返回 {"total_comments", "counts", "ratios"}，须用 counts 画扇区
+            # 饼图：若结果为 {"total_comments", "counts", "ratios"}，用 counts 画扇区
             try:
                 series_data = []
                 if isinstance(raw_result, dict):
@@ -698,14 +704,15 @@ class MonitorManager:
             data = await self.collector.collect_for_metric(env, metric_def)
             # 计算指标值
             raw_result = self.processor.calculate(metric_def, data)
-            logger.info(raw_result)
+            logger.info(summarize_metric_result_for_log(raw_result))
             if raw_result is None:
                 return
 
             # 发帖用户行为 / 根帖作者自转发：每次指标更新追加一行 JSONL（含 env.current_step）
-            if metric_name == "Posting User Comment Behavior" and isinstance(
-                raw_result, dict
-            ):
+            if metric_name in (
+                "Posting User Diffusion Behavior",
+                "Posting User Comment Behavior",
+            ) and isinstance(raw_result, dict):
                 self._append_posting_user_behavior_snapshot(env, raw_result)
             if metric_name == "Root Author Self-Repost Behavior" and isinstance(
                 raw_result, dict
@@ -758,15 +765,15 @@ class MonitorManager:
                 logger.error(f"refresh_all_metrics: 更新 {metric_name} 失败: {e}")
 
     def _append_posting_user_behavior_snapshot(self, env: Any, raw_result: Dict[str, Any]) -> None:
-        """将发帖用户行为列表追加到 metrics_save_dir/posting_user_comment_behavior/snapshots.jsonl。"""
+        """Append posting-user diffusion snapshots to metrics_save_dir/posting_user_diffusion_behavior/snapshots.jsonl."""
         users = raw_result.get("users")
         if not isinstance(users, list):
             return
         mdir = getattr(env, "metrics_save_dir", None) if env is not None else None
         if not mdir:
-            logger.debug("metrics_save_dir 未设置，跳过 posting_user_comment_behavior JSONL 写入")
+            logger.debug("metrics_save_dir unset; skip posting_user_diffusion_behavior JSONL write")
             return
-        sub = os.path.join(mdir, "posting_user_comment_behavior")
+        sub = os.path.join(mdir, "posting_user_diffusion_behavior")
         try:
             os.makedirs(sub, exist_ok=True)
             step = getattr(env, "current_step", None)
@@ -779,7 +786,7 @@ class MonitorManager:
             with open(path, "a", encoding="utf-8") as af:
                 af.write(json.dumps(record, ensure_ascii=False) + "\n")
         except Exception as e:
-            logger.warning(f"写入 posting_user_comment_behavior 快照失败: {e}")
+            logger.warning(f"Failed to write posting_user_diffusion_behavior snapshot: {e}")
 
     def _append_root_author_self_repost_snapshot(self, env: Any, raw_result: Dict[str, Any]) -> None:
         """根作者在自己链路上的各跳自转发，追加到 root_author_self_repost_behavior/snapshots.jsonl。"""
@@ -839,7 +846,7 @@ class MonitorManager:
 
     @staticmethod
     def _write_posting_user_behavior_csv(path: str, raw: Dict[str, Any]) -> None:
-        """将 calculate_posting_user_comment_behavior 的 users 列表写成表格 CSV（UTF-8 BOM，便于 Excel）。"""
+        """Write calculate_posting_user_diffusion_behavior users table to CSV (UTF-8 BOM for Excel)."""
         users = raw.get("users")
         if not isinstance(users, list):
             users = []
@@ -1497,6 +1504,105 @@ class MonitorManager:
             "No notes in content pool",
         )
 
+    def _save_single_comment_count_frequency(
+        self,
+        raw: Dict[str, Any],
+        metric_dir: str,
+        metric_name: str,
+        round_info: str,
+        timestamp: str,
+    ) -> None:
+        """Export one comment-count frequency line chart (user or note dimension)."""
+        viz = raw.get("_viz_kind")
+        base = f"{metric_name}{round_info}_{timestamp}"
+        bins = list(raw.get("repost_bins") or raw.get("comment_bins") or [])
+        pct = list(raw.get("frequency_pct") or [])
+
+        if viz == "user_comment_count_freq_bar":
+            n = int(raw.get("n_users_in_pool") or 0)
+            subtitle = (
+                f"% of users in pool (N={n}; note authors union commenters) "
+                "— exact comment count per user"
+            )
+            xlabel = "Comments per user (0 = none)"
+            ylabel = "Frequency (% of users in pool)"
+            color = "tab:blue"
+            empty_msg = "No users in content pool (no author/commenter user_id)"
+            suffix = "commenting_users"
+        elif viz == "note_comment_count_freq_bar":
+            n = int(raw.get("n_notes") or 0)
+            subtitle = f"% of all notes (N={n}) — exact comment count under each note"
+            xlabel = "Comments under note"
+            ylabel = "Frequency (% of all notes)"
+            color = "tab:orange"
+            empty_msg = "No notes in content pool"
+            suffix = "notes"
+        elif viz == "user_repost_count_freq_bar":
+            n = int(raw.get("n_users_in_pool") or 0)
+            subtitle = (
+                f"% of users in pool (N={n}; basis={raw.get('user_count_basis', 'content_pool')}) "
+                "— exact repost count per user"
+            )
+            xlabel = "Reposts per user (0 = none)"
+            ylabel = "Frequency (% of users in pool)"
+            color = "tab:blue"
+            empty_msg = "No users in content pool"
+            suffix = "reposting_users"
+        elif viz == "root_repost_count_freq_bar":
+            n = int(raw.get("n_root_tweets") or 0)
+            subtitle = f"% of root blogs (N={n}) — repost nodes under each root"
+            xlabel = "Repost nodes under root blog"
+            ylabel = "Frequency (% of root blogs)"
+            color = "tab:orange"
+            empty_msg = "No root blogs in content pool"
+            suffix = "root_blogs"
+        else:
+            return
+
+        n_bins = len(bins)
+        xlabels = [
+            str(int(b)) if isinstance(b, (int, float)) and float(b) == int(b) else str(b)
+            for b in bins
+        ]
+        fig, ax = plt.subplots(figsize=(10, 6))
+        if n_bins == 0:
+            ax.text(
+                0.5,
+                0.5,
+                empty_msg,
+                ha="center",
+                va="center",
+                transform=ax.transAxes,
+            )
+        else:
+            vals = list(pct)
+            while len(vals) < n_bins:
+                vals.append(0.0)
+            vals = vals[:n_bins]
+            xs = list(range(n_bins))
+            ax.plot(
+                xs,
+                vals,
+                color=color,
+                linestyle="-",
+                linewidth=1.8,
+                marker="o",
+                markersize=6,
+                markeredgecolor="white",
+                markeredgewidth=0.6,
+            )
+            ax.set_xticks(xs)
+            ax.set_xticklabels(xlabels)
+            ax.set_ylim(bottom=0)
+        ax.set_xlabel(xlabel, fontsize=11)
+        ax.set_ylabel(ylabel, fontsize=11)
+        ax.set_title(f"{metric_name}\n{subtitle}", fontsize=11, fontweight="bold")
+        ax.grid(True, linestyle="--", alpha=0.5)
+        plt.tight_layout()
+        out = os.path.join(metric_dir, f"{base}_{suffix}.png")
+        fig.savefig(out, dpi=300, bbox_inches="tight")
+        plt.close(fig)
+
     def _save_repost_count_frequency_pair(
         self,
         raw: Dict[str, Any],
@@ -1671,6 +1777,48 @@ class MonitorManager:
         fig.subplots_adjust(left=0.10, right=0.98, top=0.88, bottom=0.14, hspace=0.22)
         return fig
 
+    def _figure_comment_diversity_timeseries(
+        self,
+        data: Dict[str, Any],
+        metric_name: str,
+        metric_def: Any,
+    ):
+        """Multi-series diversity metrics on one chart (TTR, Distinct-2/3, 1-Self-BLEU, Div_sem)."""
+        series = data.get("series") or {}
+        timestamps = data.get("xAxis") or []
+        keys = [
+            ("ttr", "TTR", "tab:blue"),
+            ("distinct_2", "Distinct-2", "tab:orange"),
+            ("distinct_3", "Distinct-3", "tab:green"),
+            ("one_minus_self_bleu", "1-Self-BLEU", "tab:red"),
+            ("div_sem", "Div_sem", "tab:purple"),
+        ]
+        n = len(timestamps)
+        fig, ax = plt.subplots(figsize=(12, 6))
+        if n == 0:
+            ax.text(0.5, 0.5, "No time series data", ha="center", va="center", transform=ax.transAxes)
+            ax.set_title(metric_name)
+            plt.tight_layout()
+            return fig
+
+        xs = list(range(n))
+        for key, label, color in keys:
+            vals = list(series.get(key) or [])
+            while len(vals) < n:
+                vals.append(None)
+            vals = vals[:n]
+            if not any(v is not None for v in vals):
+                continue
+            ax.plot(xs, vals, marker="o", linestyle="-", markersize=4, color=color, label=label)
+
+        ax.set_xlabel("Sample index", fontsize=11)
+        ax.set_ylabel("Diversity score", fontsize=11)
+        ax.grid(True, linestyle="--", alpha=0.6)
+        ax.legend(loc="best", fontsize=9)
+        fig.suptitle(metric_name, fontsize=12, fontweight="bold", y=0.98)
+        plt.tight_layout()
+        return fig
+
     def _save_repost_hop_depth_timeseries_figures(
         self,
         data: Dict[str, Any],
@@ -1810,13 +1958,12 @@ class MonitorManager:
                 # Create metric-specific directory
                 metric_dir = os.path.join(scene_metrics_dir, metric_name)
                 os.makedirs(metric_dir, exist_ok=True)
-                
-                # 使用统一的数据获取接口，指定matplotlib格式
                 data = self.get_metric_data(metric_name, format="matplotlib")
                 
                 line_scalar_plotted = False
                 line_wrote_distribution_snapshots = False
                 save_comment_count_freq_pair = False
+                save_single_comment_count_freq = False
                 save_repost_count_freq_pair = False
                 save_repost_hop_depth_figures = False
                 if (
@@ -1842,6 +1989,17 @@ class MonitorManager:
                 elif (
                     viz_type == "line"
                     and isinstance(result.raw_data, dict)
+                    and result.raw_data.get("_viz_kind")
+                    in ("user_comment_count_freq_bar", "note_comment_count_freq_bar",
+                        "user_repost_count_freq_bar", "root_repost_count_freq_bar")
+                ):
+                    plt.close(fig)
+                    fig = None
+                    save_single_comment_count_freq = True
+                    line_scalar_plotted = True
+                elif (
+                    viz_type == "line"
+                    and isinstance(result.raw_data, dict)
                     and result.raw_data.get("_viz_kind") == "comment_count_freq_bar"
                 ):
                     plt.close(fig)
@@ -1860,7 +2018,9 @@ class MonitorManager:
                     line_scalar_plotted = True
                 elif (
                     viz_type == "line"
-                    and metric_name == "Comment Top-Level vs Reply Over Time"
+                    and metric_name in (
+                        "Diffusion Top-Level vs Reply Over Time",
+                    )
                     and data
                     and isinstance(data.get("series"), dict)
                     and "top_level_comments" in data["series"]
@@ -1873,7 +2033,21 @@ class MonitorManager:
                     line_scalar_plotted = True
                 elif (
                     viz_type == "line"
-                    and metric_name == "Repost Hop Depth Over Time"
+                    and metric_name in ("Comment Diversity", "Text Diversity")
+                    and data
+                    and isinstance(data.get("series"), dict)
+                    and "ttr" in data["series"]
+                ):
+                    plt.close(fig)
+                    fig = self._figure_comment_diversity_timeseries(
+                        data, metric_name, metric_def
+                    )
+                    line_scalar_plotted = True
+                elif (
+                    viz_type == "line"
+                    and metric_name in (
+                        "Diffusion Hop Depth Over Time",
+                    )
                     and data
                     and isinstance(data.get("series"), dict)
                     and any(
@@ -1886,9 +2060,7 @@ class MonitorManager:
                     save_repost_hop_depth_figures = True
                     line_scalar_plotted = True
                 elif viz_type == "line":
-                    # 处理折线图
                     if data and "series" in data and isinstance(data["series"], dict):
-                        # 分布快照：每个时间点、每个 series 一条升序序列，单独导出 PNG；多 series 文件名带 series 名
                         snap_dir = os.path.join(metric_dir, "distribution_snapshots")
                         timestamp_snap = datetime.now().strftime('%Y%m%d_%H%M%S')
                         round_info_snap = f"_round{round_num}" if round_num is not None else ""
@@ -2104,14 +2276,12 @@ class MonitorManager:
                                 line_scalar_plotted = True
 
                 elif viz_type == "bar":
-                    # 处理柱状图
                     if data and "xAxis" in data and "series" in data:
                         categories = data["xAxis"]
                         
                         if isinstance(data["series"], dict):
-                            # 多series条形图
                             series_count = len(data["series"])
-                            width = 0.8 / series_count  # 每个条的宽度
+                            width = 0.8 / series_count  
                             
                             for i, (series_name, values) in enumerate(data["series"].items()):
                                 positions = [j + (i - series_count/2 + 0.5) * width for j in range(len(categories))]
@@ -2120,7 +2290,6 @@ class MonitorManager:
                             plt.xticks(range(len(categories)), categories, rotation=45)
                             MonitorManager._plt_legend_if_labeled()
                         else:
-                            # 兼容旧格式单series
                             plt.bar(categories, data["series"])
                         
                         plt.title(f'{metric_name} Distribution', fontsize=14, fontweight='bold')
@@ -2129,14 +2298,11 @@ class MonitorManager:
                         plt.tight_layout()
                         
                 elif viz_type == "pie":
-                    # 处理饼图
                     if data:
                         if "categories" in data and "values" in data:
-                            # 处理单系列饼图
                             plt.pie(data["values"], labels=data["categories"], autopct='%1.1f%%', 
                                   shadow=True, startangle=90)
                         elif "series" in data and isinstance(data["series"], list):
-                            # 处理新格式饼图数据
                             values = [item["value"] for item in data["series"]]
                             labels = [item["name"] for item in data["series"]]
                             plt.pie(values, labels=labels, autopct='%1.1f%%', 
@@ -2145,7 +2311,6 @@ class MonitorManager:
                         plt.title(f'{metric_name} Distribution', fontsize=14, fontweight='bold')
                         plt.axis('equal')
                 
-                # 保存图表，包含时间戳和回合数（仅分布快照、未在主图上画标量折线时跳过主 PNG，避免空白图）
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                 round_info = f"_round{round_num}" if round_num is not None else ""
                 filename = f"{metric_name}{round_info}_{timestamp}.png"
@@ -2157,7 +2322,9 @@ class MonitorManager:
                     )
                     or (
                         viz_type == "line"
-                        and metric_name == "Posting User Comment Behavior"
+                        and metric_name in (
+                            "Posting User Diffusion Behavior",
+                        )
                         and not line_scalar_plotted
                     )
                     or (
@@ -2166,11 +2333,20 @@ class MonitorManager:
                         and not line_scalar_plotted
                     )
                     or save_comment_count_freq_pair
+                    or save_single_comment_count_freq
                     or save_repost_count_freq_pair
                     or save_repost_hop_depth_figures
                 )
                 if save_comment_count_freq_pair and isinstance(result.raw_data, dict):
                     self._save_comment_count_frequency_pair(
+                        result.raw_data,
+                        metric_dir,
+                        metric_name,
+                        round_info,
+                        timestamp,
+                    )
+                elif save_single_comment_count_freq and isinstance(result.raw_data, dict):
+                    self._save_single_comment_count_frequency(
                         result.raw_data,
                         metric_dir,
                         metric_name,
@@ -2196,9 +2372,10 @@ class MonitorManager:
                 elif not skip_main_png:
                     plt.savefig(os.path.join(metric_dir, filename), dpi=300, bbox_inches='tight')
                 
-                # 保存原始数据：Posting User Comment Behavior / Root Author Self-Repost 为 CSV，其余多为 JSON
                 if (
-                    metric_name == "Posting User Comment Behavior"
+                    metric_name in (
+                        "Posting User Diffusion Behavior",
+                    )
                     and isinstance(result.raw_data, dict)
                 ):
                     data_filename = f"{metric_name}{round_info}_{timestamp}.csv"
@@ -2219,13 +2396,26 @@ class MonitorManager:
                     data_filename = f"{metric_name}{round_info}_{timestamp}.json"
                     with open(os.path.join(metric_dir, data_filename), "w") as f:
                         if (
-                            metric_name == "Comment Volume Real Time"
+                            metric_name in (
+                                "Diffusion Volume Real Time",
+                            )
                             and isinstance(result.raw_data, dict)
                         ):
                             json.dump(result.raw_data, f, ensure_ascii=False, indent=2)
                         elif (
                             isinstance(result.raw_data, dict)
-                            and result.raw_data.get("_viz_kind") == "comment_count_freq_bar"
+                            and result.raw_data.get("_viz_kind")
+                            in (
+                                "comment_count_freq_bar",
+                                "user_comment_count_freq_bar",
+                                "note_comment_count_freq_bar",
+                                "user_repost_count_freq_bar",
+                                "root_repost_count_freq_bar",
+                                "comment_diversity",
+                                "repost_diversity",
+                                "comment_max_reference_similarity",
+                                "repost_max_reference_similarity",
+                            )
                         ):
                             json.dump(result.raw_data, f, ensure_ascii=False, indent=2)
                         else:
@@ -2239,45 +2429,19 @@ class MonitorManager:
                     plt.close(fig)
                 
     def export_metrics_as_images(self, save_dir: str, round_num: Optional[int] = None) -> None:
-        """
-        将所有指标保存为本地图片文件（综合接口）
-        
-        Args:
-            save_dir (str): 图片保存目录
-            round_num (Optional[int]): 当前回合数（可选）
-        """
+        """Save all metrics as local image files."""
         try:
-            # 1. 创建保存目录
+            # Create save directory
             os.makedirs(save_dir, exist_ok=True)
-            
-            # 2. 导出常规指标图表（使用现有方法）
-            # 收集常规指标数据
+
+            # Export general metric charts
             general_metrics = self.collect_metrics(self.env.data if hasattr(self, 'env') and self.env else {}, round_num)
-            # 将已注册的 scene 折线指标合并进 general_metrics，以便写入 metrics_*.json
-            # for metric_name, ts_data in self.time_series_data.items():
-            #     metric_def = self.metrics.get(metric_name)
-            #     if not metric_def or metric_def.visualization_type != "line":
-            #         continue
-            #     key = metric_def.calculation_function
-            #     # 键必须可 JSON 序列化：若为可调用对象则用其 __name__
-            #     if callable(key):
-            #         key = getattr(key, "__name__", None) or metric_name
-            #     if not key or key in general_metrics:
-            #         continue
-            #     series = getattr(ts_data, "series_data", None) or {}
-            #     if "default" in series:
-            #         values = list(series["default"])
-            #     elif series:
-            #         values = list(next(iter(series.values())))
-            #     else:
-            #         values = []
-            #     general_metrics[key] = values
 
             general_dir = os.path.join(save_dir, 'general')
             self.plot_metrics(general_metrics, general_dir, round_num)
             logger.info(f"Saved general metrics plots to {general_dir}")
-            
-            # 3. 导出注册的特定指标图表
+
+            # Export registered scene-specific metric charts
             self.plot_registered_metrics(save_dir, round_num)
             logger.info(f"Saved registered metrics plots to {save_dir}")
         finally:
@@ -2285,16 +2449,7 @@ class MonitorManager:
             plt.close('all')
 
     def _normalize_line_data(self, raw_result: Any) -> Any:
-        """
-        规范化折线图数据格式，确保存储的是一致格式
-        
-        Args:
-            raw_result: 原始数据
-            
-        Returns:
-            规范化后的数据
-        """
-        # 评论真实时间可视化：完整结构在 raw_data，时间序列仅占位避免破坏存储
+        """Normalize line chart data format."""
         if isinstance(raw_result, dict) and raw_result.get("_viz_kind") == "comment_realtime":
             n = raw_result.get("n_comments", 0)
             try:
@@ -2303,8 +2458,42 @@ class MonitorManager:
                 nv = 0.0
             return {"_comment_realtime_placeholder": nv}
 
-        if isinstance(raw_result, dict) and raw_result.get("_viz_kind") == "comment_count_freq_bar":
+        if isinstance(raw_result, dict) and raw_result.get("_viz_kind") in (
+            "comment_count_freq_bar",
+            "user_comment_count_freq_bar",
+            "note_comment_count_freq_bar",
+            "user_repost_count_freq_bar",
+            "root_repost_count_freq_bar",
+        ):
             return {"_comment_count_freq_placeholder": 0.0}
+
+        if isinstance(raw_result, dict) and raw_result.get("_viz_kind") in (
+            "comment_diversity",
+            "repost_diversity",
+        ):
+            out: Dict[str, float] = {}
+            for k in (
+                "ttr",
+                "distinct_2",
+                "distinct_3",
+                "one_minus_self_bleu",
+                "div_sem",
+                "n_comments",
+                "n_reposts",
+            ):
+                v = raw_result.get(k)
+                if isinstance(v, (int, float)) and v is not None:
+                    out[k] = float(v)
+            return out if out else {"_comment_diversity_placeholder": 0.0}
+
+        if isinstance(raw_result, dict) and raw_result.get("_viz_kind") in (
+            "comment_max_reference_similarity",
+            "repost_max_reference_similarity",
+        ):
+            v = raw_result.get("mean_max_cosine_similarity")
+            if isinstance(v, (int, float)):
+                return {"mean_max_cosine_similarity": float(v)}
+            return {"_comment_max_ref_sim_placeholder": 0.0}
 
         if isinstance(raw_result, dict) and raw_result.get("_viz_kind") == "repost_realtime":
             n = raw_result.get("n_reposts", 0)
@@ -2320,7 +2509,6 @@ class MonitorManager:
         ):
             return {"_repost_count_freq_placeholder": 0.0}
 
-        # 发帖用户行为摘要：{"users": [...]}，不参与数值折线，仅占位
         if isinstance(raw_result, dict) and "users" in raw_result:
             users = raw_result.get("users")
             if isinstance(users, list) and (
@@ -2332,7 +2520,6 @@ class MonitorManager:
             ):
                 return {"_posting_behavior_placeholder": 0.0}
 
-        # 「分布快照」：字典的每个键对应一条升序序列（每 timestep 追加一整段 list），勿拆成 series_0/1/…
         if isinstance(raw_result, dict) and raw_result:
             if all(
                 isinstance(v, list) and all(isinstance(x, (int, float)) for x in v)
@@ -2340,56 +2527,35 @@ class MonitorManager:
             ):
                 return {k: [int(x) for x in v] for k, v in raw_result.items()}
 
-        # 如果已经是字典形式，适合多series，直接返回
         if isinstance(raw_result, dict):
-            # 检查字典值是否全为数值类型
             for key, value in raw_result.items():
                 if not isinstance(value, (int, float, bool)) and value is not None:
-                    # 如果包含非数值，可能是嵌套结构，尝试扁平化
                     try:
                         return self._flatten_nested_dict(raw_result)
                     except:
-                        # 无法扁平化，返回原字典
                         pass
             return raw_result
             
-        # 如果是简单类型，转换为默认series
         if isinstance(raw_result, (int, float, bool, str)) or raw_result is None:
             return {"default": raw_result}
             
-        # 如果是列表或其他复杂类型，尝试转换为字典
         try:
             if isinstance(raw_result, (list, tuple)) and len(raw_result) > 0:
-                # 如果是键值对列表，转换为字典
                 if all(isinstance(item, (list, tuple)) and len(item) == 2 for item in raw_result):
                     return {str(item[0]): item[1] for item in raw_result}
-                    
-                # 如果是单值列表，使用索引作为键
                 return {f"series_{i}": val for i, val in enumerate(raw_result) if val is not None}
         except Exception:
             pass
             
-        # 如果无法规范化，转换为默认series
         return {"default": raw_result}
         
     def _flatten_nested_dict(self, nested_dict: Dict, prefix: str = "") -> Dict:
-        """
-        将嵌套字典扁平化为一级字典
-        
-        Args:
-            nested_dict: 嵌套字典
-            prefix: 键前缀
-            
-        Returns:
-            扁平化后的字典
-        """
+        """Flatten nested dictionary into a single level dictionary."""
         result = {}
         for key, value in nested_dict.items():
             new_key = f"{prefix}.{key}" if prefix else key
             if isinstance(value, dict):
-                # 递归处理嵌套字典
                 result.update(self._flatten_nested_dict(value, new_key))
             elif isinstance(value, (int, float, bool)) or value is None:
-                # 只保留数值类型
                 result[new_key] = value
         return result

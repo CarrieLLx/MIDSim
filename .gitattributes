@@ -1,3 +1,4 @@
 src/envs/midsim_twitter/profile/data/UserAgent.json filter=lfs diff=lfs merge=lfs -text
 src/envs/midsim_weibo/profile/data/UserAgent.json filter=lfs diff=lfs merge=lfs -text
 datasets/*/UserAgent.json filter=lfs diff=lfs merge=lfs -text
+datasets/**/historical_notes.csv filter=lfs diff=lfs merge=lfs -text

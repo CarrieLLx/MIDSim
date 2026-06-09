@@ -31,9 +31,9 @@ except ImportError:
     )
 
 try:
-    from .comment_text_utils import strip_at_mentions
+    from ..utils import format_real_text
 except ImportError:
-    from comment_text_utils import strip_at_mentions
+    from utils import format_real_text
 
 
 @dataclass(frozen=True)
@@ -122,7 +122,7 @@ def collect_comment_records(
             raw_text = (comment.get("content") or "").strip()
             if not raw_text:
                 continue
-            text = strip_at_mentions(raw_text) if strip_mentions else raw_text
+            text = format_real_text(raw_text) if strip_mentions else raw_text
             if not text:
                 continue
             emb = None
@@ -235,11 +235,10 @@ def _monitor_utils():
     return safe_get, log_metric_error
 
 
-def default_reference_comments_csv_path() -> str:
+def default_reference_csv_path() -> str:
     root = find_project_root()
     candidates = [
         os.path.join(root, "datasets", "rednote", "comments.csv"),
-        os.path.join(root, "datasets", "openreview", "comments.csv"),
     ]
     for p in candidates:
         if os.path.isfile(p):
@@ -254,7 +253,7 @@ def load_reference_comments_by_note(csv_path: str) -> Dict[str, List[str]]:
     with open(csv_path, "r", encoding="utf-8-sig") as f:
         for row in csv.DictReader(f):
             note_id = str(row.get("note_id") or "").strip()
-            text = strip_at_mentions(row.get("content") or "")
+            text = format_real_text(row.get("content") or "")
             if note_id and text:
                 by_note[note_id].append(text)
     return dict(by_note)
@@ -317,10 +316,10 @@ def compute_max_reference_cosine_mean(
     return mean_score, meta
 
 
-def calculate_comment_max_reference_similarity(data: Dict[str, Any]) -> Any:
+def calculate_text_max_reference_similarity(data: Dict[str, Any]) -> Any:
     """Max-reference cosine: each reference comment vs same-note simulated comments, then mean."""
     safe_get, log_metric_error = _monitor_utils()
-    metric_id = "comment_max_reference_similarity"
+    metric_id = "text_max_reference_similarity"
     try:
         if not data or not isinstance(data, dict):
             log_metric_error(metric_id, ValueError("Invalid data input"), {"data": data})
@@ -332,9 +331,8 @@ def calculate_comment_max_reference_similarity(data: Dict[str, Any]) -> Any:
             return None
 
         csv_path = (
-            safe_get(data, "reference_comments_csv_path", None)
-            or safe_get(data, "reference_csv_path", None)
-            or default_reference_comments_csv_path()
+            safe_get(data, "reference_csv_path", None)
+            or default_reference_csv_path()
         )
         reference_by_note = load_reference_comments_by_note(str(csv_path))
         if not reference_by_note:
@@ -431,10 +429,10 @@ def compute_comment_note_cosine_scores(
     return results
 
 
-def calculate_comment_similarity(data: Dict[str, Any]) -> Any:
+def calculate_text_similarity(data: Dict[str, Any]) -> Any:
     """Mean cosine similarity between comment embeddings and precomputed note embeddings."""
     safe_get, log_metric_error = _monitor_utils()
-    metric_id = "comment_similarity"
+    metric_id = "text_similarity"
     try:
         if not data or not isinstance(data, dict):
             log_metric_error(metric_id, ValueError("Invalid data input"), {"data": data})

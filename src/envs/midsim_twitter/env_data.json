@@ -4,6 +4,7 @@
   "current_notes": {},
   "mention_pool": {},
   "reference_embedding_path": "/datasets/twitter/embeddings/bge-base-zh-v1.5_embeddings.json",
+  "reference_csv_path": "datasets/twitter/reposts.csv",
   "content_pool": {
     "1994104147373903893": {
       "note_id": "1994104147373903893",

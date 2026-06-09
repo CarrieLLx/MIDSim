@@ -7,7 +7,7 @@
 
 说明：
 1) 评估的是「生成文本」与「根推语义向量」的贴合程度，不是文本两两匹配。
-2) 监控入口：`calculate_tweet_text_similarity`（由 scene_info / metrics 注册）。
+2) 监控入口：`calculate_text_similarity`（由 scene_info / metrics 注册）。
 3) Twitter：仅引用/回复链上的生成内容按根推 id 对齐；转推与纯原创跳过。
 4) 离线可传 content_pool 快照，将 output 里的 note_id 归并为根推 id。
 5) `count_content_pool_tweets_for_monitor` 供 metrics 统计「传播类」推文：原创推一律不计，转推/引用/回复计入。
@@ -582,7 +582,7 @@ def run_offline_evaluation(
 
 
 # ---------- 在线评估（监控指标）----------
-def calculate_tweet_text_similarity(data: Dict[str, Any]) -> Any:
+def calculate_text_similarity(data: Dict[str, Any]) -> Any:
     """
     在线监控指标：生成文本 vs 参考 tweet 向量的平均余弦相似度。
 
@@ -602,7 +602,7 @@ def calculate_tweet_text_similarity(data: Dict[str, Any]) -> Any:
                 pass
 
     if not data or not isinstance(data, dict):
-        log_metric_error("tweet_text_similarity", ValueError("无效的数据输入"), {"data": data})
+        log_metric_error("text_similarity", ValueError("无效的数据输入"), {"data": data})
         return None
 
     content_pool = safe_get(data, "content_pool", {})
@@ -621,7 +621,7 @@ def calculate_tweet_text_similarity(data: Dict[str, Any]) -> Any:
             base_url, model_name = load_embedding_config(config_path)
         else:
             log_metric_error(
-                "tweet_text_similarity",
+                "text_similarity",
                 FileNotFoundError("未找到 embedding 配置"),
                 {"data_keys": list(data.keys())},
             )
@@ -644,7 +644,7 @@ def calculate_tweet_text_similarity(data: Dict[str, Any]) -> Any:
         )
     if not os.path.isfile(tweet_embeddings_path):
         log_metric_error(
-            "tweet_text_similarity",
+            "text_similarity",
             FileNotFoundError("未找到 tweet embeddings 文件"),
             {"path": tweet_embeddings_path},
         )
@@ -666,7 +666,7 @@ def calculate_tweet_text_similarity(data: Dict[str, Any]) -> Any:
         mean_cos = sum(r["cosine_similarity"] for r in rows) / len(rows)
         return float(mean_cos)
     except Exception as e:
-        log_metric_error("tweet_text_similarity", e, {"data_keys": list(data.keys())})
+        log_metric_error("text_similarity", e, {"data_keys": list(data.keys())})
         return None
 
 
@@ -708,7 +708,7 @@ def main() -> None:
     parser.add_argument(
         "--output-table",
         default="",
-        help="离线按 tweet 聚合结果 CSV 路径（默认: 与 output_json 同目录下 tweet_text_similarity.csv）",
+        help="离线按 tweet 聚合结果 CSV 路径（默认: 与 output_json 同目录下 text_similarity.csv）",
     )
     parser.add_argument(
         "--content-pool-json",
@@ -749,7 +749,7 @@ def main() -> None:
     else:
         output_table = os.path.join(
             os.path.dirname(os.path.abspath(args.output_json)),
-            "tweet_text_similarity.csv",
+            "text_similarity.csv",
         )
 
     with open(output_table, "w", encoding="utf-8", newline="") as f:

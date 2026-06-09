@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
-"""
-多渠道信息传播模型的监控指标计算模块
-"""
 import os
 import sys
 _metrics_dir = os.path.dirname(os.path.abspath(__file__))
 if _metrics_dir not in sys.path:
     sys.path.insert(0, _metrics_dir)
 try:
-    from repost_similarity import calculate_repost_similarity
+    from embedding_metrics import (
+        calculate_text_max_reference_similarity,
+        calculate_text_similarity,
+    )
 except ImportError:
-    calculate_repost_similarity = None
+    calculate_text_similarity = None
+    calculate_text_max_reference_similarity = None
+
+try:
+    from text_diversity import calculate_text_diversity
+except ImportError:
+    calculate_text_diversity = None
 
 from typing import Dict, Any, List, Optional, Union, Callable, Set, Tuple
 from collections import Counter, defaultdict
@@ -20,34 +26,27 @@ from onesim.monitor.utils import (
     safe_avg, safe_max, safe_min, safe_count, log_metric_error
 )
 
+try:
+    from .repost_text_utils import is_chain_root_blog, resolve_root_blog_id
+except ImportError:
+    from repost_text_utils import is_chain_root_blog, resolve_root_blog_id
 
-def calculate_repost_generation(data: Dict[str, Any]) -> Any:
-    """
-    计算指标: repost_generation
-    描述: 统计随时间变化的转发相关规模，用于追踪信息传播的活跃度
-    可视化类型: line
-    更新频率: 5 秒
+try:
+    from ..utils import is_repost_of_other_blog, time_to_ms
+except ImportError:
+    from utils import is_repost_of_other_blog, time_to_ms
 
-    统计 content_pool 顶层条目中 `reposted_blog_id` 非空（strip 后非空串）的条数；
-    即视为「有父帖引用的传播类帖子」。不遍历嵌套 `reposts`。
 
-    Args:
-        data: 包含环境数据的字典，应该包含 content_pool 字段
-
-    Returns:
-        float: 上述条数
-    """
+def calculate_diffusion_generation(data: Dict[str, Any]) -> Any:
+    """Calculate the number of comments generated over time"""
     try:
-        # 验证输入数据
         if not data or not isinstance(data, dict):
-            log_metric_error("repost_generation", ValueError("无效的数据输入"), {"data": data})
+            log_metric_error("diffusion_generation", ValueError("Invalid data input"), {"data": data})
             return 0
         
-        # 获取 content_pool（字典格式，键为 blog_id）
         content_pool = safe_get(data, "content_pool", {})
-        
         if not isinstance(content_pool, dict):
-            log_metric_error("repost_generation", ValueError("content_pool 不是字典格式"), {"content_pool_type": type(content_pool)})
+            log_metric_error("diffusion_generation", ValueError("content_pool is not a dict"), {"content_pool_type": type(content_pool)})
             return 0
         
         total = 0
@@ -59,36 +58,14 @@ def calculate_repost_generation(data: Dict[str, Any]) -> Any:
                 total += 1
 
         return float(total)
-    
+
     except Exception as e:
-        log_metric_error("repost_generation", e, {"data_keys": list(data.keys()) if isinstance(data, dict) else None})
+        log_metric_error("diffusion_generation", e, {"data_keys": list(data.keys()) if isinstance(data, dict) else None})
         return 0
 
 
-def _blog_time_to_ms(value: Any) -> Optional[float]:
-    """Normalize blog `time` to milliseconds (same rules as comment timestamps)."""
-    if value is None or isinstance(value, bool):
-        return None
-    if isinstance(value, (int, float)):
-        x = float(value)
-        if x <= 0:
-            return None
-        if x < 1e11:
-            return x * 1000.0
-        return x
-    if isinstance(value, str):
-        s = value.strip()
-        if not s:
-            return None
-        try:
-            return _blog_time_to_ms(float(s))
-        except ValueError:
-            return None
-    return None
-
-
-def _histogram_repost_times_ms(times_ms: List[float]) -> Tuple[List[float], List[int], str]:
-    """Equal-width bins over real time span (same strategy as comment volume realtime)."""
+def _histogram_diffusion_times_ms(times_ms: List[float]) -> Tuple[List[float], List[int], str]:
+    """Calculate the number of reposts generated over time"""
     if not times_ms:
         return [], [], ""
     lo, hi = min(times_ms), max(times_ms)
@@ -119,7 +96,7 @@ def _histogram_repost_times_ms(times_ms: List[float]) -> Tuple[List[float], List
     return edges, counts, desc
 
 
-def calculate_repost_volume_realtime(data: Dict[str, Any]) -> Any:
+def calculate_diffusion_volume_realtime(data: Dict[str, Any]) -> Any:
     """
     Per repost entry in content_pool: use blog `time` (ms) as event time.
     Sorted timestamps, equal-width histogram → same visualization contract as Comment Volume Real Time.
@@ -135,7 +112,7 @@ def calculate_repost_volume_realtime(data: Dict[str, Any]) -> Any:
     try:
         if not data or not isinstance(data, dict):
             log_metric_error(
-                "repost_volume_realtime",
+                "diffusion_volume_realtime",
                 ValueError("invalid data"),
                 {"data": data},
             )
@@ -144,7 +121,7 @@ def calculate_repost_volume_realtime(data: Dict[str, Any]) -> Any:
         content_pool = safe_get(data, "content_pool", {})
         if not isinstance(content_pool, dict):
             log_metric_error(
-                "repost_volume_realtime",
+                "diffusion_volume_realtime",
                 ValueError("content_pool is not a dict"),
                 {"content_pool_type": type(content_pool)},
             )
@@ -154,14 +131,14 @@ def calculate_repost_volume_realtime(data: Dict[str, Any]) -> Any:
         for bid, blog in content_pool.items():
             if not isinstance(blog, dict):
                 continue
-            if not _is_user_repost_entry(str(bid), blog):
+            if not is_repost_of_other_blog(str(bid), blog):
                 continue
-            ms = _blog_time_to_ms(blog.get("time"))
+            ms = time_to_ms(blog.get("time"))
             if ms is not None:
                 times_ms.append(ms)
 
         times_ms.sort()
-        edges, counts, desc = _histogram_repost_times_ms(times_ms)
+        edges, counts, desc = _histogram_diffusion_times_ms(times_ms)
         return {
             "_viz_kind": "repost_realtime",
             "timestamps_ms": times_ms,
@@ -172,61 +149,11 @@ def calculate_repost_volume_realtime(data: Dict[str, Any]) -> Any:
         }
     except Exception as e:
         log_metric_error(
-            "repost_volume_realtime",
+            "diffusion_volume_realtime",
             e,
             {"data_keys": list(data.keys()) if isinstance(data, dict) else None},
         )
         return empty
-
-
-def _root_blog_id_for_entry(
-    blog_id: str,
-    blog: Dict[str, Any],
-    pool: Dict[str, Any],
-    cache: Dict[str, str],
-) -> str:
-    """Resolve chain root blog_id (multi-hop via reposted_path or reposted_blog_id)."""
-    if blog_id in cache:
-        return cache[blog_id]
-    path = blog.get("reposted_path")
-    if isinstance(path, list) and len(path) > 0:
-        r0 = path[0]
-        if r0 is not None and str(r0).strip() != "":
-            cache[blog_id] = str(r0).strip()
-            return cache[blog_id]
-    pid = blog.get("reposted_blog_id")
-    ps = str(pid).strip() if pid is not None else ""
-    bid = str(blog_id).strip()
-    if not ps or ps == bid:
-        cache[blog_id] = bid
-        return cache[blog_id]
-    if ps not in pool:
-        cache[blog_id] = bid
-        return cache[blog_id]
-    parent = pool[ps]
-    if not isinstance(parent, dict):
-        cache[blog_id] = bid
-        return cache[blog_id]
-    r = _root_blog_id_for_entry(ps, parent, pool, cache)
-    cache[blog_id] = r
-    return r
-
-
-def _is_original_root_blog(blog_id: str, blog: Dict[str, Any], pool: Dict[str, Any], cache: Dict[str, str]) -> bool:
-    """True if this entry is the root post of its chain (counts as one root tweet)."""
-    r = _root_blog_id_for_entry(blog_id, blog, pool, cache)
-    return str(blog_id).strip() == str(r).strip()
-
-
-def _is_user_repost_entry(blog_id: str, blog: Dict[str, Any]) -> bool:
-    """True if this blog is a repost of another blog (excludes original where reposted_blog_id == self)."""
-    pid = blog.get("reposted_blog_id")
-    if pid is None:
-        return False
-    ps = str(pid).strip()
-    if not ps:
-        return False
-    return ps != str(blog_id).strip()
 
 
 def _repost_hop_depth(
@@ -235,16 +162,11 @@ def _repost_hop_depth(
     _pool: Dict[str, Any],
     memo: Dict[str, int],
 ) -> int:
-    """
-    转发级数 hop_k：**仅**由 reposted_path 中非空 blog_id 的个数决定（k = 该数量）。
-    1 个节点 = 一级转发，2 个 = 二级，以此类推。
-    reposted_path 缺失或为空列表时，退化为 1（视为一级转发条目）。
-    根帖上的 repost_ids 不参与本指标。
-    """
+    """Calculate the hop depth of the repost chain"""
     bid = str(blog_id).strip()
     if bid in memo:
         return memo[bid]
-    if not _is_user_repost_entry(bid, blog):
+    if not is_repost_of_other_blog(bid, blog):
         memo[bid] = 0
         return 0
 
@@ -259,17 +181,13 @@ def _repost_hop_depth(
     return path_len
 
 
-def calculate_repost_hop_depth_over_time(data: Dict[str, Any]) -> Any:
-    """
-    At each monitor sample: count repost entries in content_pool by hop depth (1,2,3,...).
-    级数由 _repost_hop_depth 定义：仅 reposted_path 非空节点个数（见该函数说明）。
-    Same semantics as Comment Top-Level vs Reply Over Time — totals in pool, time series from samples.
-    """
+def calculate_diffusion_hop_depth_over_time(data: Dict[str, Any]) -> Any:
+    """At each monitor sample: count repost entries in content_pool by hop depth (1,2,3,...)."""
     default = {"hop_1": 0.0, "hop_2": 0.0, "hop_3": 0.0}
     try:
         if not data or not isinstance(data, dict):
             log_metric_error(
-                "repost_hop_depth_over_time",
+                "diffusion_hop_depth_over_time",
                 ValueError("invalid data"),
                 {"data": data},
             )
@@ -278,7 +196,7 @@ def calculate_repost_hop_depth_over_time(data: Dict[str, Any]) -> Any:
         content_pool = safe_get(data, "content_pool", {})
         if not isinstance(content_pool, dict):
             log_metric_error(
-                "repost_hop_depth_over_time",
+                "diffusion_hop_depth_over_time",
                 ValueError("content_pool is not a dict"),
                 {"content_pool_type": type(content_pool)},
             )
@@ -289,7 +207,7 @@ def calculate_repost_hop_depth_over_time(data: Dict[str, Any]) -> Any:
         for bid, blog in content_pool.items():
             if not isinstance(blog, dict):
                 continue
-            if not _is_user_repost_entry(str(bid), blog):
+            if not is_repost_of_other_blog(str(bid), blog):
                 continue
             d = _repost_hop_depth(str(bid), blog, content_pool, memo)
             if d >= 1:
@@ -312,119 +230,166 @@ def calculate_repost_hop_depth_over_time(data: Dict[str, Any]) -> Any:
         return default
 
 
-def calculate_repost_count_frequency(data: Dict[str, Any]) -> Any:
-    """
-    Two distributions (raw counts on Y; X = repost count including 0):
+def _collect_content_pool_repost_stats(
+    content_pool: Dict[str, Any],
+) -> Tuple[List[int], Dict[str, int], Set[str]]:
+    """Per-root descendant counts, per-user repost totals, pool author user_ids."""
+    cache: Dict[str, str] = {}
+    root_ids: List[str] = []
+    for bid, b in content_pool.items():
+        if not isinstance(b, dict):
+            continue
+        if is_chain_root_blog(str(bid), b, content_pool, cache):
+            root_ids.append(str(bid))
 
-    1) Per root tweet: total repost nodes under that root (all levels). Count only non-root blogs
-       whose chain root equals R; root R has repost total = that count.
-    2) Per user: number of repost entries authored by that user (original posts not counted).
-       Denominator users: union of (optional) user_agent_profile_ids from all UserAgents and every user_id
-       seen as blog author in content_pool; users with 0 reposts included.
-    """
+    per_root_descendants: List[int] = []
+    for r in root_ids:
+        n = 0
+        for bid, b in content_pool.items():
+            if not isinstance(b, dict):
+                continue
+            if str(bid) == r:
+                continue
+            root = resolve_root_blog_id(str(bid), b, content_pool, cache)
+            if str(root) == str(r):
+                n += 1
+        per_root_descendants.append(n)
+
+    pool_users: Set[str] = set()
+    user_repost_totals: Dict[str, int] = defaultdict(int)
+    for bid, b in content_pool.items():
+        if not isinstance(b, dict):
+            continue
+        uid = b.get("user_id")
+        if uid is None or str(uid).strip() == "":
+            continue
+        us = str(uid).strip()
+        pool_users.add(us)
+        if is_repost_of_other_blog(str(bid), b):
+            user_repost_totals[us] += 1
+
+    return per_root_descendants, user_repost_totals, pool_users
+
+
+def _count_frequency_histogram(
+    counts: List[int], denominator: int
+) -> Tuple[List[int], List[float], List[int]]:
+    if denominator <= 0:
+        return [], [], []
+    h = Counter(counts)
+    max_k = max(counts) if counts else 0
+    bins = list(range(0, max_k + 1))
+    raw = [h[k] for k in bins]
+    pct = [100.0 * c / denominator for c in raw]
+    return bins, pct, raw
+
+
+def calculate_user_repost_count_frequency(data: Dict[str, Any]) -> Any:
+    """Distribution of repost entries per user (denominator: registered or pool authors)."""
     empty: Dict[str, Any] = {
-        "_viz_kind": "repost_count_freq_bar",
-        "root_repost_bins": [],
-        "root_repost_counts": [],
-        "n_root_tweets": 0,
-        "user_repost_bins": [],
-        "user_repost_counts": [],
+        "_viz_kind": "user_repost_count_freq_bar",
+        "repost_bins": [],
+        "frequency_pct": [],
+        "raw_counts": [],
         "n_users_in_pool": 0,
+        "user_count_basis": "content_pool_presence",
     }
+    metric_id = "user_repost_count_frequency"
     try:
         if not data or not isinstance(data, dict):
-            log_metric_error(
-                "repost_count_frequency",
-                ValueError("invalid data"),
-                {"data": data},
-            )
+            log_metric_error(metric_id, ValueError("invalid data"), {"data": data})
             return empty
 
         content_pool = safe_get(data, "content_pool", {})
         if not isinstance(content_pool, dict):
             log_metric_error(
-                "repost_count_frequency",
+                metric_id,
                 ValueError("content_pool is not a dict"),
                 {"content_pool_type": type(content_pool)},
             )
             return empty
 
-        cache: Dict[str, str] = {}
-        root_ids: List[str] = []
-        for bid, b in content_pool.items():
-            if not isinstance(b, dict):
-                continue
-            if _is_original_root_blog(str(bid), b, content_pool, cache):
-                root_ids.append(str(bid))
+        _per_root, user_repost_totals, pool_users = _collect_content_pool_repost_stats(
+            content_pool
+        )
 
-        n_roots = len(root_ids)
-        per_root_descendants: List[int] = []
-        for r in root_ids:
-            n = 0
-            for bid, b in content_pool.items():
-                if not isinstance(b, dict):
-                    continue
-                if str(bid) == r:
-                    continue
-                root = _root_blog_id_for_entry(str(bid), b, content_pool, cache)
-                if str(root) == str(r):
-                    n += 1
-            per_root_descendants.append(n)
-
-        pool_users: Set[str] = set()
-        user_repost_totals: Dict[str, int] = defaultdict(int)
-        for bid, b in content_pool.items():
-            if not isinstance(b, dict):
-                continue
-            uid = b.get("user_id")
-            if uid is None or str(uid).strip() == "":
-                continue
-            us = str(uid).strip()
-            pool_users.add(us)
-            if _is_user_repost_entry(str(bid), b):
-                user_repost_totals[us] += 1
-
-        # 与 profile/data/UserAgent.json 中全体智能体对齐：未在 content_pool 中出现过作者行的用户也计入分母（0 转发）
-        registered = data.get("user_agent_profile_ids")
+        registered = safe_get(data, "user_agent_profile_ids", None)
         if isinstance(registered, list):
-            for x in registered:
-                if x is None:
-                    continue
-                s = str(x).strip()
-                if s:
-                    pool_users.add(s)
-
-        n_pool_users = len(pool_users)
-        if n_roots == 0 and n_pool_users == 0:
-            return empty
-
-        rh = Counter(per_root_descendants)
-        max_k_root = max(per_root_descendants) if per_root_descendants else 0
-        root_bins = list(range(0, max_k_root + 1))
-        root_counts = [rh[k] for k in root_bins]
-
-        if n_pool_users > 0:
-            per_user = [user_repost_totals[u] for u in pool_users]
-            uh = Counter(per_user)
-            max_k_user = max(per_user) if per_user else 0
-            user_bins = list(range(0, max_k_user + 1))
-            user_counts = [uh[k] for k in user_bins]
+            universe: Set[str] = {
+                str(x).strip() for x in registered if x is not None and str(x).strip() != ""
+            }
         else:
-            user_bins = []
-            user_counts = []
+            universe = set()
+        use_registered = len(universe) > 0
+        if not use_registered:
+            universe = pool_users
 
+        n_pool_users = len(universe)
+        basis = "user_agent_profile_ids" if use_registered else "content_pool_presence"
+        if n_pool_users == 0:
+            return {**empty, "user_count_basis": basis}
+
+        per_user_counts = [user_repost_totals.get(u, 0) for u in sorted(universe)]
+        bins, pct, raw = _count_frequency_histogram(per_user_counts, n_pool_users)
         return {
-            "_viz_kind": "repost_count_freq_bar",
-            "root_repost_bins": root_bins,
-            "root_repost_counts": root_counts,
-            "n_root_tweets": n_roots,
-            "user_repost_bins": user_bins,
-            "user_repost_counts": user_counts,
+            "_viz_kind": "user_repost_count_freq_bar",
+            "repost_bins": bins,
+            "frequency_pct": pct,
+            "raw_counts": raw,
             "n_users_in_pool": n_pool_users,
+            "user_count_basis": basis,
         }
     except Exception as e:
         log_metric_error(
-            "repost_count_frequency",
+            metric_id,
+            e,
+            {"data_keys": list(data.keys()) if isinstance(data, dict) else None},
+        )
+        return empty
+
+
+def calculate_root_repost_count_frequency(data: Dict[str, Any]) -> Any:
+    """Distribution of repost nodes under each root blog (denominator: all chain roots in pool)."""
+    empty: Dict[str, Any] = {
+        "_viz_kind": "root_repost_count_freq_bar",
+        "repost_bins": [],
+        "frequency_pct": [],
+        "raw_counts": [],
+        "n_root_tweets": 0,
+    }
+    metric_id = "root_repost_count_frequency"
+    try:
+        if not data or not isinstance(data, dict):
+            log_metric_error(metric_id, ValueError("invalid data"), {"data": data})
+            return empty
+
+        content_pool = safe_get(data, "content_pool", {})
+        if not isinstance(content_pool, dict):
+            log_metric_error(
+                metric_id,
+                ValueError("content_pool is not a dict"),
+                {"content_pool_type": type(content_pool)},
+            )
+            return empty
+
+        per_root_descendants, _user_totals, _pool_users = _collect_content_pool_repost_stats(
+            content_pool
+        )
+        n_roots = len(per_root_descendants)
+        if n_roots == 0:
+            return empty
+
+        bins, pct, raw = _count_frequency_histogram(per_root_descendants, n_roots)
+        return {
+            "_viz_kind": "root_repost_count_freq_bar",
+            "repost_bins": bins,
+            "frequency_pct": pct,
+            "raw_counts": raw,
+            "n_root_tweets": n_roots,
+        }
+    except Exception as e:
+        log_metric_error(
+            metric_id,
             e,
             {"data_keys": list(data.keys()) if isinstance(data, dict) else None},
         )
@@ -434,10 +399,8 @@ def calculate_repost_count_frequency(data: Dict[str, Any]) -> Any:
 def calculate_posting_root_author_repost_behavior(data: Dict[str, Any]) -> Any:
     """
     Per root-tweet author:
-    - self_repost_hop_k: 根作者在自己根帖链路上的第 k 跳自转发（与链上根作者一致）。
-    - repost_on_others_count: 该用户在**他人根帖**下的转发条数（链路的根帖作者不是本人）。
-
-    Same contract as Posting User Comment Behavior: {"users": [ {...}, ... ]}.
+    - self_repost_hop_k: The k-th self-repost hop on the root author's root post chain.
+    - repost_on_others_count: The number of reposts on **other root posts** by the user.
     """
     empty: Dict[str, Any] = {"users": []}
     try:
@@ -471,7 +434,7 @@ def calculate_posting_root_author_repost_behavior(data: Dict[str, Any]) -> Any:
             if uid is None or str(uid).strip() == "":
                 continue
             us = str(uid).strip()
-            if _is_original_root_blog(str(bid), b, content_pool, cache):
+            if is_chain_root_blog(str(bid), b, content_pool, cache):
                 root_authors.add(us)
                 root_post_count[us] += 1
             nn = b.get("nickname")
@@ -486,13 +449,13 @@ def calculate_posting_root_author_repost_behavior(data: Dict[str, Any]) -> Any:
         for bid, blog in content_pool.items():
             if not isinstance(blog, dict):
                 continue
-            if not _is_user_repost_entry(str(bid), blog):
+            if not is_repost_of_other_blog(str(bid), blog):
                 continue
             author = blog.get("user_id")
             if author is None or str(author).strip() == "":
                 continue
             ua = str(author).strip()
-            root_id = _root_blog_id_for_entry(str(bid), blog, content_pool, cache)
+            root_id = resolve_root_blog_id(str(bid), blog, content_pool, cache)
             rb = content_pool.get(root_id)
             if not isinstance(rb, dict):
                 continue
@@ -509,7 +472,7 @@ def calculate_posting_root_author_repost_behavior(data: Dict[str, Any]) -> Any:
         for bid, blog in content_pool.items():
             if not isinstance(blog, dict):
                 continue
-            if not _is_user_repost_entry(str(bid), blog):
+            if not is_repost_of_other_blog(str(bid), blog):
                 continue
             author = blog.get("user_id")
             if author is None or str(author).strip() == "":
@@ -517,7 +480,7 @@ def calculate_posting_root_author_repost_behavior(data: Dict[str, Any]) -> Any:
             ua = str(author).strip()
             if ua not in root_authors:
                 continue
-            root_id = _root_blog_id_for_entry(str(bid), blog, content_pool, cache)
+            root_id = resolve_root_blog_id(str(bid), blog, content_pool, cache)
             rb = content_pool.get(root_id)
             if not isinstance(rb, dict):
                 continue
@@ -555,27 +518,22 @@ def calculate_posting_root_author_repost_behavior(data: Dict[str, Any]) -> Any:
         )
         return empty
 
-
-# 指标函数字典，用于查找
 METRIC_FUNCTIONS = {
-    'calculate_repost_generation': calculate_repost_generation,
-    'calculate_repost_volume_realtime': calculate_repost_volume_realtime,
-    'calculate_repost_hop_depth_over_time': calculate_repost_hop_depth_over_time,
-    'calculate_repost_count_frequency': calculate_repost_count_frequency,
+    'calculate_diffusion_generation': calculate_diffusion_generation,
+    'calculate_diffusion_volume_realtime': calculate_diffusion_volume_realtime,
+    'calculate_diffusion_hop_depth_over_time': calculate_diffusion_hop_depth_over_time,
+    'calculate_user_repost_count_frequency': calculate_user_repost_count_frequency,
+    'calculate_root_repost_count_frequency': calculate_root_repost_count_frequency,
     'calculate_posting_root_author_repost_behavior': calculate_posting_root_author_repost_behavior,
 }
-if calculate_repost_similarity is not None:
-    METRIC_FUNCTIONS['calculate_repost_similarity'] = calculate_repost_similarity
+if calculate_text_similarity is not None:
+    METRIC_FUNCTIONS['calculate_text_similarity'] = calculate_text_similarity
+if calculate_text_diversity is not None:
+    METRIC_FUNCTIONS['calculate_text_diversity'] = calculate_text_diversity
+if calculate_text_max_reference_similarity is not None:
+    METRIC_FUNCTIONS['calculate_text_max_reference_similarity'] = calculate_text_max_reference_similarity
 
 
 def get_metric_function(function_name: str) -> Optional[Callable]:
-    """
-    根据函数名获取对应的指标计算函数
-    
-    Args:
-        function_name: 函数名
-        
-    Returns:
-        指标计算函数或None
-    """
+    """Get the metric calculation function by function name."""
     return METRIC_FUNCTIONS.get(function_name)

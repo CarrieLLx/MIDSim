@@ -1,7 +1,8 @@
 {
     "exposure": {
         "social": {
-            "probability": 1
+            "probability": 1,
+            "social_feed_budget": 0
         },
         "recommendation": {
             "probability": 1,

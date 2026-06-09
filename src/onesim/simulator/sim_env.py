@@ -4,7 +4,7 @@ from enum import Enum
 from dataclasses import dataclass, field
 from onesim.events import Event, DataEvent, DataResponseEvent, DataUpdateEvent, DataUpdateResponseEvent
 from onesim.events import Scheduler, EventBus
-from onesim.agent import GeneralAgent
+from onesim.agent import GeneralAgent, is_general_agent_instance
 import asyncio
 from loguru import logger
 import threading
@@ -960,6 +960,93 @@ class BasicSimEnv:
         else:
             logger.info("No initial environment data file specified.")
 
+        await self._load_midsim_params()
+
+    def _resolve_config_path(self, path: str) -> str:
+        """Resolve a config-relative path against cwd or project root (parent of src/)."""
+        if not path:
+            return path
+        if os.path.isabs(path):
+            return path
+        cwd_path = os.path.join(os.getcwd(), path)
+        if os.path.exists(cwd_path):
+            return cwd_path
+        if self.env_path:
+            project_root = os.path.dirname(os.path.dirname(os.path.dirname(self.env_path)))
+            root_path = os.path.join(project_root, path)
+            if os.path.exists(root_path):
+                return root_path
+        return cwd_path
+
+    _SIMULATOR_PARAM_KEYS = (
+        "max_span_days",
+        "max_step",
+        "timestamp_schedule_type",
+        "timestamp_power_p",
+        "timestamp_sigmoid_scale",
+        "timestamp_sigmoid_center_ratio",
+    )
+
+    def _simulator_schedule_settings(self) -> Dict[str, Any]:
+        """Read timestamp schedule settings from midsim_params.simulator (config/params_*.json)."""
+        defaults: Dict[str, Any] = {
+            "max_span_days": 24.0,
+            "max_step": 8,
+            "timestamp_schedule_type": "power",
+            "timestamp_power_p": 1.6,
+            "timestamp_sigmoid_scale": 1.2,
+            "timestamp_sigmoid_center_ratio": 0.5,
+        }
+        out = dict(defaults)
+        mp = self.data.get("midsim_params")
+        if isinstance(mp, dict):
+            sim = mp.get("simulator")
+            if isinstance(sim, dict):
+                for key in defaults:
+                    if key in sim and sim[key] is not None:
+                        out[key] = sim[key]
+        else:
+            for key in defaults:
+                if key in self.data and self.data[key] is not None:
+                    out[key] = self.data[key]
+        out["max_span_days"] = float(out["max_span_days"])
+        out["max_step"] = int(out["max_step"])
+        out["timestamp_power_p"] = float(out["timestamp_power_p"])
+        out["timestamp_sigmoid_scale"] = float(out["timestamp_sigmoid_scale"])
+        out["timestamp_sigmoid_center_ratio"] = float(out["timestamp_sigmoid_center_ratio"])
+        out["timestamp_schedule_type"] = str(out["timestamp_schedule_type"])
+        return out
+
+    async def _load_midsim_params(self) -> None:
+        """Load experiment params JSON referenced by additional_config.params_path."""
+        params_path = self.config.additional_config.get("params_path")
+        if not params_path:
+            return
+
+        resolved = self._resolve_config_path(params_path)
+        if not await aiofiles.os.path.exists(resolved):
+            logger.warning(f"MIDSim params file not found: {resolved}")
+            return
+
+        try:
+            async with aiofiles.open(resolved, "r", encoding="utf-8") as f:
+                params = json.loads(await f.read())
+            if not isinstance(params, dict):
+                logger.error(f"MIDSim params file must be a JSON object: {resolved}")
+                return
+            async with self._lock:
+                self.data["midsim_params"] = params
+                simulator = params.get("simulator")
+                if isinstance(simulator, dict):
+                    for key in self._SIMULATOR_PARAM_KEYS:
+                        if key in simulator and simulator[key] is not None:
+                            self.data[key] = simulator[key]
+            logger.info(f"Loaded MIDSim params from {resolved}")
+        except json.JSONDecodeError:
+            logger.error(f"Error decoding JSON from MIDSim params file: {resolved}")
+        except Exception as e:
+            logger.error(f"Error loading MIDSim params from {resolved}: {e}")
+
     async def handle_pause_event(self, event: Event) -> None:
         """Handle a pause event."""
         if not self._pause_signal.is_set() and (event.to_agent_id == "ENV" or event.to_agent_id == "all"):
@@ -1720,7 +1807,7 @@ class BasicSimEnv:
                     local_agent = agents[agent_id]
                     break
 
-        if isinstance(local_agent, GeneralAgent):
+        if is_general_agent_instance(local_agent):
             # Local access - properly handle async get_data method
             try:
                 # GeneralAgent's get_data is async, so we need to await it

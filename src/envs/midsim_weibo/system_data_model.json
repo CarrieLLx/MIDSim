@@ -5,37 +5,67 @@
                 "name": "content_pool",
                 "type": "dict",
                 "default_value": {},
-                "description": "Available content pool in dictionary format with note_id as keys. Each content item contains the following fields: note_id (note ID), title (title), desc (content), time (timestamp indicating content publication time in milliseconds), user_id (publisher ID), nickname (publisher nickname), liked_count (like count), collected_count (collection count), comment_count (comment count), ip_location (IP geographic location), tags_list (tag list), comments (comment list)."
+                "description": "All blogs keyed by blog_id. Each blog: blog_id, content, time (Unix seconds or ms at load), user_id, nickname, ip_location, reposted_blog_id (empty for root posts), reposted_path (chain blog_ids), repost_count, repost_ids, popularity (runtime rolling-window repost count on ancestors)."
             },
             {
                 "name": "current_timestamp",
                 "type": "int",
                 "default_value": 0,
-                "description": "Current simulation time step. Initial time is set to the earliest note publication time."
+                "description": "Simulation clock in Unix seconds; advances each step with power/sigmoid-scheduled day slices."
             },
             {
                 "name": "timestamp_duration",
                 "type": "int",
-                "default_value": 3600000,
-                "description": "Duration of each time step in milliseconds."
+                "default_value": 0,
+                "description": "Width of the next blog window in seconds (distance from current_timestamp covered by current_blogs)."
             },
             {
-                "name": "current_notes",
+                "name": "simulation_start_timestamp",
+                "type": "int",
+                "default_value": 0,
+                "description": "Anchor time at load; used with max_span_days to cap timeline."
+            },
+            {
+                "name": "current_step",
+                "type": "int",
+                "default_value": 1,
+                "description": "1-based step counter updated after each SimEnv._save_step_data."
+            },
+            {
+                "name": "current_blogs",
                 "type": "dict",
                 "default_value": {},
-                "description": "Dictionary of current notes in dictionary format with note_id as keys. Each note item contains the following fields: note_id (note ID), title (title), desc (content), time (timestamp indicating content publication time in milliseconds), user_id (publisher ID), nickname (publisher nickname), liked_count (like count), collected_count (collection count), comment_count (comment count), ip_location (IP geographic location), tags_list (tag list), comments (comment list)."
+                "description": "Subset of content_pool with blog.time < window_end; used in prompts and recommendation pools."
             },
             {
                 "name": "mention_pool",
                 "type": "dict",
                 "default_value": {},
-                "description": "Dictionary of mention pool in dictionary format with comment_id as keys. Each mention item contains the following fields: comment_id (comment ID), note_id (note ID), comment_content (comment content), mentioner_id (mentioner ID), mentioner_nickname (mentioner nickname), mention_type (mention type)."
+                "description": "Nested user_id -> blog_id -> {mention_message: {blog_id, mention_type (at|repost)}}."
+            },
+            {
+                "name": "user_agent_profile_ids",
+                "type": "list",
+                "default_value": [],
+                "description": "All UserAgent profile IDs; populated at init for metrics denominators (user_repost_count_frequency)."
+            },
+            {
+                "name": "reference_embedding_path",
+                "type": "string",
+                "default_value": "",
+                "description": "Path to precomputed blog embeddings JSON for text_similarity metric."
             },
             {
                 "name": "reference_csv_path",
                 "type": "string",
                 "default_value": "",
-                "description": "The path to the reference CSV file."
+                "description": "Reference reposts CSV (root blog_id, content) for text_max_reference_similarity metric."
+            },
+            {
+                "name": "popularity_window_days",
+                "type": "float",
+                "default_value": 7.0,
+                "description": "Rolling window (days) for per-blog popularity = chain repost count ending at current_timestamp."
             }
         ]
     },
@@ -43,48 +73,118 @@
         "UserAgent": {
             "variables": [
                 {
-                    "name": "recommended_note_ids",
+                    "name": "recommended_blog_ids",
                     "type": "list",
                     "default_value": [],
-                    "description": "List of note IDs received"
+                    "description": "Flat list of blog IDs already recommended to this user (legacy union)."
+                },
+                {
+                    "name": "recommended_blog_ids_by_channel",
+                    "type": "dict",
+                    "default_value": {},
+                    "description": "source_type (algorithm|social|search|keep_following) -> step -> [blog_id]."
+                },
+                {
+                    "name": "mentioned_blog_ids_by_channel",
+                    "type": "dict",
+                    "default_value": {},
+                    "description": "mention_type (at|repost) -> step -> [blog_id]."
+                },
+                {
+                    "name": "keep_following_blog_ids",
+                    "type": "list",
+                    "default_value": [],
+                    "description": "At most one blog ID to re-expose next round via KeepFollowingEvent."
                 },
                 {
                     "name": "recommendations",
                     "type": "dict",
                     "default_value": {},
-                    "description": "Dictionary of note content pushed by social network. The key is the note ID, the value is a dictionary containing note ID, title, content, publisher ID, publisher nickname, publication time, and other fields."
+                    "description": "Transient recommendation payload on profile (schema compat)."
                 },
                 {
                     "name": "mentions",
                     "type": "dict",
                     "default_value": {},
-                    "description": "Dictionary of mentions."
+                    "description": "Transient mention payload on profile (schema compat)."
                 },
                 {
                     "name": "last_login_timestamp",
                     "type": "int",
                     "default_value": 0,
-                    "description": "The timestamp of the last login."
+                    "description": "Last social-feed scan time (seconds); social feed uses [last_login, window_end)."
                 },
                 {
                     "name": "login",
                     "type": "int",
                     "default_value": -1,
-                    "description": "The flag of login. True(1), False(0), Not Set(-1)"
+                    "description": "Activation flag: 1 active, 0 inactive, -1 unset (set -1 each StartEvent)."
+                },
+                {
+                    "name": "historical_blogs",
+                    "type": "dict",
+                    "default_value": {},
+                    "description": "Historical content IDs received."
+                },
+                {
+                    "name": "historical_summary",
+                    "type": "string",
+                    "default_value": "",
+                    "description": "Persona summary used in LLM prompts."
                 }
             ]
         },
-        "RecommenderAgent": {
+        "Algorithm": {
             "variables": [
-              {
-                "name": "recommendations",
-                "type": "dict",
-                "default_value": {},
-                "description": "Dictionary of note content pushed by recommendation algorithm. The key is the note ID, the value is a dictionary containing note ID, title, content, publisher ID, publisher nickname, publication time, and other fields."
-              }
+                {
+                    "name": "type",
+                    "type": "string",
+                    "default_value": "Popularity Recommendation",
+                    "description": "Random Recommendation | Popularity Recommendation | Interest Recommendation | Relevant Search."
+                },
+                {
+                    "name": "current_blogs",
+                    "type": "dict",
+                    "default_value": {},
+                    "description": "Mirror of env current_blogs updated on StartEvent."
+                },
+                {
+                    "name": "recommended_blog_ids_by_user",
+                    "type": "dict",
+                    "default_value": {},
+                    "description": "user_id -> list of blog IDs ever pushed to that user."
+                },
+                {
+                    "name": "candidate_blog_ids_by_user",
+                    "type": "dict",
+                    "default_value": {},
+                    "description": "user_id -> candidate blog IDs for interest recommendation."
+                },
+                {
+                    "name": "popularity_distribution",
+                    "type": "list",
+                    "default_value": [],
+                    "description": "Popularity recommendation: [{repost_count, post_count}, ...]."
+                },
+                {
+                    "name": "random_rec_mau",
+                    "type": "float",
+                    "default_value": 588000000,
+                    "description": "Random recommendation platform MAU."
+                },
+                {
+                    "name": "random_rec_avg_posts_per_user_month",
+                    "type": "float",
+                    "default_value": 95.69,
+                    "description": "Random recommendation avg posts per user per month."
+                },
+                {
+                    "name": "recommendations",
+                    "type": "dict",
+                    "default_value": {},
+                    "description": "Transient recommendation output (schema compat)."
+                }
             ]
         }
     }
 }
-
-

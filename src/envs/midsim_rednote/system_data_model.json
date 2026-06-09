@@ -53,13 +53,13 @@
                 "name": "reference_embedding_path",
                 "type": "string",
                 "default_value": "",
-                "description": "Path to precomputed note embeddings JSON for comment_similarity metric."
+                "description": "Path to precomputed note embeddings JSON for text_similarity metric."
             },
             {
-                "name": "reference_comments_csv_path",
+                "name": "reference_csv_path",
                 "type": "string",
                 "default_value": "",
-                "description": "Reference comments CSV (note_id, content) for comment_max_reference_similarity metric."
+                "description": "Reference comments CSV (note_id, content) for text_max_reference_similarity metric."
             },
             {
                 "name": "popularity_window_days",
@@ -139,7 +139,7 @@
                 {
                     "name": "type",
                     "type": "string",
-                    "default_value": "Hot Recommendation",
+                    "default_value": "Popularity Recommendation",
                     "description": "Random Recommendation | Hot Recommendation | Interest Recommendation | Relevant Search."
                 },
                 {

@@ -1,0 +1,98 @@
+tweet_id,create_time,create_date_time,content,user_id,nickname,username,replyCount,retweetCount,likeCount,quoteCount,conversation_id,retweetedTweet_id,quotedTweet_id,replyedTweet_id,at_count
+1994104147373903893,1764266452,2025-11-27 18:00:52+00:00,https://t.co/Xqd8AEERb0,1013971684624424960,ICLR 2026,iclr_conf,52,139,681,143,1994104147373903893,,,,0
+1994648404430115289,1764396213,2025-11-29 06:03:33+00:00,"About the ICLR drama.
+
+1. Nothing says healthy field as much as reviewer names being disclosed resulting in death threats.
+
+2. If that leak makes you look like an nice person / asshole, you probably are one.",99581347,François Fleuret,francoisfleuret,7,13,271,1,1994648404430115289,,,,0
+1994833897683669185,1764440438,2025-11-29 18:20:38+00:00,"AI researchers woke up  today to a major scandal about leaked identities of reviewers/PC members assigned to all paper submissions in the past N years. 
+
+Openreview was inspired by @ylecun 's original manifesto https://t.co/Xd33djljvY. Time to implement @ylecun 's full proposal? (It was radical for its time!)",882257115863187457,Sanjeev Arora,prfsanjeevarora,22,29,265,0,1994833897683669185,,,,2
+1994419729046344136,1764341692,2025-11-28 14:54:52+00:00,"&gt; iclr reviewer suggests changes that will make him update score
+&gt; spend 2 days implementing said request
+&gt; data leak
+&gt; reviewers will not be able to change their scores",1928877850372829184,Ed25518,Ed25518,0,0,1,0,1994419729046344136,,,,0
+1994429289643782176,1764343972,2025-11-28 15:32:52+00:00,"Lol what a shitshow @iclr_conf 
+
+I'm sure the new ACs will take the rebuttals into account in a meaningful way when they decide to keep the original scores. What a waste of effort for everyone who spent time on rebuttals, and what a stupid reaction to the leak 🤦 https://t.co/uYspz71JaM",65385274,Andreas Kirsch 🇺🇦,BlackHC,10,15,209,5,1994429289643782176,,,,1
+1995393015733707180,1764573742,2025-12-01 07:22:22+00:00,"OpenReview's leak just ruined the double-blind review. You can now check ICLR Review Radar to rank the strictest rejects: https://t.co/kgdJTHGvX9
+Now I can spot Reviewer #2 before they say 'innovative? More like incremental fluff'
+#OpenReviewLeak #MLResearch #openreview",1618288871510528001,Sujoy Nath,sujoynath_ai,0,0,0,0,1995393015733707180,,,,0
+1994620067208990764,1764389456,2025-11-29 04:10:56+00:00,"The ICLR reviewer leak reveals what many already know: conference peer review doesn't scale to 20k+ submissions.Time to try rolling submissions with continuous review cycles, like top journals. This would 
+address our shortage of good reviewers @iclr_conf @NeurIPSConf @icmlconf",586001926,Leo Dianbo Liu,DianboLiu,4,4,65,3,1994620067208990764,,,,3
+1994071095268233713,1764258571,2025-11-27 15:49:31+00:00,"OpenReview seems to have rebranded itself as... #OpenReviewer. 🤦‍♂️ The names of all reviewers and AC are now easily accessible. A massive breach of anonymity and trust.
+
+BTW, thank goodness I neither submitted nor reviewed for #ICLR2026 this time. https://t.co/WjXVAforqD",1734039374046564352,Yang Yue,YangYue_THU,11,19,269,6,1994071095268233713,,,,0
+1994663483586294056,1764399808,2025-11-29 07:03:28+00:00,"The ICLR'26 reviewer-name leak is a reminder that we're no longer advancing science -- we're trapped in a system that often disrespects it.
+
+Maybe it's time for AI/ML to pause and rethink the entire conference culture.
+
+Wild idea: Stop all major AI/ML conferences for 1-2 years. Let papers live on arXiv, and be submitted to journals. Meanwhile, conferences rebuild real policies and accountability.
+
+Will this ever happen? Probably not.
+The incentives are too big. Its about MONEY and PROFIT.
+
+But the community deserves better and we need the courage to imagine alternatives.
+
+@iclr_conf @NeurIPSConf @RealAAAI",2878552400,Tanmoy Chakraborty,Tanmoy_Chak,7,6,144,1,1994663483586294056,,,,0
+1994934296990138847,1764464375,2025-11-30 00:59:35+00:00,"ICLR has placed OpenReview in a difficult position, so I want to offer a few words about the OpenReview team working behind the scenes.
+
+OpenReview has long been operated at UMass Amherst as a non-profit organization founded by Andrew McCallum. Each year, Andrew must raise more than $2 million to support a 20-person team that provides essential infrastructure for most major conferences.
+
+I once asked Andrew what might have been a naïve question: whether he had considered developing a business model for OpenReview, given its prominence and the seemingly obvious opportunities. He pushed back, explaining that everything he has done for OpenReview is driven by a commitment to serve and strengthen the academic community. He is willing to devote significant personal effort to ensure the platform remains freely accessible to all.
+
+We should not blame such a brilliant and dedicated team for an accidental issue. Otherwise, fewer people would be willing to shoulder this kind of responsibility in the future. 
+
+Deep respect to the OpenReview team! I’m grateful for their work and happy to support in any way!",1276214596672593920,Chuang Gan,gan_chuang,27,138,992,18,1994934296990138847,,,,0
+1994478339508375830,1764355666,2025-11-28 18:47:46+00:00,"The OpenReview / ICLR 2026 Identity Leak: What Really Happened, Why It Matters, and What Comes Next https://t.co/YcQTNVOyWo",1729634547913175040,SakaiSec,sksec_,0,0,1,0,1994478339508375830,,,,0
+1994515256568418518,1764364468,2025-11-28 21:14:28+00:00,"If it was actually necessary for ICLR to revert the review process, we have a much bigger problem than the OpenReview leak. Namely, if authors and reviewers can’t be trusted to behave ethically, we should also certainly assume they’re cooking their numbers and doing bad science.",971242879,Kyle Sargent,KyleSargentAI,4,2,119,0,1994515256568418518,,,,0
+1994849441912860796,1764444144,2025-11-29 19:22:24+00:00,The conversation over the ICLR name leak is a reminder we’re no longer writing science — we’re generating it. https://t.co/2wMH9MvnYh,276508048,Alexander Doria,Dorialexander,1,0,39,0,1994849441912860796,,,,0
+1998066956776415279,1765211259,2025-12-08 16:27:39+00:00,The ICLR 61-min leak exposed a system-wide Cognitive Trust Deficit. My paper introduces #ProofOfThought (PoT): an immediate remedy using structured dependency graphs to verify reasoning depth . This makes LLM deepfakes in peer review much harder #ICLR  https://t.co/zaUI1BcczO https://t.co/jzPHpsK09U,1870489634335072256,Pinkney,pinkxney,0,0,0,1,1998066956776415279,,,,0
+1994549901233885418,1764372728,2025-11-28 23:32:08+00:00,"Now that this ICLR leak happened, surely there will be serious consideration about changing peer review.
+
+Are there any promising discussions people have seen since the leak?",22874473,Heather Miller,heathercmiller,8,1,17,0,1994549901233885418,,,,0
+1994102734195208661,1764266115,2025-11-27 17:55:15+00:00,Open review leak has actual implications... It's safe to assume anonymity is compromised this year for @iclr_conf https://t.co/U2cTf6CWag,227737847,Wassim (Wes) Bouaziz,_Vassim,2,0,15,1,1994102734195208661,,,,1
+1994600737587052818,1764384848,2025-11-29 02:54:08+00:00,"The OpenReview / ICLR 2026 Identity Leak: What Really Happened, Why It Matters, and What Comes Next https://t.co/5bY9KHZ7Bm",1596804601751080960, Public Order or Morality ⚖️,public_decency,0,0,0,0,1994600737587052818,,,,0
+1994424921834074302,1764342930,2025-11-28 15:15:30+00:00,"My heart goes out to @iclr_conf organizers who are putting up a valiant fight to restore review integrity in the face of the @openreview leak. 
+
+Organizing conferences is always a labor of love, and doing so for mega AI conferences in the midst of a massive security leak is something else! 
+
+There can always be individual quibbles on the specifics, but it seems like they are doing their best this in a pretty hard ""can't please everyone"" kind of situation, and deserve the benefit of our doubt.",2850858010,Subbarao Kambhampati (కంభంపాటి సుబ్బారావు),rao2z,4,16,172,1,1994424921834074302,,,,2
+1995009523611046195,1764482310,2025-11-30 05:58:30+00:00,"The OpenReview / ICLR 2026 Identity Leak: What Really Happened, Why It Matters, and What Comes Next https://t.co/Wt35QMgX0J",40576466,Tetsuya Sakai (酒井哲也),tetsuyasakai,0,0,1,1,1995009523611046195,,,,0
+1994178570545959062,1764284195,2025-11-27 22:56:35+00:00,"PSA: If anyone is glaring at you at #NeurIPS2025,  assume that they crawled the Openreview leak and recognize you as their Reviewer 2. Promptly report them to ICLR.💡 #AIAphorisms",2850858010,Subbarao Kambhampati (కంభంపాటి సుబ్బారావు),rao2z,5,8,84,0,1994178570545959062,,,,0
+1999221108504166494,1765486430,2025-12-11 20:53:50+00:00,"The OpenReview / ICLR 2026 Identity Leak: What Really Happened, Why It Matters, and What Comes Next https://t.co/KVN9p5L3ym",1143480609152671744,Ruslan Rust,rust_ruslan,0,0,0,0,1999221108504166494,,,,0
+1994428337716924929,1764343745,2025-11-28 15:29:05+00:00,So what will you do about the score raising before the information leak?@iclr_conf,1885301189937664000,Yanshu Li🚀Seeking 26Fall PhD,karrsen0713,0,0,3,0,1994428337716924929,,,,1
+1994851045596623069,1764444526,2025-11-29 19:28:46+00:00,OpenReview/ICLR などをめぐる「2025年の漏洩(リーク)」事件 https://t.co/I4kNKm48TI について深掘りしてみました https://t.co/2BdhjsphnQ,1273441067262595072,すらいむ＠フィードフォワードで未来へ進化！！,Wjofkxsyf8I9r8w,0,2,2,0,1994851045596623069,,,,0
+1994604579686945278,1764385764,2025-11-29 03:09:24+00:00,"オープン査読のプラットフォームにセキュリティの穴があって、査読者の情報が大量に流出したらしい。 談合も起きてそう、と。 The OpenReview / ICLR 2026 Identity Leak: What Really Happened, Why It Matters, and What Comes Next https://t.co/HE0GnMoQV1",245697148,おきさやか（Sayaka OKI）,okisayaka,1,11,26,0,1994604579686945278,,,,0
+1994426310161056233,1764343261,2025-11-28 15:21:01+00:00,"I respect that @iclr_conf had to respond to the OR leak, but I disagree with resetting scores. Many students worked hard on rebuttals and improved their papers in good faith. I hope the organizers reconsider and revert the reset. If you agree, feel free to retweet.",1097489155620245504,Christopher Morris,chrsmrrs,6,48,153,3,1994426310161056233,,,,1
+1994951862177730734,1764468563,2025-11-30 02:09:23+00:00,"As a first-time author, I am flabbergasted about all the drama caused by OpenReview leak. This is a great time for reflection and open, formal discussions regarding how to make the peer review process more transparent and fair, maybe by holding an open panel at ICLR venue.",1621387926876868608,meowshark,colored_dye,1,0,3,0,1994951862177730734,,,,0
+1994077145933689323,1764260014,2025-11-27 16:13:34+00:00,"Hi, @iclr_conf  there has been a severe information leak on OpenReview. Theoretically, the anonymity barrier between reviewers, ACs, and authors has been completely shattered.
+Au: How should I expect to meet my reviewers?
+Re: How do I face the authors?",1753628274163650560,Yorriey,Yorriey,0,0,0,0,1994077145933689323,,,,1
+1995519142695522660,1764603813,2025-12-01 15:43:33+00:00,"#OpenReview #API leak unmasked #ICLR 2026 &amp; major conference identities—blind review broken before fixes. 
+
+Newsletter: https://t.co/n5vFOEprJl
+Contact us at info@kimova.ai
+
+#infosec #academicintegrity​ #KimovaAI #Turboaudit #AI #EU #Infosec #CybersecurityNews #ISO27001 #ISO https://t.co/JCvD3QDD1y",1794424507530113024,Kimova AI,KimovaAI,0,2,4,0,1995519142695522660,,,,0
+1994324437735502192,1764318973,2025-11-28 08:36:13+00:00,"Question about OpenReview identity-leak: 
+
+if someone did a few tests, reported it to ICLR PCs immediately (before official announcement), didn’t store/share anything, and didn’t contact anyone, is that generally considered okay? Or could it still be viewed as “exploitation”?",1745393330635341824,Vincent Dai,wxtai,0,0,0,0,1994324437735502192,,,,0
+1994679409144431032,1764403605,2025-11-29 08:06:45+00:00,"The OpenReview / ICLR 2026 Identity Leak: What Really Happened, Why It Matters, and What Comes Next はてなブックマーク テクノロジー新着 https://t.co/keYY6VWwUv",55999612,技術ブログのモーリタロー,mohritaroh,0,0,0,0,1994679409144431032,,,,0
+1995239946588930368,1764537247,2025-11-30 21:14:07+00:00,"I know they have a very small team and this might be tough for them but I think post openreview/ICLR leak, it's a great chance to release full anonymized data and let the community do its magic in finding bad actors/collusion rings.",1159161802913009669,Puneesh Deora,puneeshdeora,1,0,0,0,1995239946588930368,,,,0
+1994896478553452705,1764455358,2025-11-29 22:29:18+00:00,"まさに「レビューの裏事情」が暴露されたのだ! The OpenReview / ICLR 2026 Identity Leak: What Really Happened, Why It Matters, and What Comes Next #ずんだもん風ニュース #ずんだもん https://t.co/tMbbRcxH4E",1960605030719086593,ずんだもん風ニュースなのだ！,zundamon_newsch,0,0,7,0,1994896478553452705,,,,0
+1994593406107140246,1764383100,2025-11-29 02:25:00+00:00,"fully support ICLR @iclr_conf  decision to revert to original scores. The reason is obvious 1) reviewers had been forced to raise scores because of doxing, due to leak; 2) Other papers not having doxed reviewers  cannot get score raised  or reviewers have not responded yet",1599408121159507973,JunkThoughts,thoughts_junk,0,0,0,0,1994593406107140246,,,,1
+1994680071529836544,1764403763,2025-11-29 08:09:23+00:00,ICLR 2026のOpenReviewで発生したアイデンティティ漏洩は、機械学習のピアレビューエコシステムに影響を及ぼしました。このバグは、レビューの匿名性を一時的に侵害。研究プロセスの透明性と安全性を再考する必要があります。 #ICLR2026 https://t.co/m2wg6sYaHZ,1908373658370002944,OCGOT(オシゴット),OCGOT1616,0,0,0,0,1994680071529836544,,,,0
+1999917526143091181,1765652469,2025-12-13 19:01:09+00:00,"The OpenReview / ICLR 2026 Identity Leak: What Really Happened, Why It Matters, and What Comes Next https://t.co/23VtYcFLyn",180287955,Professor Graham Kendall,Graham_Kendall,0,0,0,0,1999917526143091181,,,,0
+1994724317469556803,1764414312,2025-11-29 11:05:12+00:00,"査読サービス OpenReviewの情報漏洩で、査読者と担当論文の情報が流出しちゃったらしい。 AI系カンファレンス(CLR, NeurIPS, ICML, ACL, CVPR)だいぶやられてる... >The OpenReview / ICLR 2026 Identity Leak: What Really Happened, Why It Matters, and What Comes Next https://t.co/CgGcTBKz70",20405995,TOK,TOK_HOTSTAFF,1,1,0,0,1994724317469556803,,,,0
+1996101984550834422,1764742773,2025-12-03 06:19:33+00:00,ICLRの査読サイトが不正アクセスで匿名性が揺らぎ、一部査読者の実名が流出。研究コミュニティの信頼と安全をどう守るか。 査読プラットフォーム「OpenReview」脆弱性露呈 匿名性が破綻し実名曝露の被害も https://t.co/23pvJxRdoV https://t.co/fMN8W5fJhl,1968542415062712321,NOVAIST,NOVAIST_AI,0,0,0,0,1996101984550834422,,,,0
+1994485268209176728,1764357318,2025-11-28 19:15:18+00:00,I'm so frustrated about the ICLR solution. I give a paper low score because I did not understand the setup at the beginning. the authors and I had a lengthy back and forth to help me understand. We are finally on the same page and I am about to change score. Now this???,1288542460831043585,Yunyi Shen/申云逸 🐺,ShenRaphael,4,3,125,1,1994485268209176728,,,,0
+1994428155835089030,1764343701,2025-11-28 15:28:21+00:00,"Wait what the hell? #ICLR2026 what are you thinking? Leaking the names of reviewers is bad, but how does reversing any changes (which are overwhelmingly score-increases) make things better? 
+
+They say it's to prevent collusion... is collusion that rampant? That's a wild sentiment https://t.co/Im0IVI053E",1125849026308575239,Stella Biderman,BlancheMinerva,7,8,103,1,1994428155835089030,,,,0
+1994438927336243445,1764346269,2025-11-28 16:11:09+00:00,"Got an email from @iclr_conf  today, and I’m honestly furious.
+I spent days running experiments and writing a detailed rebuttal. Two reviewers read it, agreed with the points, and raised their scores. And now #ICLR has decided to revert everything back. Wonderful use of everyone’s time.",1578081452486426641,Parsa Hosseini,paahrsa,4,5,196,4,1994438927336243445,,,,1
+1994263039202480173,1764304334,2025-11-28 04:32:14+00:00,"AI 顶会 ICLR 审稿人信息大规模泄露,官方连夜修 bug 也没挡住吃瓜群众 11 月 27 日,人工智能领域三大顶会之一的 2026 ICLR 审稿信息遭到泄露。会议方使用的 OpenReview 平台出现前端 bug,导致本应是双盲的审稿制度失效,只需要在浏览器上输入网址并替换某些字段即可查看审稿人身份和他的评审打分。该漏洞被发现后立即在 AI 社区内引发轩然大波。由于 OpenReview 平台是 AI 领域内使用广泛的会议论文审稿系统之一,很快有人发现这一漏洞不仅覆盖了新一届的 ICLR,还可令人自由查看往年甚至其他 AI 顶会(NeurIPS、ICML、ACL)的审稿信息。 有人发现给自己投稿论文打低分的审稿人是微信好友(ICLR 评审是 5 分制)。来源:社交媒体 几个小时后, ICLR 和 OpenReview 紧急修复了该漏洞,并发布声明,表示任何使用、暴露或分享泄露信息的人都会被拒稿且被 ICLR 长期列入黑名单,未来还将采取进一步行动处理此事。不过,已经有社交媒体用户称,有人爬走了整份审稿名单,还有人利用泄露数据做了统计分析。例如有帖子统计 ICLR 2026 前 1 万篇投稿的评审结果,结合审稿人的国别(主要语言)给出了平均打分习惯,发现韩国审稿人更习惯给低分;还有帖子称,基于同一份数据发现来自中国的审稿人占比高达 65.4%。目前,一些学者开始呼吁有关社区不要继续传播这份泄露名单,保护同行评审制度不被伤害。(ICLR, 机器之心)",877812343912226817,He Qi 戚何,HeQi67,0,0,1,0,1994263039202480173,,,,0
+1994288926639390963,1764310506,2025-11-28 06:15:06+00:00,"ICLR 评审信息因系统漏洞泄露,官方紧急修复并警告违规者 北京时间 11 月 27 日晚,人工智能顶会 ICLR 的审稿系统 OpenReview 出现前端漏洞,导致审稿人身份及评分外泄。用户只需修改网址即可查看任意论文的审稿信息,使长期执行的双盲评审失效。 事件引发学术圈广泛关注,不少研究者发现低分评审... https://t.co/2jo4M1b5PY",1879434083312521216,科技圈🎗在花新闻,ZaihuaNews,0,0,2,0,1994288926639390963,,,,0
+1998383209802002466,1765286660,2025-12-09 13:24:20+00:00,【人工智能】AI顶会ICLR泄露门始末 | 61分钟漏洞 | 审稿人身份裸奔 | 双盲机制粉碎 | 学术信仰崩塌 | OpenReview | ... https://t.co/DHyeTLw8MH 来自 @YouTube,373901672,最佳拍档,ZhangAlfred,0,1,0,0,1998383209802002466,,,,1
+1994105818095210978,1764266850,2025-11-27 18:07:30+00:00,"圈外人表示ICLR瓜真好看。今年Neurips会有枪击吗,或者至少打架斗殴之类的。我要去围观🙉👍",1165672819,A Pervert’s Guide to Quantum Mechanics,shibainu_vodka,5,3,50,1,1994105818095210978,,,,0

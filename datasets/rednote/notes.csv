@@ -1,0 +1,1208 @@
+﻿note_id,type,title,desc,video_url,time,last_update_time,user_id,nickname,avatar,liked_count,collected_count,comment_count,share_count,ip_location,image_list,tag_list,last_modify_ts,note_url,source_keyword,xsec_token
+6928ff5f000000001e03721b,normal,学术圈的瓜还是这么朴实无华,"凌晨全都是开盒的瓜，ICLR 2026 的 双盲评审网站 OpenReview，出大BUG了
+	
+不知哪个外包来了个vibe coding，直接允许用户从前端抓取数据库的原始信息，审稿人信息完全裸奔
+	
+一查，给打低分的就是好友！！！平常跟我这乐乐呵呵呢。
+	
+学术圈就那么大，哪个组大概在做什么心里大概有数。
+	
+此外，AI学术圈嘛，现在一般都AI帮着写，AI帮着审，AI帮着回复审稿意见，完美闭环...  现在投稿量实在太大了...  需要通过一定手段整治下风气
+	
+明审也不好，人情世故那一套绕不开；盲审也不好，躲在马甲后面可以毫无压力乱审...
+	
+不管怎样，学术界又多了个知名数据集：ICLR26 10000数据集
+	
+#大模型[话题]# #科技[话题]# #AI[话题]# #iclr[话题]# #ai[话题]# #人工智能[话题]# #vibecoding[话题]# #人工智障[话题]# #互联网大厂[话题]#",,1764294495000,1764294827000,597818875e87e73490fd8b3b,一只小茄墩,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31fnf32v4ge0049mqjkc8f2pr0sqoqig,3188,490,159,1860,北京,http://sns-webpic-qc.xhscdn.com/202512251502/6446764e3cab430ff4ca45e7646bf423/spectrum/1040g34o31pdn4es0260g49mqjkc8f2pr1rkf520!nd_dft_wlteh_jpg_3,"大模型,科技,AI,iclr,ai,人工智能,vibecoding,人工智障,互联网大厂",1766646131785,https://www.xiaohongshu.com/explore/6928ff5f000000001e03721b?xsec_token=AB_Cwbq92rtJFLNgod9xVJQS2ZTRk5VYXAlEZLIaxlM68=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQS2ZTRk5VYXAlEZLIaxlM68=
+69290e59000000001e034ab4,normal,我去，学术圈发生史诗级翻车事故！OpenReview,"这绝对是学术圈今年最炸裂的瓜，OpenReview 昨晚直接上演了一场史诗级裸奔。
+原本是盲审，结果因为一个后台权限漏洞，整个系统变成了实名影评。只要调个简单的 API 接口，匿名审稿人的身份就全露馅了：真名、邮箱、单位、履历，全都一清二楚。
+不光是正在审的 ICLR 2026，连之前的 NeurIPS、ICML、ACL 的记录也能查。消息一出，学术圈立马炸锅，各种陈年旧账瞬间翻出来
+有人被实锤恶意打低分，斯坦福一位 PhD 被抓到给同行打 1 分（Strong Reject），就为了压住对方比自己早几个月发的类似工作。
+那个传说中复制粘贴审稿人也现形了，三篇不同论文，意见一字不差，结果是国内某高校的副教授 Wenbo_Zheng2。
+更狗血的是，还有师兄弟互相打低分的内斗戏码。
+当然也有高光时刻，之前那位给垃圾论文反手打 0 分的“人间清醒”，也被扒出来了，是德国的一位博后，这波真得respect。
+虽然 OpenReview 现在火速修复漏洞，还发了严惩声明，但据说完整的审稿人名单早就被人爬走了。
+说到底，这两年 AI 论文卷得离谱，审稿质量越来越水，AI 代审、恶意打压的事屡见不鲜。这次漏洞虽是个事故，却把这套畸形评审机制的遮羞布彻底扯了下来。
+各位审稿人，最近出门注意安全......🌚#AI[话题]# #大模型[话题]# #学术[话题]# #很担心论文人的精神状态[话题]# #人工智能[话题]# #很担心论文人的精神状态[话题]# #科研学习[话题]# #学术会议[话题]# #科技[话题]#",,1764298329000,1764298330000,5e2a573f0000000001002ddf,阿卷,https://sns-avatar-qc.xhscdn.com/avatar/634a7d8d49edab6343b6f292.jpg,1915,637,163,3297,广东,"http://sns-webpic-qc.xhscdn.com/202512251502/33ee0468bd3b2693286f95728f5906dd/notes_pre_post/1040g3k031pdp7l8tig105nhaasvg8bevn20g9og!nd_dft_wlteh_jpg_3,http://sns-webpic-qc.xhscdn.com/202512251502/a9f4dff195f0fa12d0f9a2823329d3a4/notes_pre_post/1040g3k031pdp7l8tig005nhaasvg8bevarfaiqo!nd_dft_wgth_jpg_3,http://sns-webpic-qc.xhscdn.com/202512251502/d940ca69681b35994e2853898b43e244/notes_pre_post/1040g3k031pdp7l8tig0g5nhaasvg8bevg3rvt0o!nd_dft_wgth_jpg_3","AI,大模型,学术,很担心论文人的精神状态,人工智能,科研学习,学术会议,科技",1766646131789,https://www.xiaohongshu.com/explore/69290e59000000001e034ab4?xsec_token=AB6z7xpUEymBgHOpFYziNMLXeyAWY__RCXsn6hUC0wIWs=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLXeyAWY__RCXsn6hUC0wIWs=
+6928fc58000000001e02e6e2,normal,ICLR漏洞是意外？还是掀桌子整治审稿人😏,"最近圈里都在说 ICLR 的“漏洞”是意外😮 但我越想越不对劲……
+	
+CVPR：举报不负责审稿人？桌据一下🪑
+	
+AAAI：AI 审稿人？找相关都不会🤖
+	
+ICLR：行，既然你们都搞不定—— 那我就直接把审稿人名字全打开😏🔓
+	
+然后： 乱写 40 条评论的审稿人瞬间社死💀
+作者开始复仇模式📝⚔️
+OpenReview 装无辜：我…我只是个 bug 啦？😳
+	
+但你细想👇 接口“刚好”开错 信息“刚好”外泄 时机“刚好”在审稿高峰
+	
+这不叫 bug。 这叫—— 大会议一次性清洗不负责任审稿人的“系统更新”⚡😈
+	
+你信意外？ 我只信阴谋论😌✨
+@Thien-Minh Nguyen 天明 阮  是这篇梗的共同作者
+#iclr[话题]#  #openreview[话题]# #bug[话题]# #阴谋[话题]#",,1764293720000,1764294377000,639373b700000000260065ab,徒手拆高达,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31jo6aaih3q605osjeerpgpdb2q4oup0,704,150,60,712,新加坡,"http://sns-webpic-qc.xhscdn.com/202512251502/e252c1a9db1bbd910ea16cb7f3b33de7/spectrum/1040g0k031pdmkprf2a205osjeerpgpdbgecvjg0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251502/60e26e9c20545e3b1302deffcaa8fae6/spectrum/1040g0k031pdmkprf2a005osjeerpgpdb4pj3qq8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251502/fab2a87e1684f683660238e039df6c62/spectrum/1040g0k031pdmkprf2a1g5osjeerpgpdba2pi3r8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251502/a1479803fea428ae58a10f03cba9e167/spectrum/1040g0k031pdmkprf2a105osjeerpgpdb82c8tao!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251502/f10b92bea9f8bf59ecf00322ba45d81b/spectrum/1040g0k031pdmkprf2a0g5osjeerpgpdbmeknsn0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251502/23e77aaacc24c8356e22701b111ca8fc/spectrum/1040g34o31pdmsj6528105osjeerpgpdbuuejnt0!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251502/6506871e0a9acd356e8ed12cad995b0c/spectrum/1040g34o31pdmsj65281g5osjeerpgpdbtkc02s0!nd_dft_wgth_webp_3","iclr,openreview,bug,阴谋",1766646131793,https://www.xiaohongshu.com/explore/6928fc58000000001e02e6e2?xsec_token=AB_Cwbq92rtJFLNgod9xVJQQzPAqRW9Y_IAHVg-pWH0tI=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQQzPAqRW9Y_IAHVg-pWH0tI=
+69289206000000001f006644,normal,DB人淡定吃瓜ICLR,"ICLR不愧是学术界春晚，这次reviewer身份泄露，直接节目效果拉满。发现的瓜包括但不限于:
+1. 80条评审意见还嘴硬不是AI。开盒后又乖乖给了10分
+2.私发邮件，要转5w涨分的
+3.组里师兄弟互打低分(这个不开盒是真猜不到，只能说对自己人太狠了，不愧是一个师父教的)
+4.四个reviewer三个来自同一个组
+	
+持续追更，以及，期待下周nips真人cs#春晚[话题]# #ICLR[话题]##openreview[话题]# [doge]",,1764266502000,1764266502000,5e2c6c3000000000010043fa,港科巴菲特,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31h4r0u9aji005nhcdgo08gvq3b8dpko,525,148,105,1058,广东,http://sns-webpic-qc.xhscdn.com/202512251531/38456235377948ac31984ef7c176458e/1040g2sg31pd9mg7q2ue05nhcdgo08gvq00slsm8!nd_dft_wlteh_webp_3,"春晚,ICLR,openreview",1766647885285,https://www.xiaohongshu.com/explore/69289206000000001f006644?xsec_token=AB_Cwbq92rtJFLNgod9xVJQfTfBLYEQSMnNPU8Iv0mirw=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQfTfBLYEQSMnNPU8Iv0mirw=
+69286e16000000001e004019,normal,出大事了，openreview所有审稿信息都是公开,"本来以为是iclr26的问题，试了一下，之前的年份，几乎所有的会议，都是可以无鉴权访问。
+本来以为是最近的程序员vibe coding的结果，朋友说之前就能看到iros的其他审稿人信息，没太在意。
+在openreview官方没有修复之前，各位审稿人注意保护好自己……
+#openreview[话题]# #审稿[话题]# #审稿人[话题]# #iclr26[话题]# #nips25[话题]#",,1764257302000,1764257302000,6164486e0000000002020096,和AI一起进化,https://sns-avatar-qc.xhscdn.com/avatar/642664709e2ef0a4db22f8af.jpg,412,165,60,1067,广东,http://sns-webpic-qc.xhscdn.com/202512251531/6e08d15c526cc83afecb36b487e2ce8e/1040g00831pd5lrdli44g5ob491n0k04m21nsu7o!nd_dft_wlteh_webp_3,"openreview,审稿,审稿人,iclr26,nips25",1766647885288,https://www.xiaohongshu.com/explore/69286e16000000001e004019?xsec_token=AB_Cwbq92rtJFLNgod9xVJQdjpFP663cIXWJVLNXjFbjE=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQdjpFP663cIXWJVLNXjFbjE=
+69302102000000001e02510a,normal,学术界最暴力的一招：0 分 +5置信阴间审稿,"最近 ICLR 审稿泄露，让很多人第一次直观看到： 0 分 + 置信度 5 + 十几字评语，是怎样在系统里横行的。
+很多人今天在做的，其实已经不叫「评审」了， 而是把评审当成一种暴力工具：
+用极端低分刷存在感，证明自己“很严”；
+用几句话就挡掉别人几个月、甚至几年的工作；
+明明说不出理由，却享受那种「我一句话就能让你没了」的快感。💣
+	
+但这里的“暴力”不是血肉横飞， 而是非对称权力： 你有权利挡住发表，却不给出真正的论证， 在没有对话空间的情况下，最大化对别人的心理伤害和恐吓。🧠
+在很多高压、强中心化的东亚文化里， 大家从小被训练成：政权/话语权是靠物理斗争建立， “权威 = 惩罚”，而不是 “权威 = 解释和教学”。 这种逻辑从课堂、实验室，一路渗透到审稿： 打最低分，成了最省力的“严肃表演方式”， 哪怕理由薄得像一张纸。
+不同的研究文化，对这种权力用法也很不一样： 有的文化习惯待在中间区间，认真写清楚自己的判断； 有的区域文化则非常爱用最低分来“秀强硬”。 问题不是意见不同，而是： 在缺乏问责的情况下滥用暴力打分。🔍
+	
+如果我们真想要“严格但不暴力”的评审， 至少需要三件事：
+- 把每一个分数的含义讲清楚，不能想怎么打就怎么打；
+- 对所有极端分数（特别是 0 分）要求更强的解释和额外审查；
+- 长期跟踪那些经常给 0 分、却几乎不给理由的审稿人（OpenReview 其实能做）。
+	
+严格是好事。 但**瞎喷打出来的 0 分，不叫严格，只叫暴力。**🚫
+这次 OpenReview 泄露，某种意义上是一次残酷的“反噬”—— 让大家第一次看到暴力审稿是怎么运作的， 也让“暴力”短暂地反过来打在施暴者身上。 与其一窝蜂去人肉、报复个体， 不如把证据保存下来， 逼迫会议和社区去写规则、立制度、建问责。📢
+	
+前阵子也真的是气得发抖，嘴上说过一堆“见到就拒稿”之类的气话。冷静下来想想，真正有用的报复，不是去拒稿整个学校或者区域，而是：你们懂应该怎么做。
+	
+Fiat justitia, ruat caelum. ⚖️
+我只管讲公道，不陪他们演戏。#很担心论文人的精神状态[话题]# #写论文的精神状态[话题]# #科研人的精神状态[话题]# #研究生论文[话题]# #学术[话题]# #科研[话题]# #博士论文[话题]#",,1764761858000,1765300892000,639373b700000000260065ab,徒手拆高达,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31jo6aaih3q605osjeerpgpdb2q4oup0,166,14,13,15,新加坡,"http://sns-webpic-qc.xhscdn.com/202512251531/a4142cc7b9939eebb0ec99dab410ed5d/spectrum/1040g0k031pkm6v0kk0005osjeerpgpdbemn9pug!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251531/b5a26910e73c16126b4b1d8a7c4a92f0/spectrum/1040g34o31pklnm81jq0g5osjeerpgpdbto8s4k8!nd_dft_wgth_webp_3","很担心论文人的精神状态,写论文的精神状态,科研人的精神状态,研究生论文,学术,科研,博士论文",1766647885290,https://www.xiaohongshu.com/explore/69302102000000001e02510a?xsec_token=ABz_cX3lW8LOuCbFSZ0bAMkLTUKiszXAx9r4ZVM4dU-wY=&xsec_source=pc_search,,ABz_cX3lW8LOuCbFSZ0bAMkLTUKiszXAx9r4ZVM4dU-wY=
+6928896a000000001d03910c,normal,openreview泄露发现被人追杀,开盒了两轮ACL ARR的审稿人 一共六个人 三个2开头分数的全是老钟，三个4分全是老外，AC是一个老钟小同行 连着打了两次低于oa的meta分[萌萌哒R]#iclr26[话题]# #openreview[话题]#,,1764264298000,1764264299000,64abb970000000001c02908a,添加一个名字,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31619ea6ngm2g5p5bn5o7544af9utiio,102,15,33,34,广东,http://sns-webpic-qc.xhscdn.com/202512251531/d71b4796acd1492c00c9a6589327c403/1040g00831pd8vlpt2c6g5p5bn5o7544ark6mrg8!nd_dft_wlteh_webp_3,"iclr26,openreview",1766647885305,https://www.xiaohongshu.com/explore/6928896a000000001d03910c?xsec_token=AB_Cwbq92rtJFLNgod9xVJQctN96YBYIVgRaPuxjqtAOU=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQctN96YBYIVgRaPuxjqtAOU=
+69289704000000001e00e83d,normal,OpenReview审稿人泄露影响预测,"吃了一上午的瓜，刚刚发现查询的API被封了；感觉这次审稿人信息泄露的规模感觉前所未有，能查到几乎所有会议前好几年的审稿人信息，来推测一下这个时间造成的影响：
+	
+短期影响：
+	
+1. 最近出分的会议，像ICLR，ARR，回复率和涨分率应该会涨很多，毕竟现在明牌了，大多数人都不想多一些学术上的enemy。所以如果你的审稿人还没有回复，赶紧再去催催他没准有惊喜[doge]
+	
+2. 历届会议的经典逆天审稿人，比如40 weaknesses和who is adam，会被爆出来，接受一轮大家的怒火和清算；下周的Neurips也可能会有精彩的线下对线环节，敬请期待
+	
+长期影响：
+	
+1. 由于近几年全部会议基本都可以查询，一些历史被拒稿/恶意打低分的情况会催生出researcher之间更多相互对立和仇视，在未来的会议上继续厮杀
+	
+2. 很多人已经把数据爬取下来，在未来一段时间应该会有针对AI会议同行评审的论文放出来，研究例如AI会议的bid情况，什么背景的审稿人爱给什么样的review等等，这些研究可能会作为推动AI审稿系统改进的契机
+	
+#openreview[话题]# #吃瓜[话题]# #科研日常[话题]# #学术吃瓜[话题]# #ICLR[话题]#",,1764267780000,1764267780000,639a3d10000000002702a3ee,Dawei Li,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo318vfal7i44005osq7k89t8vesuo7lk8,95,31,13,43,美国,http://sns-webpic-qc.xhscdn.com/202512251531/a402abff210c35d962e4dd8e8095b173/spectrum/1040g34o31pda0erki60g5osq7k89t8ve1pbk8m0!nd_dft_wgth_webp_3,"openreview,吃瓜,科研日常,学术吃瓜,ICLR",1766647885308,https://www.xiaohongshu.com/explore/69289704000000001e00e83d?xsec_token=AB_Cwbq92rtJFLNgod9xVJQa-U3uVZcdxiPJ38yxfPMAo=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQa-U3uVZcdxiPJ38yxfPMAo=
+6928fc6b000000000d00c5e0,normal,OpenReview史诗级翻车，ICLR秒变开盒现场,"昨晚，学术圈彻底沸腾！
+	
+OpenReview疑似权限配置出错，直接翻了个大车[大笑R]
+	
+所有年份、所有会议的作者、审稿人、AC 信息，都能被轻松查出来😅
+	
+而且查法还贼简单，只要替换下面接口里的相应信息：
+https://api2.openreview.net/profiles/search?group=ICLR.cc/2025/Conference/Submission{}/Reviewer_{}
+当然这个bug已经被修复，目前是没有办法查到任何内容的。
+	
+不过接着昨晚有限的时间窗口，大家也是“冤有头债有主”的开始找人[失望R]
+	
+有人查到了给打2分的同行，有人发现给自己的打低分的居然就在微信列表里？？？
+有人甚至都已经做了个带姓名的审稿红黑榜出来……（图2️⃣，源自小红书博主@大模法师 ）
+流传江湖的40 weakness，40 questions也水落石出[黄金薯R]
+	
+对于这种程度的泄漏，ICLR的官方声明（图3️⃣）用词非常严肃：
+	
+「任何对泄露信息的使用、利用或传播（无论是在本通知之前还是之后）都违反了 ICLR 的行为准则，并将导致所有投稿被直接拒稿以及被ICLR会议禁赛数年。」
+	
+不过，也有人认为真正的问题并不在这里——
+想要真正挽救同行评审流程，真正的解决方案应该是取消不负责任审稿人的匿名权。
+既然被拒稿件要公开，为何不能以同样的标准要求审稿人？
+	
+毕竟，盲审的初衷是保护公正性，而不是纵容不负责任的审稿。
+	
+#大模型[话题]#  #ai[话题]#  #人工智能[话题]#  #学术[话题]#  #ICLR[话题]#  #科研[话题]# #论文[话题]#",,1764293739000,1764293739000,6228870a0000000010008e88,量子位,https://sns-avatar-qc.xhscdn.com/avatar/622887c64f1c23567e524733.jpg,91,21,11,123,北京,"http://sns-webpic-qc.xhscdn.com/202512251531/9dd8b020f0230d8468ccfa2e35269f7e/spectrum/1040g0k031pdmsp3p2a005oh8gs5413k8631gug0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251531/0bc4a034cf6f5214ff93b6afcfdaea9f/spectrum/1040g0k031pdmvvba24005oh8gs5413k8ofct89o!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251531/0f78ad739a3f560015289607e5a755f8/spectrum/1040g0k031pdmvs6ti6005oh8gs5413k8eho75to!nd_dft_wgth_webp_3","大模型,ai,人工智能,学术,ICLR,科研,论文",1766647885313,https://www.xiaohongshu.com/explore/6928fc6b000000000d00c5e0?xsec_token=AB_Cwbq92rtJFLNgod9xVJQWVP7-YXH5-T_ZwwFBy55XA=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQWVP7-YXH5-T_ZwwFBy55XA=
+692a0e79000000001e007b68,normal,ICLR2026泄露数据分析,"昨天拿到泄露出来的ICLR Openreview数据，简单做了个数据分析，看看有没有什么好玩的。由于常规情况下ICLR也会公开审稿数据，但不公开审稿人demographics；因此这个分析主要是基于数据的特殊性，从审稿人的性别、国家、机构、职位这样几个维度来分析的。所有信息来源于openreview api。文章作者的信息，我只用了第一作者，用来代表这篇文章主要贡献的来源。机构、国家、职位的话，我只画了前15个最大的（审稿人数量最多的）。结果图个乐，不是严格的统计分析，不能导出什么有意义的结论。
+P1：【审稿人demographics】审稿人男性占比很大，国内顶校人多并扎堆，中美占据审稿人主要比例，PhD学生是主力军
+P2、P3：【审稿人rating和confidence by demographics】中国审稿人总体来说还是比较友善，教授更严格些且confidence高，junior reviewer比较心软
+P4：【总体rating和confidence分布】总体rating集中在4和6，confidence集中在3和4
+P5：【heatmap显示reviewer->first author的pairwise count信息】相同国家的研究者互相审稿比例很高，且存在本科生审教授文章的现象
+P6、P7：【heatmap显示reviewer->first author的pairwise data的rating和confidence信息】具体感觉不太好解释，大家可以自己看看。过滤掉了<10数据点的pair，防止偏差太大
+	
+Disclaimer：用户demographics信息是从openreview平台用api获取。代码用的cursor+少量人工review，不过应该问题不大。仅population level分析，无个人信息泄露。仅兴趣导向的分析，观点只是自己观点，可能有误。因为是xhs帖子所以不是很严肃，没调色卡和字号，凑活看看哈哈
+#iclr26审稿泄露事件[话题]# #数据分析[话题]# #ICLR[话题]# #AI[话题]# #计算机科学[话题]#",,1764363897000,1764434930000,5b6bf1275d3f3f0001f8c73a,Henry,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31chfuvlogk004abgkeoifhpqia2ql6o,58,17,10,21,美国,"http://sns-webpic-qc.xhscdn.com/202512251554/36a4a2489fc151e8f7251d73d17add29/spectrum/1040g34o31peo031ti4504abgkeoifhpq09mg1t8!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/8266bdde4c7368932400b317da512497/spectrum/1040g34o31peo031ti44g4abgkeoifhpqksekobo!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/d265e6985b8ce3f7d4f6a53703969d6b/spectrum/1040g34o31peo031ti43g4abgkeoifhpqfmfs3c8!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/b931f84136e68eac205669cc832452e9/spectrum/1040g34o31peo031ti4404abgkeoifhpqnb4q7ao!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/75e55df7516dc8339897a3d986bd81a6/spectrum/1040g34o31peo031ti46g4abgkeoifhpqj163fag!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/c4d07a8d3bc8a26ab2122f27c81d2884/spectrum/1040g34o31peo031ti4604abgkeoifhpqld9i670!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/7c66de3fc5456f86a7d682b89ed166c6/spectrum/1040g34o31peo031ti45g4abgkeoifhpqlarh408!nd_dft_wgth_webp_3","iclr26审稿泄露事件,数据分析,ICLR,AI,计算机科学",1766649271470,https://www.xiaohongshu.com/explore/692a0e79000000001e007b68?xsec_token=ABAUWIWHMgtxfcf11MhNzQX199ixZkyUbpFWuhggvZeno=&xsec_source=pc_search,,ABAUWIWHMgtxfcf11MhNzQX199ixZkyUbpFWuhggvZeno=
+6928fc37000000001d03ea1a,normal,炸穿AI学术圈！ICLR评审大开盒，打低分是熟人,"11月27日晚，国内AI社区因学术评审平台OpenReview的前端漏洞引发震荡。这一极低门槛的漏洞让原本匿名的双盲评审彻底失效，用户只需在浏览器网址中替换论文ID和审稿人编号，即可直接查询任意审稿人身份及对应打分，瞬间点燃全网""查审稿人""热潮。
+	
+漏洞曝光后，社交媒体上充斥着各类爆料：有人发现低分评价源于审稿人未能理解论文原意，有人遭遇组内竞争导致的恶意打分，更有极端案例中，打1分的审稿人五个月后提交同赛道论文却未引用原作者成果，被实锤""为自己论文让路""。部分疑似恶意打分的审稿人在身份暴露后，紧急调高了论文评分，引发广泛争议。
+	
+更令人意外的是，该漏洞属于系统级问题，替换网址字符即可查阅ICLR历年论文，以及NeurIPS、ICML、ACL等多个AI顶会的评审信息。近年来AI领域热度飙升，顶会普遍面临审稿人不足的困境，审稿质量下滑已成行业痛点。Pangram Labs此前对ICLR 2026的数据分析显示，21%的同行评审完全由AI生成，超半数评审带有AI使用痕迹；同时有199篇论文被证实完全由AI生成，9%的论文超50%文本为AI撰写。
+	
+作为AI三大顶会之一，ICLR 2026的关注度持续攀升，本届大会收到19490篇论文投稿，对应产生75800篇评审意见，大会将于明年4月在巴西里约热内卢举办。周五零点左右，OpenReview紧急修复了该漏洞，ICLR官方发布声明称，任何使用、泄露相关信息的人将被拒稿并终身禁入，后续还将采取进一步措施，OpenReview也同步发布公告回应。
+	
+不过官方禁令并未完全浇灭吃瓜热情，有网友爬取完整评审名单展开数据分析，整理出打分异常偏低的审稿人清单，还基于ICLR 2026前1万篇投稿的评审结果，统计出不同国别（主要语言）审稿人的平均打分习惯——国人普遍打分偏慷慨，韩国审稿人则相对严格。网友调侃，按照这一节奏，今年8月NeurIPS上写下""Who's Adam？""迷惑评审意见的神秘审稿人身份，或许不久后也将水落石出。此次事件也让行业热议：在互联网时代，真正的匿名是否真的存在？AI顶会的评审机制又该如何完善以应对各类漏洞与争议。#人工智能[话题]# #AI人工智能[话题]# #ai[话题]# #科研[话题]# #学术[话题]# #iclr[话题]#",,1764293687000,1764293688000,55f00d62a75c950983bfc3e9,AI很有意思,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31l5o81miku00415cb06m5gv9l0ob978,43,20,14,89,北京,http://sns-webpic-qc.xhscdn.com/202512251554/45213ca4b09b19f1c9a67a73ae4beaae/1040g00831pdmq54q2400415cb06m5gv9ac0s288!nd_dft_wlteh_webp_3,"人工智能,AI人工智能,ai,科研,学术,iclr",1766649271478,https://www.xiaohongshu.com/explore/6928fc37000000001d03ea1a?xsec_token=AB_Cwbq92rtJFLNgod9xVJQech_X6DYi7mXP2JbNaIivM=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQech_X6DYi7mXP2JbNaIivM=
+69290b32000000001e02fb55,normal,ICLR泄露恶意低分，没审稿人好果子吃！,"昨夜，学术界经历了一场史无前例的「公开处刑」。
+	
+ICLR 2026的评审系统OpenReview出现严重API漏洞，导致原本严格执行的双盲评审机制彻底失效。
+	
+只要将投稿ID填入特定链接，就能获取论文所有作者、审稿人及领域主席的详细身份信息，包括姓名、邮箱、机构履历等。
+	
+更严重的是，系统连同审稿人给出的初步评分和具体评论都一并打包泄露，让很多处于盲审阶段的论文完全“裸奔”。
+	
+OpenReview团队在11月27日上午收到ICLR工作流主席通知后，确认了这一允许跨会议访问匿名信息的安全漏洞，并表示该问题影响了平台上托管的所有会议。
+	
+尽管官方在一小时内迅速部署了补丁修复，但已有部分脱敏数据在网络上传播，波及范围甚至延伸到了NeurIPS、ICML、ACL等其他顶级会议。
+	
+📉 此次泄露事件迅速在学术圈引发连锁反应，ICLR组委会虽已发出严厉警告，表示凡传播泄露信息者将面临拒稿及未来禁止参赛的处罚，但混乱已经造成。
+	
+部分审稿人不仅收到了作者请求提分甚至试图贿赂的邮件，还有人利用泄露信息反向定位并指责给差评的竞争对手，导致许多无偿贡献时间的审稿人感到极度不安。
+	
+田渊栋、谢赛宁等知名学者纷纷呼吁停止传播数据以保护脆弱的学术公平，然而已有数据分析指出了某些国家审稿人的评分倾向。
+	
+舆论对此呈现两极分化，有人担忧双盲评审的破裂让审稿人面临“报复”风险，也有人反讽这能迫使审稿人对自己的言论负责，减少信口开河的现象，这种对立情绪让本应专注于科研的评审过程充满了不确定性。
+	
+🛠️ 针对此次事故，OpenReview发布声明梳理了响应时间线，从收到报告到完全修复漏洞大约耗时一小时。
+	
+令人深思的是，多位网友指出该漏洞早在半个月前的11月12日就已被发现并多次上报，却迟迟未引起及时重视。
+	
+这种管理上的滞后让不少研究者质疑，当他们在面对无端差评感到无助时，组委会的监管似乎总是缺位。
+	
+如今隐私大门洞开，虽然双盲制度的初衷是为了消除偏见，但在身份信息被“开盒”的当下，整个同行评审机制的公信力受到了巨大挑战。
+	
+#人工智能[话题]# #openai[话题]# #显卡[话题]# #大模型[话题]# #deepseek[话题]# #谷歌[话题]#",,1764297522000,1764297523000,66b9ce3a000000001d03021e,新智元,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31e32pjhhgs605plppot7e0guu1u27d0,42,14,0,82,北京,"http://sns-webpic-qc.xhscdn.com/202512251554/8b7846c788ef6ec5e803c4bbc03b1492/spectrum/1040g34o31pdooqgoi80g5plppot7e0guoaq3k78!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/ef06484e57de8782ef515dbbca8fe7c9/spectrum/1040g34o31pdooqgoi8105plppot7e0gu2hgol20!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/ec46aa06aee4a45d98bd4cad3c0fcaa2/spectrum/1040g34o31pdooqgoi81g5plppot7e0gu09flf28!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/7c9633f75a60006049ab7bef7cb9471c/spectrum/1040g34o31pdooqgoi8205plppot7e0guu4nat0g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/c707e0c70fd8a9d831aa891f3c3b4463/spectrum/1040g34o31pdooqgoi82g5plppot7e0gu7thoes0!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/1a1f016a7eb15b7dc7d174441e8fafa4/spectrum/1040g34o31pdooqgoi8305plppot7e0guth5ek6o!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/3c9a254cc3dc2364061bd4b035bb3b34/spectrum/1040g34o31pdooqgoi83g5plppot7e0gunrrrtvo!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/fdd90223d199bf61253dedc140a8de3e/spectrum/1040g34o31pdooqgoi8405plppot7e0gucr5d618!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/cd62ea73bba5952467354a5078fdaad2/spectrum/1040g34o31pdooqgoi84g5plppot7e0gud9ilb4o!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/ca5bf123bb88bc8295a9e4af3a6f3dcb/spectrum/1040g34o31pdooqgoi8005plppot7e0gu9urptcg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/e0642a0f6c38bb989078709c3df31945/spectrum/1040g0k031pdokj7m28005plppot7e0gu2hq1000!nd_dft_wlteh_webp_3","人工智能,openai,显卡,大模型,deepseek,谷歌",1766649271481,https://www.xiaohongshu.com/explore/69290b32000000001e02fb55?xsec_token=AB6z7xpUEymBgHOpFYziNMLf4wOb821PTrGGc-u_mPeCw=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLf4wOb821PTrGGc-u_mPeCw=
+6929c478000000000d03bd9f,normal,学术开盒的闹剧 终于有了官方解决,"此次 OpenReview 匿名泄露事件，ICLR 官方终于发布了举措：
+	
+1️⃣重新指派每篇论文的 AC
+为避免串通行为，每篇论文都重新匹配新的 AC，由新 AC 基于原始评审意见与作者回复独立决定accept/reject
+	
+2️⃣ 回退所有评审与评分至讨论期前
+为避免因分数操纵与讨论串通，决定不允许审稿人继续修改评分或参与讨论
+将所有评审意见与评分恢复到讨论期开始前的版本
+作者仍可在 rebuttal 截止前继续提交回复，但审稿人不能再回应。
+	
+3️⃣ 禁止公开评论（public comments）
+为防止滥用泄露信息，关闭所有投稿的公开评论功能。
+已经含有泄露信息的评论已被删除。
+	
+4️⃣ 严惩骚扰或操纵评审的开盒者
+禁止任何进行骚扰、威胁、曝光或操控审稿流程的行为。
+违规者的投稿将被直接拒稿，并被禁止投稿数年[再见R]
+鼓励向PC举报任何此类行为。
+	
+5️⃣ 与 OpenReview 合作调查
+ICLR 正在与 OpenReview 合作追查开盒者，OR将对所有遭到去匿名化的用户发邮件通知，并且正与跨国执法机构合作调查。
+	
+6️⃣ 审稿人不用再做任何事
+若审稿人受到作者私下联系或施压，也可立即举报。
+	
+#iclr[话题]# #ai顶会[话题]# #科研[话题]# #计算机[话题]#",,1764344952000,1764344952000,60803df5000000000101f73b,Carton,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo312telogvl4005o407nqgbtprh50mm00,36,12,16,56,浙江,http://sns-webpic-qc.xhscdn.com/202512251554/591fefdebdbc60605d4e42e690461a3f/1040g00831pef26erig005o407nqgbtpr27k92bg!nd_dft_wlteh_webp_3,"iclr,ai顶会,科研,计算机",1766649271489,https://www.xiaohongshu.com/explore/6929c478000000000d03bd9f?xsec_token=AB6z7xpUEymBgHOpFYziNMLYK0t3D0KR5coRhOXPTnvjw=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLYK0t3D0KR5coRhOXPTnvjw=
+692907f5000000000d03e938,normal,OpenReview引发的思考,"1. 所谓的对审稿人的隐私保护，只是一种简单的承诺。即使像现在数据泄露了，又不涉及任何实际上的补偿，顶多再做一次承诺，保证以后加强工作。如此往复，信任崩塌。
+2. 别美化任何一个群体，只要有人的地方，就有江湖。按理来说科研应该保持严谨，无论是运动员还是裁判员，应遵守相应的规范。可是，理想是美好的，现实很残酷。当一个人不用为自己的行为负责时，人性的弱点就会被放大。自己遇到不顺心的事就各种为难别人，自己看到同门过得好就想方设法去搞别人，各种丑陋的，损人不利己的事也在科研圈流行，真的是令人唏嘘。
+3. 随着AI的盛行，无论是写作还是审稿，它无处不在。无偿的，匿名的审稿，加剧了AI的使用。投稿不需要成本，只是占用公共的审稿资源。可是审稿人是吃五谷杂粮的人啊，面对着动辄10来篇的稿件，而且充斥着AI的味道，真正能用心审稿的人又有多少呢？如果科研变成了AI创作AI审，那么这个圈子大概也快完了。",,1764296693000,1764296693000,6790d75f000000000e011b68,小小研究僧,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31mm36n3rl8005psgqtfji6r8ll9tjp8,33,5,19,2,福建,http://sns-webpic-qc.xhscdn.com/202512251554/0e24df6a80d8cfcef86005bf9064d972/1040g00831pdntd572s005psgqtfji6r8q0328po!nd_dft_wlteh_webp_3,,1766649271495,https://www.xiaohongshu.com/explore/692907f5000000000d03e938?xsec_token=AB6z7xpUEymBgHOpFYziNMLUhGD8rduXu-IZ7JEFGUAGY=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLUhGD8rduXu-IZ7JEFGUAGY=
+6928939c000000001e027505,normal,ICLR 2026 发布声明：回应 OpenReview 漏洞,"11 月 27 日，ICLR 官方发布声明，确认 OpenReview 出现的软件漏洞导致作者、审稿人和领域主席的姓名被意外泄露。该漏洞影响了所有托管在 OpenReview 上的会议。虽然问题已被迅速修复，但 ICLR 强调任何对泄露信息的使用、传播或利用都属于严重违规。
+ICLR 表示，此类行为将直接导致所有投稿被 Desk Reject，并可能带来多年的参会禁令。如果有人因此遭到联系、威胁，或被提出不当要求，ICLR 呼吁当事人立即向官方邮箱举报。
+声明还特别强调，任何形式的骚扰、报复或人肉搜索都将受到最严厉的处罚。ICLR 将继续调查事件影响，并在后续公布更多措施。
+	
+#openreview漏洞[话题]# #openreview[话题]#",,1764266908000,1764295015000,64aa2eb4000000000a022e7f,momo,https://sns-avatar-qc.xhscdn.com/avatar/645b6a2cad8bfdf0d350826b.jpg,32,12,7,84,江苏,http://sns-webpic-qc.xhscdn.com/202512251554/3f9d73a50e03519d82cc3131d3bc35ca/notes_pre_post/1040g3k031pda7aj32u005p5a5qq2kbjv6t5j0u0!nd_dft_wgth_webp_3,"openreview漏洞,openreview",1766649271498,https://www.xiaohongshu.com/explore/6928939c000000001e027505?xsec_token=AB_Cwbq92rtJFLNgod9xVJQVqRyWHAV1I5wIGB7bG1DTo=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQVqRyWHAV1I5wIGB7bG1DTo=
+6929f726000000001e02a3f8,normal,Openreview的大瓜和审稿人角度的一些思考,"最近OpenReview出了个bug，最近一些会议的审稿人信息被披露了。作为利益相关又不相关的人，也有一点思考。相关是因为我审了不少稿子，包括NeurIPS25，ICLR26，而且在AISTAT26做AC。不相关是因为我今年还没有投过这些会，虽然有时会去。而且就目前公开的ICLR数据来看，我审到的稿子都还没有被泄露出来。
+0 （disclaimer）. 我自己审稿看文章一般都是一把尺子做度量，且希望能从自己擅长的领域帮忙找到一些潜在有实际作用的文章。大多数正经审稿人行得正坐得直不要去焦虑。
+1. 这瓜爆出之后的芸芸众生真的是干啥的都有。做AI这行的聪明人太多了，但聪明人有时候沉不住气，很多时候盲目采取一些行动反而会害了自己。
+2. 这个领域不是很善良，这点可以从很多人做出的极端行为窥见。做出这些行为背后的逻辑是资源的稀缺和恶性竞争。想要入这行的人确实要考虑一下。
+3. 最近基本所有的AI会议基本是华人主导的（投稿数和审稿人的绝对数量优势）。其实可能也要考虑一下，万一AI是个泡沫，对于华人学术界意味着什么。往聪明人太多的地方钻未必是个好主意，鸡蛋最好不要放在同一个篮子里。
+4. 很多人说这些会议都变成了安卓会议。什么是安卓会议？我个人觉得要看你能不能在这个会议上聊到有趣的东西，见到能合作的人。这里有两点。第一，很多人只看发的文章发在哪里，presentation草草了事。这很难说能给多少潜在audience什么信息，反而可能有不好的印象。第二，学术确实有星，很多人都想去追，但抛除掉那些闪闪发亮的光环还剩什么，我觉得是真的喜欢做学术的人要考虑的事情。对的人去了会议做了不错的事情就是苹果会议，不然可能就是去旅游的。
+5. 从投稿审稿分布也可以看出国内的指标导向（例如ccfa）很强。这点就目前来看基本无解。国内的人没法选择，但国外如果不一定要发ccfa的话，找自己audience所在的community不失为一种选择。
+	
+感觉我们能做的事还有很多，希望能做些事情，尽量可以去伪存真吧。先从自己和自己组里开始。",,1764357926000,1764357926000,6138cb610000000002022197,Arvin,https://sns-avatar-qc.xhscdn.com/avatar/6138cb610000000002022197.jpg,29,13,3,2,美国,http://sns-webpic-qc.xhscdn.com/202512251554/254f259bd3189d258a55b9b11dc34a92/1040g00831peknumuiu005o9opdggk8cn2f257ag!nd_dft_wlteh_webp_3,,1766649271502,https://www.xiaohongshu.com/explore/6929f726000000001e02a3f8?xsec_token=AB6z7xpUEymBgHOpFYziNMLZhjSmpFqs85Z5wNVfOqE6k=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLZhjSmpFqs85Z5wNVfOqE6k=
+69287c38000000000d03f5b3,normal,"OpenReview还是太有节目效果了[doge]审稿人信息泄露，线上互怼快进到线下决斗[笑哭R]不知道马上ICLR的均分会不会因此水涨船高[吃瓜R][笑哭R]
+#openreview[话题]# #iclr26[话题]#","OpenReview还是太有节目效果了[doge]审稿人信息泄露，线上互怼快进到线下决斗[笑哭R]不知道马上ICLR的均分会不会因此水涨船高[吃瓜R][笑哭R]
+#openreview[话题]# #iclr26[话题]#",,1764260920000,1764260921000,60776dcf00000000010081be,Dereck,https://sns-avatar-qc.xhscdn.com/avatar/60776e2c00908e99d0e75b8b.jpg,22,4,21,8,江苏,http://sns-webpic-qc.xhscdn.com/202512251554/ff10a1b2f1ddfceb5ebb72dee190d83d/1040g00831pd7adlbis1g5o3ndn7g90du493blug!nd_dft_wlteh_webp_3,"openreview,iclr26",1766649271511,https://www.xiaohongshu.com/explore/69287c38000000000d03f5b3?xsec_token=AB_Cwbq92rtJFLNgod9xVJQbxTcKyMt_0-CrjM136aqX0=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQbxTcKyMt_0-CrjM136aqX0=
+692971c2000000001e022f46,normal,OpenReview信息泄露 那让我查查我的审稿人,"在最严格审稿人top20里看到了我那狡黠的师姐[黄金薯R]
+报复心理，让我在wispaper上查查我的审稿人论文写成什么样子[抠鼻R][黄金薯R]
+	
+#学术论文[话题]#  #学术[话题]#  #论文发表[话题]#  #ICLR[话题]#  #ai[话题]#  #LLM[话题]#  #论文投稿[话题]# #openreview[话题]#",,1764323778000,1764323778000,67ea0691000000000d00a0a0,论文小mo,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31gcg9oedjo6g5pva0q8j9850khes19g,19,3,5,10,甘肃,"http://sns-webpic-qc.xhscdn.com/202512251554/a6c663abf9c820b21e4eb1829b107610/spectrum/1040g0k031pe56irkic105pva0q8j9850k9bj3s8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/3c02be8b631075edc693c6ef6649782e/spectrum/1040g0k031pe56irkic005pva0q8j9850bd3qh7g!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/e31f9426cc296ab05757639e3c52a76c/spectrum/1040g0k031pe56irkic0g5pva0q8j9850a06dd80!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/dbd87e9342e397d94d96fd2bc96a31af/spectrum/1040g34o31pe4s9n32c105pva0q8j98507gk3un0!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/d7122f94cc53826602841746634d7809/spectrum/1040g0k031pe56irkic1g5pva0q8j985059f0830!nd_dft_wlteh_webp_3","学术论文,学术,论文发表,ICLR,ai,LLM,论文投稿,openreview",1766649271517,https://www.xiaohongshu.com/explore/692971c2000000001e022f46?xsec_token=AB6z7xpUEymBgHOpFYziNMLctQisuDVhmqAYfaUOY7Wz8=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLctQisuDVhmqAYfaUOY7Wz8=
+692c23cb000000001e03a5bc,normal,起初，没有人在意这一场灾难……,"起初，没有人在意这一场灾难，这不过是一个 Adam 的疑问，一次 Mental Problem 的爆发，一个 1123 的 accept，直到，一个 api 的泄露，使得这灾难和所有审稿人息息相关。
+	
+人在环境变化与危机中是无知、麻木的。一次因为 api 泄露而到来的“学术春晚”，狂欢过后，真正的反思会到来吗？还是说，这次的灾难尚且不够大？
+#neurips审稿[话题]# #iclr26[话题]# #顶会[话题]# #审稿人[话题]# #neurips25[话题]# #ai[话题]# #openreview漏洞[话题]# #openreview开盒[话题]#",,1764500427000,1764500495000,67963855000000000e011c01,FJ-lsh-Linshey,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31hpiq23ojs6g5psm71aji701ai5igag,19,4,6,16,北京,http://sns-webpic-qc.xhscdn.com/202512251554/4f16dd237255449deff9edd6110b90ee/1040g2sg31pgp57bh2od05psm71aji701mqgenoo!nd_dft_wlteh_webp_3,"neurips审稿,iclr26,顶会,审稿人,neurips25,ai,openreview漏洞,openreview开盒",1766649271519,https://www.xiaohongshu.com/explore/692c23cb000000001e03a5bc?xsec_token=ABm9K_ncmJyWDvhLVStfurBrS4ybzVxXJWYOpF1pvKBWQ=&xsec_source=pc_search,,ABm9K_ncmJyWDvhLVStfurBrS4ybzVxXJWYOpF1pvKBWQ=
+692c26e9000000001e004f3d,normal,ICLR审稿人集体裸奔！学术圈今夜全在查仇人,"家人们大无语事件！OpenReview一个BUG让ICLR双盲评审直接翻车🤦‍♀️
+🍉 抓马瞬间：
+同门师兄一边约火锅一边给我论文打""弱拒绝""
+大厂隔壁组同事电梯里说加油，评审里写""创新不足""
+最绝某副教授审稿意见40弱点+40问题，被扒后光速改分
+还有大三学弟信心值拉满给我最低分，这届本科生太狠了
+🚒 官方救火：
+1小时修复漏洞，声明直接警告：""禁止线下PK！""
+（翻译：NIPS现场不许打架！）
+🤯 后续更绝：
+组委会说要回滚分数但保留吵架记录
+作者们炸了：有人在漏洞期聊成闺蜜，我蹲厕所错过全世界？
+💡 吃瓜总结：
+21%审稿意见是AI写的
+有人把泄露数据做成""审稿人红黑榜""
+现在全网都在传申诉模板
+建议最近开会自带防弹衣，因为你永远不知道对你微笑的同行，就是给你打低分的审稿人！
+ICLR大型开盒现场 #学术圈甄嬛传 #科研人的命也是命
+吃瓜 #AI #论文[话题]# #科研[话题]# #写论文[话题]# #sci[话题]# #研究生论文[话题]# #硕博圈[话题]# #科研学习[话题]# #博士论文[话题]# #小论文[话题]# #科学的力量[话题]#",,1764501225000,1765811805000,66474f090000000007007aa7,Scholar42,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31lh7bd00l8605pi79s4houl7tlles4g,18,6,4,57,辽宁,"http://sns-webpic-qc.xhscdn.com/202512251554/5726753caaf1d6a22b0787c91d7980c3/spectrum/1040g34o31pgpulop24505pi79s4houl7tptdv3o!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/4d06ac5133465f7581187d6e74da1cb0/spectrum/1040g34o31pgpulop245g5pi79s4houl766e7dgg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/dd59f4e05e26e9ed889664021401bd7a/spectrum/1040g34o31pgpulop24605pi79s4houl76nlmd9o!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/b0b51dc7057d2588b0b6c218d706c880/spectrum/1040g34o31pgpulop246g5pi79s4houl7o9g0fu0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251554/665365b36f0d9a7a997804dd5e2c52c8/spectrum/1040g34o31pgpulop24705pi79s4houl713r0170!nd_dft_wlteh_webp_3","论文,科研,写论文,sci,研究生论文,硕博圈,科研学习,博士论文,小论文,科学的力量",1766649271522,https://www.xiaohongshu.com/explore/692c26e9000000001e004f3d?xsec_token=ABm9K_ncmJyWDvhLVStfurBuFAbJUXsvkUspknr3WZyiE=&xsec_source=pc_search,,ABm9K_ncmJyWDvhLVStfurBuFAbJUXsvkUspknr3WZyiE=
+692898dc000000001e02086d,normal,ICLR大开盒后续，两个官方的回复,"学术圈经历了一晚的开盒
+ICLR官方下场说不允许散播，openreview官方也说会追究法律责任。但这么大的参与基数，真能管的过来吗。
+	
+前情提要：北京时间11.28晚有人发现openreview的bug可以查看自己论文的审稿人信息，
+同理可以查过去所有openreview上会议的所有论文的审稿人信息。
+这直接导致了双盲机制和学术投稿制度的崩塌。
+大家查到了一篇论文给出40条审稿意见的审稿人，查到了给自己论文恶意打低分的审稿人。
+可能会出现很多仇人，也可能会倒逼很多审稿人用心审稿。
+这会带来什么样的正面/负面影响大家不得而知，但这一定是AI学术圈历史上里程碑式的一个时间节点。
+#openreview[话题]# #iclr[话题]# #ai[话题]# #论文[话题]#",,1764268252000,1764305745000,61acf607000000001000457e,7Hui,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31ed746bpgs005odcuo3k0hbu2nbk2j0,16,1,2,8,广东,"http://sns-webpic-qc.xhscdn.com/202512251607/05e80f4449e98968f813061cffe7a266/notes_pre_post/1040g3k031pdardn42u005odcuo3k0hbuv6d5ii0!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251607/3c0ba66b2c9eb83b6d2afebf9186443f/1040g00831pdsnhu63c005odcuo3k0hbufmujs1g!nd_dft_wlteh_webp_3","openreview,iclr,ai,论文",1766650046653,https://www.xiaohongshu.com/explore/692898dc000000001e02086d?xsec_token=AB_Cwbq92rtJFLNgod9xVJQUYYnbbpH5Toq7uReVSLqoc=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQUYYnbbpH5Toq7uReVSLqoc=
+6928ff7a000000001e038582,normal,ICLR史诗级开盒现场：OpenReview 大翻车！,"小编一觉醒来被逆天大瓜炸麻了。 OpenReview 出 bug，导致 ICLR 2026 全体审稿人身份直接被一键开盒……
+🍉 事件梗概：
+有人发现 OpenReview 的一个 API 链接里， 只要把数字替换成 paper ID & reviewer ID， 系统会直接把真实姓名、邮箱、单位、经历统统吐出来。
+一夜之间： 论文作者 → 直接查到是谁评的 AC → 直接实名曝光 连匿名邮箱都没来得及抵抗一分钟😵‍💫
+学术春晚提前开幕，群聊全在刷： “我昨天还跟 reviewer 一起喝酒来着……” “我看见我的审稿人了，还挺帅的（不是重点）”
+好在 OpenReview 几小时后火速修了 bug， 但为时已晚： 整个名单都被扒下来了。现在双盲机制的公信力被狠狠动摇，审稿人压力 ↑↑
+	
+明年各大顶会会不会考虑改机制？评论区说出你的想法[偷笑R]
+	
+#DINQ[话题]# #小红书科技AMA[话题]# #科研日常[话题]#",,1764294523000,1764295314000,616d7d91000000000201e9bb,DINQ.,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31pqot00k4g705obdfm8gjqdr9s4bcmo,12,2,0,9,加拿大,"http://sns-webpic-qc.xhscdn.com/202512251607/f4de3b25eb1e46db2542d8b2b0138835/spectrum/1040g34o31pdn7832i40g5obdfm8gjqdrp3itr2g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251607/8b3d24c44bba7b976ba35fdaa3407da5/spectrum/1040g34o31pdn6vdr24005obdfm8gjqdrjopm8g8!nd_dft_wlteh_webp_3","DINQ,小红书科技AMA,科研日常",1766650046661,https://www.xiaohongshu.com/explore/6928ff7a000000001e038582?xsec_token=AB_Cwbq92rtJFLNgod9xVJQULXyDWnXJAU1hwvm4usvfA=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQULXyDWnXJAU1hwvm4usvfA=
+69291ff4000000001e02296c,normal,ICLR审稿人信息泄露,我好像断网了才刷到这个帖子，openreview 信息泄露，有的网友第一时间把审稿人信息爬下来售卖公开，有的审稿人发表逆天review ，果然世界是个草台班子[捂脸R] 这种人品道德都不遵守，更别说学术道德了#学术[话题]# #ICLR[话题]# #论文[话题]# #科研[话题]# #论文发表[话题]# #Openreview[话题]##openreview漏洞[话题]# ##openreview事故[话题]#,,1764302836000,1764302837000,63ea207a00000000260066c6,野老板,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo317c5l1cf3u005ova41t9gpm6kqbked0,11,2,0,2,山东,"http://sns-webpic-qc.xhscdn.com/202512251607/3f4ace5a7ac89bcbf59a1bc3be71d4a3/1040g2sg31pdr314u2ge05ova41t9gpm6ajbpsbo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251607/a25ea6fb79b79c4f33d289cb8ae7921e/1040g2sg31pdr314u2geg5ova41t9gpm6lh3tbmg!nd_dft_wlteh_webp_3","学术,ICLR,论文,科研,论文发表,Openreview,openreview漏洞,openreview事故",1766650046664,https://www.xiaohongshu.com/explore/69291ff4000000001e02296c?xsec_token=AB6z7xpUEymBgHOpFYziNMLR9Cf9oE4eJhTIeABxXV7eA=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLR9Cf9oE4eJhTIeABxXV7eA=
+69317d4e000000001e00d9e9,normal,后续！ICLR重磅回应：评审回滚、AC重置,"过去一周，全球AI圈经历了一场现实版“无间道”。自OpenReview那个让审稿人“裸奔”的史诗级漏洞爆发后，事情彻底失控了——从单纯的技术漏洞，演变成了大规模的串通、骚扰甚至贿赂丑闻
+	
+就在社区一片哗然，担心顶会信誉崩塌之时，ICLR终于公布了详尽的调查时间线与最终处理方案！
+	
+一、事故影响触目惊心
+1、波及范围：超过 10,000篇投稿（占总数的45%）受到影响
+2、恶性升级：漏洞被利用后，迅速从“身份泄露”恶化为有组织的串通、对审稿人的定点骚扰以及赤裸裸的贿赂尝试
+3、潜伏危机：调查显示，漏洞可能早在11月11日（公开前半个月）就被利用了，意味着黑暗交易可能已污染了部分评审讨论
+	
+二、ICLR的“雷霆手段”：一切归零，重新开始
+1、评审数据强制“回滚”：将所有受影响论文的评审状态，强制恢复至讨论期开始前的“纯净”版本。简单说，就是把进度条硬生生拖回了漏洞爆发前，试图当这一切没发生过
+2、领域主席（AC）全员重置：重新分配AC，以此确保后续决策不再受已知泄露信息的污染
+	
+三、清算时刻：封禁、拒稿与纪律处分
+除了流程重启，针对破坏者的清算也已同步开始：
+1、封禁源头：泄露数据的始作俑者已被平台封禁
+2、严惩串通：任何被证实利用泄露信息进行串通或不当影响的论文，将面临直接拒稿，并可能受到进一步学术纪律处分
+3、直面黑暗：官方罕见地直接披露，事件中出现了第三方对审稿人进行恐吓与贿赂的恶劣行径
+	
+技术系统的漏洞可以被修复，但人性中的投机与贪婪，永远是学术诚信需要永恒警惕的“零日漏洞”。这场余震过后，所有学术会议都该重新检查自己的“防火墙”了
+	
+（图为ICLR官方对此次安全事件的详细复盘与后续补救措施）
+	
+#iclr26[话题]# #openreview[话题]# #openreview漏洞[话题]# #iclr26审稿泄露事件[话题]# #顶会审稿[话题]# #研究生[话题]# #科研[话题]# #论文[话题]# #学术[话题]# #人工智能[话题]#",,1764851022000,1764898200000,62f9f96b000000001501c536,模术狮,https://sns-avatar-qc.xhscdn.com/avatar/66221ac26e3dec0001ec20ee.jpg,8,3,1,1,江苏,"http://sns-webpic-qc.xhscdn.com/202512251607/d5164bbce3d30934c550e28fdd58e729/notes_pre_post/1040g3k831pm0ogesjqdg5onpv5llbh9mn0fbaog!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251607/63dfd2c3a8fc2aabbcb3c50257195f4d/notes_pre_post/1040g3k831pm0ogesjqcg5onpv5llbh9mmh3f5kg!nd_dft_wlteh_webp_3","iclr26,openreview,openreview漏洞,iclr26审稿泄露事件,顶会审稿,研究生,科研,论文,学术,人工智能",1766650046668,https://www.xiaohongshu.com/explore/69317d4e000000001e00d9e9?xsec_token=AB25cznRPioHoUMam-cuk5YHlWAjDDTLjwnB8mQv2Ddqo=&xsec_source=pc_search,,AB25cznRPioHoUMam-cuk5YHlWAjDDTLjwnB8mQv2Ddqo=
+6928faae000000000d00fdc1,normal,ICLR现重大漏洞致审稿人信息泄露学术界震惊,"ICLR 2026会议出现严重漏洞，导致原本匿名的审稿人、作者和领域主席信息被公开，引发了学术界的轩然大波。
+这一事件的起因是ICLR 2026所使用的OpenReview平台存在一个安全漏洞，只要将投稿ID填入特定的API链接，就能获取论文的作者、审稿人及领域主席的姓名、邮箱、机构、个人履历等详细信息，甚至还能看到审稿人对论文的初步评分和评论。
+ICLR组委会在11月27日已经意识到该问题，并紧急声明该漏洞影响了所有托管在OpenReview上的会议，他们感谢OpenReview团队迅速修复了此问题。同时，ICLR也发出警告，若有人传播泄露的信息，将面临直接“拒稿”，并且未来再也无法参与ICLR的相关活动。已经有人因自曝信息导致论文被封杀。
+这一漏洞的发现对学术界造成了巨大冲击，众多学术大佬纷纷发声呼吁不要传播和利用泄露的数据，以维护学术界的公平公正。这件事让双盲评审制度受到严重挑战，双盲评审一直是学术公平的根本保障，可如今如此大规模的信息泄露，让学术界处于信任危机中。
+有人通过数据分析发现，例如韩国和俄罗斯给出的分数最低等现象，也有人指出这漏洞揭示了学术评审的一些黑洞，比如可能由不懂领域、缺乏背景的人评审论文，领域主席对此却放任不管。还有的人认为这次泄露能反向促进审稿人的责任感，让审稿人在公开身份的情况下更认真对待学术成果，不敢随意写下不负责任的内容。更离谱的是，有作者利用泄露信息定位到自己的审稿人竟是竞争论文的作者，该审稿人还恶意给差评并且无视作者的反驳，这引发了作者的强烈不满。
+不过，也有人指出匿名审稿人是无偿为学术界贡献时间与精力的，他们是学者的“朋友”而非“敌人”。但如今信息泄露，已经让那些给出差评的审稿人被作者本人定位，有人担心接下来可能会出现“冤冤相报”“有仇报仇”的情况，学术界将陷入混乱。
+OpenReview团队在收到ICLR工作流主席的通知后，在一小时内就部署了软件补丁阻止未授权访问，迅速修复了漏洞。但让人疑惑的是，这一漏洞在近半个月前就已存在，早在11月12日就有人向OpenReview发出了相关邮件，且不止一封。除了ICLR，像NeurIPS、ICML、ACL等顶会的信息也都能被扒出。
+#小红书科技观察团[话题]# #AI便利店[话题]# #get职场新知识[话题]# @科技薯",,1764293294000,1764293295000,5eef14a3000000000101de30,林小一,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31ae7euh1ng005nnf2ihgbnhg0e3v03g,8,2,1,24,北京,http://sns-webpic-qc.xhscdn.com/202512251607/3182bce739f988030c4b058ec1ea6594/1040g2sg31pdmq2i3iol05nnf2ihgbnhgqp2r0t8!nd_dft_wlteh_webp_3,"小红书科技观察团,AI便利店,get职场新知识",1766650046670,https://www.xiaohongshu.com/explore/6928faae000000000d00fdc1?xsec_token=AB_Cwbq92rtJFLNgod9xVJQbe9aYl70H-1o3Cu5AeOx1I=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQbe9aYl70H-1o3Cu5AeOx1I=
+6928f368000000001e00ffcf,normal,学术圈炸了！ICLR评审大开盒，信息全泄露,"北京时间 11 月 27 日晚，国内 AI 社区全数炸锅。在学术论文审稿最常用的 OpenReview 平台上，一个前端 bug 导致数据库泄露，让原本的双盲评审变成了明牌。
+	
+这次的信息泄露方法简单到了极致：只要在浏览器上输入某个网址，自行替换你要看的 paper ID 和审稿人编号，你就可以找到对应的任何审稿人的身份。你可以知道是谁给你审的论文，知道他 / 她给你打了多少分。
+	
+因为没有操作门槛，在传播开来之后，所有人都瞬间切换到了调查模式，毕竟这年头谁还和审稿人没点摩擦，终于可以「有冤报冤，有仇报仇」了。#我在小红书造热点[话题]# #红薯地新鲜事[话题]# #热点讨论团[话题]# #人工智能[话题]# #AI工具[话题]# #大模型[话题]# #AI人工智能[话题]# #ai[话题]# #openai[话题]# #科技[话题]# #deepseek[话题]# #企业[话题]# #数字化转型[话题]# #小红书热点观察团[话题]# #小红书科技观察团[话题]# #AI新手村[话题]# @科技薯",,1764291432000,1764291433000,54eebb7e2e1d933eec5e2a55,未来智能Mind,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31a3i6h5nni00401jbltnsail6do63io,8,4,0,17,北京,http://sns-webpic-qc.xhscdn.com/202512251607/e3466592dc9bdbd614c0a5efa0e31ffe/1040g2sg31pdlt1bhiae0401jbltnsail4l4caqo!nd_dft_wlteh_webp_3,"我在小红书造热点,红薯地新鲜事,热点讨论团,人工智能,AI工具,大模型,AI人工智能,ai,openai,科技,deepseek,企业,数字化转型,小红书热点观察团,小红书科技观察团,AI新手村",1766650046674,https://www.xiaohongshu.com/explore/6928f368000000001e00ffcf?xsec_token=AB_Cwbq92rtJFLNgod9xVJQe3jmeCMX1MEW9aAgnor8Lw=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQe3jmeCMX1MEW9aAgnor8Lw=
+69290cf2000000001e02b9e0,normal,说说OpenReview信息泄漏的个人感受,"ICLR OpenReview崩塌 个人觉得反而是好事！
+本来现在学术圈已经乱做一团，同行评审的公正性早已经岌岌可危！如果这次的审稿人信息泄漏，能够带动领域进步和改革，及早扼杀不良分气，或许能够挽救已经开始风雨飘摇的学术圈吧！
+如果ICLR的PC们，能够吸收经验，披露以前的信息，改变目前僵硬的同行评审规则，那必然是学术圈的幸运。
+作为普通人，只能期望有所改变，让真正做科研的人，能够发光发热，而不是劣币驱除良币[微笑R][微笑R]
+#科研[话题]# #iclr[话题]# #iclr26[话题]# #ai[话题]# #neurips[话题]#",,1764297970000,1764299807000,6364f5e9000000001f01ebd5,小离歌迩,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo312t8bbkale5g5or4unknrqulklggj9o,7,1,3,2,新加坡,http://sns-webpic-qc.xhscdn.com/202512251607/3c7e0fa3a91fd66a2b5d460b461a3bc9/1040g2sg31pdoqo7hio705or4unknrqul1svqu50!nd_dft_wlteh_webp_3,"科研,iclr,iclr26,ai,neurips",1766650046681,https://www.xiaohongshu.com/explore/69290cf2000000001e02b9e0?xsec_token=AB6z7xpUEymBgHOpFYziNMLQe0R-0q6oGjRH6LDElh2FE=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLQe0R-0q6oGjRH6LDElh2FE=
+69298845000000001f0082c3,normal,离谱，OpenReview漏洞导致身份信息泄露😂,"2025年11月27日，OpenReview （ICLR、NeurlPS 等多个顶会使用的投稿系统）出现严重软件漏洞，导致一段时间内所有人的身份信息（作者、审稿人、AC）被泄露，彻底破坏了双盲审稿的匿名性。
+	
+ICLR 2026官方在2025年11月28日发的这条推文 （https://x.com/iclr conf/status/1994104147373903893）内容如下（中文翻译）：
+“我们已获悉 OpenReview 出现漏洞，导致部分会议（包括ICLR 2026）的作者、审稿人和领域主席（AreaChair）的身份信息在一段时间内被公开可见。
+任何故意利用这一漏洞去查找、传播或使用泄露身份信息的行为，都属于严重违反学术道德和会议行为准则。
+一经发现，将立即：
+﻿﻿* 直接桌驳（desk reject）相关投稿
+* 对涉事人员实施多年禁投 ICLR的处罚
+同时，如果有任何人因身份泄露而收到贿赂、威胁或其他不当联系，请立即向程序主席（PC）举报。
+我们正在与 OpenReview 团队一起紧急处理此事，后续会发布更多信息。”
+	
+社区反应非常激烈，主要愤怒点包括：
+﻿有人可能已经利用漏洞给竞争对手打低分，或给“自己人”打高分
+﻿官方通知太晚，很多人在漏洞修复后才知道已经泄露
+﻿﻿双盲制度形同虚设，公平性彻底崩盘
+﻿﻿有很多人呼吁直接回滚所有已经改动的分数，或者干脆重审
+目前事件还在发酵，多个顶会都在紧急评估影响。
+	
+#iclr[话题]# #neurips[话题]# #双盲[话题]# #审稿[话题]# #顶会[话题]# #草台班子[话题]# #iclr2026[话题]#",,1764329541000,1764329696000,639d12b200000000270289a0,闪闪亮亮奇妙光波,https://sns-avatar-qc.xhscdn.com/avatar/664214d081905a84ead8b920.jpg,6,2,0,20,北京,"http://sns-webpic-qc.xhscdn.com/202512251607/ba5a77052cb9873fd2c8e659e9eddaa5/spectrum/1040g34o31pe7tbftjk205ost2ap9t2d036nn2cg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251607/712cc75f57f6ba401898762cd65c3e13/spectrum/1040g0k031pe7tus326005ost2ap9t2d0k71u8l0!nd_dft_wgth_webp_3","iclr,neurips,双盲,审稿,顶会,草台班子,iclr2026",1766650046688,https://www.xiaohongshu.com/explore/69298845000000001f0082c3?xsec_token=AB6z7xpUEymBgHOpFYziNMLUKOir6YZ32745jkLvw_0kc=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLUKOir6YZ32745jkLvw_0kc=
+6929490d000000000d03d749,normal,ICLR“开盒”‼️ 真正的open review,"北京时间 11 月 27 日晚，在学术论文审稿最常用的 OpenReview 平台上，一个前端 bug 导致数据库泄露，让原本的双盲评审变成了明牌。
+	
+这次的信息泄露方法简单到了极致：只要在浏览器上输入某个网址，自行替换你要看的 paper ID 和审稿人编号，你就可以找到对应的任何审稿人的身份。你可以知道是谁给你审的论文，知道他 / 她给你打了多少分。
+	
+今日零点左右，bug 被紧急修复，ICLR 终于发布了官方声明。（见图二）
+	
+ICLR 表示任何使用、暴露或分享泄露信息的人都会被拒稿且常年被 ICLR 禁入，大会方未来还计划采取进一步的行动。
+	
+随后，OpenReview 也给出了官方公告。（见图三）
+	
+学界、业界的大佬们也纷纷对此事件进行了点评。（见图四、图五）
+	
+#ICLR[话题]# #openreview[话题]# #openreview漏洞[话题]# #信息泄露[话题]# #ICLR审稿[话题]#",,1764313357000,1764313357000,66f9897f000000001d030e90,智猩猩,https://sns-avatar-qc.xhscdn.com/avatar/e30403a1-c151-37c0-8cbd-3b4a9c53d8fe,4,1,0,3,北京,"http://sns-webpic-qc.xhscdn.com/202512251607/252be46fc6567230568ffe72dbf4ab36/notes_pre_post/1040g3k831pdr6q8g2obg5pnph5vne3kg7tqlht0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251607/011850ffc1ea94d80b48cccb5dd3b3b3/notes_pre_post/1040g3k831pdr6q8g2ob05pnph5vne3kg4pgd8l0!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251607/14e039cb7a47ea320ea1de09c31fa55f/notes_pre_post/1040g3k831pdr6q8g2oag5pnph5vne3kghgk1mho!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251607/e49f4c9fffc659dea2636075ad84622a/notes_pre_post/1040g3k831pdr6q8g2odg5pnph5vne3kgohqqke8!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251607/af7a36f94f7d5044b0fd33a395ce9e70/notes_pre_post/1040g3k831pdr6q8g2oa05pnph5vne3kgqd3bhg8!nd_dft_wgth_webp_3","ICLR,openreview,openreview漏洞,信息泄露,ICLR审稿",1766650046696,https://www.xiaohongshu.com/explore/6929490d000000000d03d749?xsec_token=AB6z7xpUEymBgHOpFYziNMLeFUnaq2znxw-aufglrsalU=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLeFUnaq2znxw-aufglrsalU=
+69391a7f000000001e028af3,normal,如何看待Open Review系统bug泄露审稿人身份,"看到这个消息其实没有多惊讶，既是意料之外，又是意料之中！
+	
+当下的双盲审稿机制，本质上已经演变成一种结构性不公平的游戏。
+	
+本来它是为了隔离身份信息、减少偏见，但实际上却为某些审稿人的不当行为提供了天然的掩护。
+	
+小同行之间的利益冲突、学术竞争中的隐性较劲，甚至单纯的负面情绪，都可以被包装成“有理有据”的低分意见。
+	
+面对这些表面上严谨但实则带有恶意的审稿意见，作者往往只能无奈接受。
+	
+有人或许会说，AC会主持公道。
+	
+然而，经常投稿的人都知道AC的时间极其有限，他们几乎没有精力在一份稿件上反复审读、甄别细节。
+	
+运气好时遇到一个存心找茬的审稿人，负责任的 AC 或许还能出手“捞一把”；若不幸遇到两个，那就连 AC 也无能为力了。
+	
+审稿人即便做出了明显不负责任的判断，也极少受到任何追责。因为他们完全能够把恶意裹挟进“合理的 weakness”中，让批评看似专业、逻辑严密，却在实质上对研究贡献构成不当的质疑。
+	
+作者不仅要用大量篇幅解释自己并不存在的问题，还必须设法说服 AC 不被这些“合理弱点”误导。
+	
+至于要求 AC 主动判断审稿人是否存在恶意，那更是难上加难。除非审稿人愚蠢到直接暴露自身动机，否则几乎没有 AC 会冒险做这种裁决。
+	
+久而久之，双盲机制就变成了：审稿人可以零成本作恶，而作者却几乎没有任何反制手段。
+	
+更讽刺的是，双盲本应保护审稿人，但如今却成为某些人“为所欲为”的盾牌。那些动辄提几十个问题、反复质疑 novelty 和 experiment，却在作者补齐实验后又突然装死的审稿行为，离大谱。
+#学术[话题]# #论文投稿[话题]# #审稿人[话题]#",,1765350015000,1765350016000,63d768ad000000002702bdc4,经典SCI解读,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31oppb8jo1a605ound2mptfe4cadech0,3,2,0,0,山东,http://sns-webpic-qc.xhscdn.com/202512251607/c7d930d35b874a9c463d9b217421ab2e/1040g2sg31ptenb3f52d05ound2mptfe4kq19omg!nd_dft_wlteh_webp_3,"学术,论文投稿,审稿人",1766650046702,https://www.xiaohongshu.com/explore/69391a7f000000001e028af3?xsec_token=ABF3lTLeOVw2k_vsCPcDaI_cfC1PC1LiAHx9yx2vRUy3I=&xsec_source=pc_search,,ABF3lTLeOVw2k_vsCPcDaI_cfC1PC1LiAHx9yx2vRUy3I=
+692c02f4000000001e037fe7,normal,ICLR“当场裸奔”，审稿人被一键开盒,"独家丨ICLR“当场裸奔”，审稿人被一键开盒，OpenReview爆出史上最大双盲翻车现场
+	
+ICLR 2026 的 OpenReview 昨晚直接翻车，堪称学术圈版的「当场裸奔」。因为后台权限配置出现致命失误，只要把投稿的内部 ID 填进一段特定 API 链接，系统就会乖乖把这篇论文绑定的 reviewer 和 AC 的实名 profile 统统吐出来：姓名、邮箱、单位、履历，一应俱全。#ZFinance[话题]#",,1764492021000,1764492021000,62c2e8c7000000001b025f73,小Z说财经,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo30uplkfc6li0g5om2t33msnrjnsneb1g,2,2,0,0,天津,"http://sns-webpic-qc.xhscdn.com/202512251618/3bab5d53a7dbc67a8d099911e1040b69/notes_pre_post/1040g3k831pglhgfa2seg5ps51aji3um74mdq8ko!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/03b2d085ce4d5d69d076a8d94a787629/notes_pre_post/1040g3k831pglhgfa2se05ps51aji3um7bu1q7d0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/d9249ce58d8485c06a1d80d3272c746b/notes_pre_post/1040g3k831pglhgfa2sgg5ps51aji3um7hrrch40!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/c01ec220a8308996faad8348bf0dd1c9/notes_pre_post/1040g3k831pglhgfa2sfg5ps51aji3um7n907l9g!nd_dft_wlteh_webp_3",ZFinance,1766650688081,https://www.xiaohongshu.com/explore/692c02f4000000001e037fe7?xsec_token=ABm9K_ncmJyWDvhLVStfurBvg9_r7ZTCCU7x-8jmnoX4w=&xsec_source=pc_search,,ABm9K_ncmJyWDvhLVStfurBvg9_r7ZTCCU7x-8jmnoX4w=
+6929bac7000000001e002ca5,normal,活久见，为应对Openreview泄露带来的影响，ICLR为每个投稿分配了新AC,活久见，为应对Openreview泄露带来的影响，ICLR为每个投稿分配了新AC,,1764342471000,1764342472000,6476c69c000000001c028cf4,Ziqiang,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31p97ktdqic605p3moqe7537khreouq0,1,0,2,1,江苏,http://sns-webpic-qc.xhscdn.com/202512251618/48041b88d0ff81dbdad6c77c81e8d132/1040g2sg31pee9d54i92g5p3moqe7537kcrr6310!nd_dft_wlteh_webp_3,,1766650688099,https://www.xiaohongshu.com/explore/6929bac7000000001e002ca5?xsec_token=AB6z7xpUEymBgHOpFYziNMLZ0IIoGH2xNpWkVELEZf6DA=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLZ0IIoGH2xNpWkVELEZf6DA=
+6928b22d000000001b026af0,normal,学术圈开盒狂欢，这一年感觉大家都崩溃了,"昨晚看到OpenReview上出了一个Bug，只要输入特定字段给一个链接，系统就会自己输出论文的reviewer的个人信息。不仅是ICLR 2026，NeurIPS、ICML、ACL 这些顶会都能输出…
+	
+所以，有很多人立刻人肉出了自己的论文审稿人是谁，整个一大型开盒现场。
+	
+虽然现在ICLR官方说bug已经OpenReview修复了，但似乎已经有人把整份名单全爬了下来（图4 Z Finance）。
+	
+审稿人和投稿人之间的矛盾，我们之前也讲过一回。大概总结一下就是，这两年AI风太大，学术圈的朋友们也都想在里卷出成绩，所以一直狂发论文，让整个领域都变卷了。各个顶会面对这些越来越多的论文，其实也搞不来更多高质量的人审，这导致这两年一些被邀请来的Reviewer质量不如之前高，有人开始用AI随便瞎审，有人甚至直接开始随便瞎BB。
+	
+今年最出名的瞎审案例就是那个 Who's Adam（具体看我图6），被曝出之后让各种辛苦写论文的朋友群情激愤，从X到小红书都骂翻了。
+	
+这种情绪下，现在忽然OpenReview冒出一个漏洞，能让人查到底是谁给自己论文随便打低分，那铁定是要看一眼的节奏。
+	
+只能说，这股“有冤报冤 有仇报仇”的Feel，其实是结构性问题层层累积，积怨已久了。如果各个顶会再不出一些方案让整个审稿机制更科学，估计这种事之后还会发生。
+	
+#AI[话题]# #大模型[话题]# #学术[话题]# #很担心论文人的精神状态[话题]# #人工智能[话题]# #很担心论文人的精神状态[话题]# #科研学习[话题]# #学术会议[话题]# #科技[话题]#",,1764274733000,1764274734000,65d9910300000000050308e1,四木相对论 AI版,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo30vi5glhr64005pepi41he2717mvo6j8,9502,2627,417,7564,北京,"http://sns-webpic-qc.xhscdn.com/202512251618/3d851a4a0872fb7940448d279d9235a4/notes_pre_post/1040g3k831pdd9olfis9g5pepi41he271pfc29ag!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/9a4cebd525e47dfe71c07264a346b0a8/notes_pre_post/1040g3k831pdd9olfisa05pepi41he271b0g36lg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/d5db224e86c070655a6010133966ab4c/notes_pre_post/1040g3k831pdd9olfisag5pepi41he271j0ph8fo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/6870e705ac0d2e527ee03fbdcf7adaa8/notes_pre_post/1040g3k831pdd9olfisb05pepi41he2711jngtb8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/7434e91e7ae69504592f55f389041012/notes_pre_post/1040g3k831pdd9olfisbg5pepi41he271hnbol6g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/33e6957d0c6f33966e3936663c47ba57/notes_pre_post/1040g3k831pdd9olfisc05pepi41he271mis0t9g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/a76eb68d24c7d08f4a44c47a3f8c4e33/notes_pre_post/1040g3k831pdd9olfiscg5pepi41he271a8chhdg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/cc958c541bbc17c674fc48aa5ebd4127/notes_pre_post/1040g3k831pdd9olfisd05pepi41he271n9v2ta8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/234133c58cd47ee9a4aa21c821f1387e/notes_pre_post/1040g3k831pdd9olfisdg5pepi41he2717sob600!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/0e5f314f4edadcd1d102c07d92edd20a/notes_pre_post/1040g3k831pdda56n2u705pepi41he271aaeitbg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/63ae6dad6fba04c42c497cb779b32b1c/notes_pre_post/1040g3k831pdda56n2u7g5pepi41he271ugvqd0g!nd_dft_wlteh_webp_3","AI,大模型,学术,很担心论文人的精神状态,人工智能,科研学习,学术会议,科技",1766650688104,https://www.xiaohongshu.com/explore/6928b22d000000001b026af0?xsec_token=AB_Cwbq92rtJFLNgod9xVJQRzqfde6dQpeCFvPfEYqRIA=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQRzqfde6dQpeCFvPfEYqRIA=
+692c02d1000000001e025c1d,normal,ICLR 极端打分的机构分布,"别人不敢指明的说我就来说了。这里没有黑谁的意思 就只是放出来明说是非了。
+	
+首先 华人学校基本占领世界学术 占比非常高
+	
+其次 这次 ICLR review 泄露之后，我根据目前能看到的公开信息，对泄露的前一万条 review 做了一个很窄但很具体的统计：只看极端低分——尤其是 0 分 + 置信度 5。最新数据是11月30日下午4点从openreview.online提取。
+	
+在这 1 万条里，按 active reviewers 数量排前面的高校包括：北大（310）、浙大（248）、清华（400+）、上交（200+）、中科大（181）、复旦（148）、NUS（161）、港中文（130）、NTU（125）、港科大（62），再加上 MIT、牛津、剑桥 等，也都有相当数量的审稿人——都是妥妥的一线“审稿大户”。
+	
+但如果只看极端低分 打并且只打 0 分 + 置信度 5（e0-5），图景完全变了：
+	
+- 在这一万条里，可以匹配到的清华相关审稿人大约 400 人，共给出了 6 篇 e0-5 分。根据若干第三方对这几篇论文及其评审的独立梳理，大致认为其中只有 1 篇勉强接近“0 分级别”，其余几篇存在一句话评审、理由极其单薄等问题，这类 review不少外国人直接称为 “toxic”。
+	
+- 韩国那边（主要是首尔大）审稿人不多（<50），但 0 分总数仅次于清华，按人数归一化后的比例甚至是最高的；
+	
+- 而在同一批样本下，北大、复旦、NUS、NTU、港大、港科大、MIT、牛津、剑桥 这些审稿人大户，出现的 e0-5 次数是 0。
+	
+- 此外还有一条 long tail：零星分散在其他机构和个人的少量 0 分案例。从目前能看到的内容看，其中有几篇确实接近“应该被 0 分”的水平（比如明显胡扯、完全不按基本规范来），这部分更像是正常的极端个例，而不是系统性模式。
+	
+在泄露的这前一万条 review 里，极端打分不是随机噪声，而是高度集中在极少数机构（清华 + 首尔大）；其他审稿人规模相当的一线高校，极端 0 分基本为 0。
+	
+这组数字说明的不是“谁好谁坏”，而是一个更加尴尬的事实：极端 0 分并不是正常学术分歧，而是高度集中在极少数机构的“习惯性操作”。
+	
+所以下次投稿 你们懂应该放什么到 COI 那栏里面了吧
+	
+@Thien-Minh Nguyen 天明 阮  come and eat melon.",,1764491985000,1764731361000,639373b700000000260065ab,徒手拆高达,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31jo6aaih3q605osjeerpgpdb2q4oup0,899,481,218,861,新加坡,"http://sns-webpic-qc.xhscdn.com/202512251618/4e4cdc9bcf57dab55a485ffa93123ed0/spectrum/1040g34o31pgl6iepi80g5osjeerpgpdbg92pfi0!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/3b22d1cf992d0b6fbcb591f12c89b481/spectrum/1040g34o31pglp30diaf05osjeerpgpdbmrhnh68!nd_dft_wgth_webp_3",,1766650688112,https://www.xiaohongshu.com/explore/692c02d1000000001e025c1d?xsec_token=ABm9K_ncmJyWDvhLVStfurBurSh04XRpQS4zTdAvaASCI=&xsec_source=pc_search,,ABm9K_ncmJyWDvhLVStfurBurSh04XRpQS4zTdAvaASCI=
+69291745000000001e0107ef,normal,学术圈大逃杀！ICLR:I Can Locate Reviewer,"第一章：最后的晚餐
+喜欢的话，双击一下，谢谢大家！
+Aplus云组会原创，首发于小红书。
+	
+小说介绍：
+名称：《重生之我觉醒了ICLR：I Can Locate Reviewer》
+类型： 都市/系统/科研
+核心设定： 学术圈是一个巨大的“黑暗森林”。匿名评审是射向作者的冷枪。主角重生回投稿前，觉醒 ICLR系统（I Can Locate Reviewer），能直接穿透匿名机制，看到审稿人的真实身份、地理位置、甚至师承关系。他发誓，要让恶意评分的reviewer付出代价。
+创作背景：2025年11月27日，OpenReview系统出现bug，导致全世界人短暂拥有了ICLR系统（I Can Locate Reviewer）。
+	
+鸣谢：
+[1] @eyewater . @eyewater RedNote Reviewer. 2025
+	
+#深度学习[话题]# #Aplus云组会[话题]# #科研[话题]#  #很担心研究生的精神状态[话题]#  #博士生[话题]#  #科研人的精神状态[话题]# #研究生[话题]# #小红书校园日记[话题]# #科幻[话题]# #抽象[话题]#",,1764300613000,1764497071000,65546f5f0000000002028ac0,Aplus云组会,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31phoku39k06g5pakdtfgl2m0k0kt26o,883,153,101,1173,广东,"http://sns-webpic-qc.xhscdn.com/202512251618/1d8e18e5bfb26d9a4272103a17246f46/spectrum/1040g34o31pdq2v7aia905pakdtfgl2m0qghqi0o!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/5758fe776ebc2bf72f0782f79e27426c/spectrum/1040g34o31pdq2v7aia9g5pakdtfgl2m0ptnd5kg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/1a3c49ab063eb919763902156fabd027/spectrum/1040g34o31pdq2v7aiaa05pakdtfgl2m03r9a2l0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/2e594ef1695294aa0e9f028960451b2a/spectrum/1040g34o31pdq2v7aiaag5pakdtfgl2m0q5s8ujo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/a3ec84e09e8f3b7fc27db4d72550f6c7/spectrum/1040g34o31pdq2v7aiab05pakdtfgl2m06sfjs68!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/295084e966f73c7a264396159d99476a/spectrum/1040g34o31pdq2v7aiabg5pakdtfgl2m0duipqsg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/a3a22e1ecf25aba8c3d86c05b44c59f9/spectrum/1040g34o31pdq2v7aiac05pakdtfgl2m0lia2jro!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/9d898e801f03e4545678818d82ea7147/spectrum/1040g34o31pdq2v7aiacg5pakdtfgl2m0rgrvno0!nd_dft_wlteh_webp_3","深度学习,Aplus云组会,科研,很担心研究生的精神状态,博士生,科研人的精神状态,研究生,小红书校园日记,科幻,抽象",1766650688114,https://www.xiaohongshu.com/explore/69291745000000001e0107ef?xsec_token=AB6z7xpUEymBgHOpFYziNMLeDphbCtHou26hWa4WzjcZA=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLeDphbCtHou26hWa4WzjcZA=
+69296d9d000000001e014177,normal,有人开始大规模公屏开盒reviewer了,爆了，感觉今年iclr真搞不下去了，这个人开了小号公屏开盒所有异常低分reviewer#iclr[话题]# #iclr26[话题]# #openreview[话题]#,,1764322717000,1764322730000,64abb970000000001c02908a,添加一个名字,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31619ea6ngm2g5p5bn5o7544af9utiio,692,140,152,1239,广东,http://sns-webpic-qc.xhscdn.com/202512251618/597bf93fda031093f484a269e923227a/notes_pre_post/1040g3k031pe4r8odi8605p5bn5o7544apncuf70!nd_dft_wgth_webp_3,"iclr,iclr26,openreview",1766650688119,https://www.xiaohongshu.com/explore/69296d9d000000001e014177?xsec_token=AB6z7xpUEymBgHOpFYziNMLbM-twOMwQuQxTWrIH5L2fM=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLbM-twOMwQuQxTWrIH5L2fM=
+69287906000000001e031332,normal,武动 NeurIPS!,"NeurIPS 得加强安保工作了：
+	
+openreview 可以查到审稿人和投稿人信息了，直接变成线下武斗 🤣🤣🤣
+	
+我已经知道谁给我打的 2 分了
+	
+#人工智能[话题]# #ICLR[话题]# #ICML[话题]# #EMNLP[话题]# #AAAI[话题]# #NIPS[话题]#",,1764260102000,1764260103000,66585da50000000003033712,我，吉他，猫，LLM,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31i0dr7k3n80g5piobmigudoisi7k25o,560,94,128,764,美国,http://sns-webpic-qc.xhscdn.com/202512251618/63ebb735b3592b8b8935e97539e75a4b/1040g2sg31pd6usie2u705piobmigudoir74f548!nd_dft_wlteh_webp_3,"人工智能,ICLR,ICML,EMNLP,AAAI,NIPS",1766650688121,https://www.xiaohongshu.com/explore/69287906000000001e031332?xsec_token=AB_Cwbq92rtJFLNgod9xVJQfDzxBM-TzctcRMr3rxYlQQ=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQfDzxBM-TzctcRMr3rxYlQQ=
+69286a0d000000001b022a33,normal,openreview惊现bug,"openreview惊现bug
+能查到审稿人具体信息
+学术春晚开盒启动了
+明天的各位的邮箱或许会掀起腥风血雨#大模型[话题]# #学术[话题]# #科研人精神状态[话题]# #openreview[话题]# #iclr[话题]# #aaai[话题]# #ICLR[话题]#",,1764256269000,1764273854000,5d39048b0000000011013b8d,MathsCode,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31nl51g2k58605n9p0i5kaesdmg0hfu8,494,170,142,1647,上海,http://sns-webpic-qc.xhscdn.com/202512251618/be33b605a8e9644a8720d2c6cc6670d8/1040g2sg31pd55h6i2u6g5n9p0i5kaesd9lm31r8!nd_dft_wlteh_webp_3,"大模型,学术,科研人精神状态,openreview,iclr,aaai,ICLR",1766650688126,https://www.xiaohongshu.com/explore/69286a0d000000001b022a33?xsec_token=AB_Cwbq92rtJFLNgod9xVJQbluYksFfJXPYanTq8E4AH8=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQbluYksFfJXPYanTq8E4AH8=
+69294a6a000000001e008c68,normal,有土木本科生给所有论文都打了2conf5,"刚才看了一下openreview online
+发现most strict和most stable的榜一（min reviews设置成5）给所有论文都打了2 conf 5 （图2）
+openreview 主页是土木工程本科生 （图3）
+	
+========
+更新：本人出现在了评论区，他主页有澄清帖子，我截图放图4了。
+个人感觉写的很缺乏说服力，甚至related work都没有cite我[石化R]，
+所以只能给rate 2 ，confidence 5。[doge]
+	
+#iclr[话题]# #iclr26[话题]# #iclr25[话题]# #iclr出分[话题]# #iclr审稿[话题]#",,1764313706000,1764331982000,643e1dd8000000000d018575,焦糖,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo30vvbr62als005p1u3nc3b1bl7euajfo,249,62,74,531,广东,"http://sns-webpic-qc.xhscdn.com/202512251618/290328b0d8c159685412fecaebc81c9d/1040g00831pe0eenp3k005p1u3nc3b1blm51hfgg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/1420bd008d19a65b2ec814d06b33e5c6/1040g00831pe0eenp3k0g5p1u3nc3b1bl6403fug!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/1835bd448fa6a7338e170b8fbee58ceb/1040g00831pe0eenp3k105p1u3nc3b1blus9co78!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/474ea38da4e70961e9a32f494ac7e1e9/1040g00831pe4806hi8005p1u3nc3b1bljhq9gcg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251618/cc86533ee738acccc2c7b28d59a44320/1040g2sg31pe8m049ic705p1u3nc3b1blj3t1jr0!nd_dft_wlteh_webp_3","iclr,iclr26,iclr25,iclr出分,iclr审稿",1766650688135,https://www.xiaohongshu.com/explore/69294a6a000000001e008c68?xsec_token=AB6z7xpUEymBgHOpFYziNMLUJg--3bnofbnThPE89kafY=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLUJg--3bnofbnThPE89kafY=
+69296522000000001e002d96,normal,抱歉我给过的 strong reject,"自证好人，泄露数据库可查，图 2 是我 iclr 最初的给分
+如果你查到我曾经给过 strong reject，那么要不是 ac 给我写信要求明确/统一意见，要么是讨论过程中有人提出论文实验做错/违反投稿规则
+我也没有追杀过任何 paper，我不主动bid我本来就不喜欢的论文，审过的论文分到第二次我会拒绝审或者给borderline，如果被我拒过的论文被拒第二次，不是我主导的
+我也不会去查谁给过我低分
+我审稿划水的时候是因为我水平低看不懂
+或者是aaai多个track给我塞了十来篇压榨出的幻觉
+这轮不要票我，谢谢
+#科研[话题]# #iclr[话题]# #openreview[话题]#",,1764320546000,1764326087000,5ffaf0f2000000000100afa6,黄威威暴瘾抱石,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31cqblc5mh6005nvqu3p09bt643nttb8,219,18,41,149,北京,"http://sns-webpic-qc.xhscdn.com/202512251658/e49087e58991f5cd8210cb1fa138844f/1040g2sg31pe3i39i2c7g5nvqu3p09bt6if5rp80!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251658/d6da05704b244a6657caa401d2cf5c47/1040g2sg31pe3i39i2c705nvqu3p09bt6b9ekif0!nd_dft_wgth_webp_3","科研,iclr,openreview",1766653105213,https://www.xiaohongshu.com/explore/69296522000000001e002d96?xsec_token=AB6z7xpUEymBgHOpFYziNMLSj_rOY-CjaNVdhlmLSG7YM=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLSj_rOY-CjaNVdhlmLSG7YM=
+692879ca000000001b026254,normal,ICLR审稿人泄露有感，小同行搞人是真的,"故事是这样的，去年我有一篇8866被ICLR拒的论文，一开始有一个审稿人给3分，置信度拉满5分，可以看出是领域内的人，但是找事模式; 架不住有别的审稿人都高分并帮忙rebuttal最后才把分拉到6，只可惜最后ac还是rephrase他之前意见给了拒
+	
+当时我就怀疑是北美top 20某印度博士生小同行，从他让引的论文中可以定位出来，今天用泄露的漏洞查了一下，实锤了
+	
+所以小同行搞人是真实的[汗颜R]
+	
+#ICLR[话题]# #小同行[话题]# #审稿[话题]#",,1764260298000,1764260299000,5eca1979000000000101ea17,半闲三癫,https://sns-avatar-qc.xhscdn.com/avatar/5eca1979000000000101ea17.jpg,223,38,15,83,丹麦,http://sns-webpic-qc.xhscdn.com/202512251658/e63a78925d82831fb5d7ec4cf4475554/notes_pre_post/1040g3k831pd6q1saig705nma35sgbqgnkki1k78!nd_dft_wlteh_webp_3,"ICLR,小同行,审稿",1766653105217,https://www.xiaohongshu.com/explore/692879ca000000001b026254?xsec_token=AB_Cwbq92rtJFLNgod9xVJQdmxPT2p0PFd967qPtYj-Pk=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQdmxPT2p0PFd967qPtYj-Pk=
+69287dd3000000001e02f194,normal,关于我开心跑实验，Openreview被开盒…,"今天晚上真的热闹，本来打算熬夜好好跑跑实验，把自己的东西再打磨一下，群里突然出现“openreview开盒”词汇，简单阅读。之后我的好兄弟@神奇的海螺 就给我发来了我们审稿人的“审稿信息”，不看不知道一看吓一跳，真有一个懂哥reviewer，于是赶紧翻阅他与我们工作相关的论文，真的受益匪浅！而且他的一篇工作还补充启发了我们最近做的一个工作！
+	
+我愿称为“开盒受益人”（ps: 本人没有开盒过审稿人，我的好兄弟小海螺也没有，他从不法分子手里那里得来的消息！我们支持良好的审稿环境）
+	
+#感恩节[话题]#",,1764261331000,1764261331000,5fa2663000000000010068e2,Wang Rongsheng,https://sns-avatar-qc.xhscdn.com/avatar/6462e19395fc4c0002ec22fb.jpg,192,26,17,21,广东,http://sns-webpic-qc.xhscdn.com/202512251658/a9f3ae02e63d3e35d68db19ea0e14bd2/note_pre_post_uhdr/1040g3r031pd7d4892s705nt2coo08q72n3n51hg!nd_dft_wgth_webp_3,感恩节,1766653105225,https://www.xiaohongshu.com/explore/69287dd3000000001e02f194?xsec_token=AB_Cwbq92rtJFLNgod9xVJQZdDeuy55FM4hxcq9cmnPcg=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQZdDeuy55FM4hxcq9cmnPcg=
+692f5352000000001e027c79,normal,论文发表的意义何在？,"作为一个作者，审稿人，和前会议主席，最近对ICLR裸奔事件以及相应带来的学术圈前景忧思
+	
+从2019年Huixiang事件，到上周的OpenReview事件，两次都亲历其中，从人为因素到AI因素，越来越让我觉得 What’s the point of all these [叹气R]
+	
+我写的英语原文：http://tinyurl.com/6pzk25ck （附图中文为机翻）
+	
+#ICLR26[话题]# #ICLR审稿[话题]# #neurips25[话题]# #学术圈[话题]# #论文发表[话题]#",,1764709202000,1764709202000,630d4dcb000000001902123c,YiyingZhang-GenseeAIUCSD,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31m5knvn9m8005ood9n5mc4hsice26io,88,35,8,23,美国,"http://sns-webpic-qc.xhscdn.com/202512251658/c87ab6fad1aba8da1f34dab76e94b3d7/1040g00831pjssl284g405ood9n5mc4hsp67kfmo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251658/a2e3f8e76554d06f9fbb2cf3d545b500/1040g00831pjssl284g0g5ood9n5mc4hs3nnfo9o!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251658/8e4244df3f6f3d0b0bd9489e4b9fbb56/1040g00831pjssl284g105ood9n5mc4hs4ngfs6g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251658/58b97a5cc02b1509c92c128781495a23/1040g00831pjssl284g305ood9n5mc4hspevsf28!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251658/c12f71dbc6ba9de3560040afd4c07ce3/1040g00831pjssl284g005ood9n5mc4hscss44v0!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251658/06610e67a1605587a617bacf75304bc5/1040g00831pjssl284g1g5ood9n5mc4hsfjahhig!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251658/c5a7659a933cf47b1a53050162018e89/1040g00831pjssl284g205ood9n5mc4hscr3n16g!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251658/9ecebca5c82014d489734568cd726e20/1040g00831pjssl284g2g5ood9n5mc4hseah1bjo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251658/8a85779e31440243eba13fa7210322d7/1040g00831pjssl284g3g5ood9n5mc4hs9blquf8!nd_dft_wgth_webp_3","ICLR26,ICLR审稿,neurips25,学术圈,论文发表",1766653105239,https://www.xiaohongshu.com/explore/692f5352000000001e027c79?xsec_token=ABIlKxkV1cTYN4PmxTlUg64eU1qA6YD4eHaPw3rdmbaKE=&xsec_source=pc_search,,ABIlKxkV1cTYN4PmxTlUg64eU1qA6YD4eHaPw3rdmbaKE=
+69288adc000000001e01793c,normal,openreview bug后续,"当审稿人和作者面对面后，各种现象开始出现，有人高价求提分，有人直接准备线下单杀。
+	
+我认为这个bug的影响绝对很深远
+	
+首先就是对双盲机制的探讨，这玩意本身就是名存实亡，大佬团队挂arxiv我连竞争的动力都没有了。
+	
+其次就是对于审稿人瞎审稿现象，现在这个情况跟刮奖有什么区别，几乎取决于审稿人用ai的提示词。有的人纯粹是报复社会来的，还有洗稿的。
+	
+大胆预测一下后续：
+首先就是分数上利好cvpr[捂脸R]都不改打低分了，但是录取比例不会变化，因此还是会竞争，但是起码我觉得报复社会的会少，就算用ai也会给一个看得过去的分数。
+	
+nips直接线下见面hhhh，坐等吃瓜。
+	
+其次就是审稿机制要变化，现在的这个审稿机制本身只能造成论文分配极度不平均，人们抢着挂大佬，因为这样真的能提升中稿率hhhh。但是最终怎么变还不好说，能不能在确认中稿之后公开双方信息，这样不违反双盲也能让报复社会的收敛点[doge]不过这样也是tradeoff可能会造成审稿人不敢打低分。
+	
+这次bug一共就爆发了一个多小时，所以能爬的信息有限，（不过听说很早就有了）我感觉如果想要最完整的版本得大家一起出力凑一下。
+最后发现还是中国人最为难中国人[捂脸R]
+	
+#openreview漏洞[话题]# #研究生日常[话题]# #论文审稿[话题]#",,1764264668000,1764270530000,6005bc220000000001008600,乐好了,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31abghfc5mo005o05ngh091g0t56mnu8,85,29,12,48,北京,http://sns-webpic-qc.xhscdn.com/202512251658/55891b1f03c9b12ed96110057050ee3d/1040g2sg31pd7aoe5i6ag5o05ngh091g0lpphu5g!nd_dft_wlteh_webp_3,"openreview漏洞,研究生日常,论文审稿",1766653105242,https://www.xiaohongshu.com/explore/69288adc000000001e01793c?xsec_token=AB_Cwbq92rtJFLNgod9xVJQX2GBo1GnMQmGhrPE1zincg=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQX2GBo1GnMQmGhrPE1zincg=
+69287c9c000000001b023186,normal,ICLR开盒纪元是如何开启的,"背景: Openreview内部的API接口突然公开可以访问，导致很多作者开盒了审稿人，黑暗森林迎来一个透明化的纪元。
+	
+发生这个事情的原因是什么呢，一种可能是上次投稿量太大时管理员错误修改设置或者打开了bypass模式，是否有可能是有人攻击服务器导致的呢？求安全大佬解答",,1764261020000,1764265618000,601d23d10000000001004bb8,杨剑飞 Prof. Mars,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo30qo7jgi4gg005o0t4f8g8iton1glht0,56,17,38,21,新加坡,http://sns-webpic-qc.xhscdn.com/202512251658/402b6ee43d6490153a39e517e4793f5a/1040g00831pd75jre3c005o0t4f8g8itou1037v8!nd_dft_wlteh_webp_3,,1766653105259,https://www.xiaohongshu.com/explore/69287c9c000000001b023186?xsec_token=AB_Cwbq92rtJFLNgod9xVJQYcdQoiXfzs1om5x-zq6eko=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQYcdQoiXfzs1om5x-zq6eko=
+69286e0e000000001f00c81e,normal,ICLR 2026的OpenReview 真的好Open!,"审稿人和作者获取api已公开，json数据库可直接下载
+#iclr26[话题]# #iclr[话题]# #openreview[话题]# #审稿[话题]#",,1764257294000,1764267300000,6878f83f000000000d02d151,OverTree,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31oebdve06g005q3ov0vjdkahhvaeckg,36,27,124,26,北京,http://sns-webpic-qc.xhscdn.com/202512251658/0e7dd81e29604766373370727a83c104/1040g00831pd5ivkgig005q3ov0vjdkah9p3h5mo!nd_dft_wlteh_webp_3,"iclr26,iclr,openreview,审稿",1766653105264,https://www.xiaohongshu.com/explore/69286e0e000000001f00c81e?xsec_token=AB_Cwbq92rtJFLNgod9xVJQV6Ig0OrOh1NSOkSplLa9OA=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQV6Ig0OrOh1NSOkSplLa9OA=
+69291003000000001b0213d6,normal,openreview整顿学术圈,"今天早上起来没多久听朋友说openreview出了这个瓜，因为分不太高➕懒得找就没有查[暗中观察R]。后面看到了太多精彩的故事，先是我在的一个wx群里某篇文章的作者和reviewer当场开撕[笑哭R] 后来看huggingface上已经有所有reviewer的dataset了（质量还挺高你别说[偷笑R]）虽然这次开盒确实是对一些恶意审稿人算是一种惩戒（sort of，但是感觉对一些良性审稿人也有影响，如果你问心无愧老老实实的打分，那有的文章就是应该被reject，有的文章美中不足就是应该补实验，但这种诚实的review在作者看来是恶意审稿还是真的为了文章变得更好呢？[睡觉R]
+	
+btw，虽然大家都在吐槽审稿，但我感觉我自己文章这几个reviewer提的建议都还挺中肯的（虽然打分确实harsh了点[doge]
+	
+#当代读书人[话题]# #iclr26[话题]# #博士生和导师[话题]#",,1764298755000,1764298799000,5cfadf2e00000000050210f6,弗兰克读博日常,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo312h466ern60g5n7qrsn1c47mkfe3ua8,26,3,4,2,美国,http://sns-webpic-qc.xhscdn.com/202512251658/3e59302d656cc4d9cd367fe80e5f476f/notes_pre_post/1040g3k031pdot6tsig005n7qrsn1c47mv1p0kno!nd_dft_wgth_webp_3,"当代读书人,iclr26,博士生和导师",1766653105267,https://www.xiaohongshu.com/explore/69291003000000001b0213d6?xsec_token=AB6z7xpUEymBgHOpFYziNMLej5cwxOOT2wJ6CmVYRlfqA=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLej5cwxOOT2wJ6CmVYRlfqA=
+692d6d47000000001e03462f,normal,不要低分就拒掉，AC要维护好ICLR顶会声誉,"因为OpenReview的信息泄露问题，AC已经成为ICLR2 026的直接守门员。
+建议每一位AC认真看看审稿人的意见，过滤掉低质量审稿。
+尤其是评分差异性大的文章，更要仔细看看，给出专业评价。
+建议不要从高到低直接排序，不要直接按排序分数录取！",,1764584775000,1764584776000,64a61db0000000001f005dc6,科研进行中,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31oco73fb586g5p563mo7one6nv18r0g,29,6,36,2,北京,http://sns-webpic-qc.xhscdn.com/202512251724/0b625835fa77f68a07fbd04beeae4d34/1040g2sg31pi1i6j5kgk05p563mo7one6u5bd4dg!nd_dft_wlteh_webp_3,,1766654648004,https://www.xiaohongshu.com/explore/692d6d47000000001e03462f?xsec_token=AB0Kz6udr3byI-cefsYV6nrhpc2iPGiOGT9kd-Ix68aVs=&xsec_source=pc_search,,AB0Kz6udr3byI-cefsYV6nrhpc2iPGiOGT9kd-Ix68aVs=
+69288fb1000000001e02d474,normal,NanoBanana如此评价本次学术界最大开盒行动,"给还不知道的同学讲一下，就是有人发现OpenReview上有个大bug，原本匿名的审稿人信息现在能通过前端直接抓到，这就意味着原本的盲审变成了实名……
+	
+你能看到谁给自己打了低分写了什么comment，这或许是学术界史上最大的开盒行动了……
+	
+太亏贼了……
+	
+Nano Banana如此评价本次事件↑
+	
+#科研[话题]# #计算机研究生[话题]# #ICLR[话题]# #OpenReview[话题]# #深度学习[话题]# #人工智能[话题]# #nips[话题]# #学术会议[话题]#",,1764265905000,1764265906000,65602534000000001103e555,coding小杨,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31oghqc3606505pb04kq4fpals35rmf0,21,4,1,9,天津,http://sns-webpic-qc.xhscdn.com/202512251724/c3d0f2b24cb1c28e4605727f100f7860/notes_pre_post/1040g3k831pd9i1v5isd05pb04kq4fpalk5tkug0!nd_dft_wlteh_webp_3,"科研,计算机研究生,ICLR,OpenReview,深度学习,人工智能,nips,学术会议",1766654648019,https://www.xiaohongshu.com/explore/69288fb1000000001e02d474?xsec_token=AB_Cwbq92rtJFLNgod9xVJQSg0EjdJjQwYX8aeniEPX00=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQSg0EjdJjQwYX8aeniEPX00=
+69314b92000000000d00c753,normal,理性讨论,"关于OpenReview网站和ICLR信息泄露的事情，不明白当时为什么不第一时间拔网线并下线整个网站？
+而是整整花了一个小时去修复打补丁？要知道明白人都知道这一个小时泄露的信息足以捅破天了？如果立即关掉的话也不会前10000ID都被爬下来。
+至于上面托管的会议，下线一段时间也没什么大碍。
+大家讨论一下是为什么，感恩节？最初没人意识到问题严重性？OpenReview网站没有关掉的先例所以宁愿ICLR信息泄露也不能关？官僚主义需要请示领导但是领导在吃火鸡？",,1764838290000,1764838290000,5a7a566d11be102abf70b9a4,朱政-极佳科技,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31o3psg1a6m004a1aihb6red427f5bu8,18,3,19,3,北京,http://sns-webpic-qc.xhscdn.com/202512251724/01fd873ba10ae1983eccab41e51c5151/1040g00831plq51co4m1g4a1aihb6red4n8l290o!nd_dft_wlteh_webp_3,,1766654648024,https://www.xiaohongshu.com/explore/69314b92000000000d00c753?xsec_token=AB25cznRPioHoUMam-cuk5YA3I9y5t4Cw9RPzyOtzxbcY=&xsec_source=pc_search,,AB25cznRPioHoUMam-cuk5YA3I9y5t4Cw9RPzyOtzxbcY=
+69289260000000001e02011c,normal,ICLR26 (及之前会议）直接开盒,"评审身份与作者信息的意外泄露，或许正是每个审稿人一次直面初心的审视。褪去匿名的保护，那些曾在评审过程中秉持的尺度、提出的见解，此刻都需接受坦荡的检验——是否真正抛开了“预设与偏见”，是否做到了对研究本身的客观评判，能否问心无愧地回应每一份学术付出，值得每一位参与者深思。我始终坚信，双盲评审的核心价值在于“以成果论优劣”，若让身份成为左右评判的变量，不仅会消解评审机制的公平根基，更会削弱学术交流的纯粹性，沦为少数人夹带私货、藏污纳垢的工具——不仅辜负了所有认真付出的参与者，更让学术会议积累的信誉根基动摇～
+	
+#openreview事故[话题]# #iclr开盒[话题]#",,1764266592000,1764270252000,5baf36b7e444a40001696184,paulpanwang,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31j5qqvhq340g4b7f2arbeoc4p4un92g,16,2,4,1,北京,http://sns-webpic-qc.xhscdn.com/202512251724/e9e4aa868bd21d553e266c319e2c697b/1040g2sg31pda3jo3jce04b7f2arbeoc41jf79m8!nd_dft_wlteh_webp_3,"openreview事故,iclr开盒",1766654648031,https://www.xiaohongshu.com/explore/69289260000000001e02011c?xsec_token=AB_Cwbq92rtJFLNgod9xVJQZV448jPwSpWuS3zTH4PdG8=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQZV448jPwSpWuS3zTH4PdG8=
+6928f9d3000000001b02195d,normal,OpenReview这次事件会带来什么后果？,"OpenReview捅了个大篓子。
+	
+昨晚有人发现，在OpenReview能看到对应论文的评审者和评分……打高分就算了，重点是大家发现了谁给自己打了低分，而且可能就是身边认识的人……
+	
+官方紧急修复了Bug，不过很多信息已经泄露了……数据库都爬出来了，这以后在圈子里……特别是恶意打低分的，不知道最近会搞出来多少私下恩怨。
+	
+#openreview[话题]##吃瓜[话题]##论文[话题]##iclr[话题]# #openreview漏洞[话题]#",,1764293075000,1764293744000,65555681000000000202aa26,大厂信号,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31qe5nbi37u005palaq0glah69l5bvv0,4,1,0,1,天津,"http://sns-webpic-qc.xhscdn.com/202512251724/f48e6a1d372f9ba0e3ac55026b151648/1040g00831pdmmksu2o9g5palaq0glah6ats9tgg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251724/7c405051ea594ce1372d4155dc7bbb84/1040g00831pdmmksu2o7g5palaq0glah61bu00fo!nd_dft_wlteh_webp_3","openreview,吃瓜,论文,iclr,openreview漏洞",1766654648046,https://www.xiaohongshu.com/explore/6928f9d3000000001b02195d?xsec_token=AB_Cwbq92rtJFLNgod9xVJQbiP4HYtakRRwajphlGRwIM=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQbiP4HYtakRRwajphlGRwIM=
+692d21ce0000000019027886,normal,从ICLR这次泄露事件，有个想法，在每篇论文提交openreview会议进行收费，不用很多钱，类似于报名费似的，这些收费可以用来激励审稿人啊之类的，利用gpt对审稿意见判断优秀还是差，好的审稿会奖励，非常好的意见得到更多的钱，如果很离谱的意见偏向ai审稿没有营养的审稿人作者投诉核实后会被警告和处罚，会不会能改善一下现在的审稿制度。感觉无偿审稿等实在是太无私了，没有任何代价和奖励总归感觉有问题。#iclr26[话题]# #openreview[话题]# #openreview开盒[话题]#,从ICLR这次泄露事件，有个想法，在每篇论文提交openreview会议进行收费，不用很多钱，类似于报名费似的，这些收费可以用来激励审稿人啊之类的，利用gpt对审稿意见判断优秀还是差，好的审稿会奖励，非常好的意见得到更多的钱，如果很离谱的意见偏向ai审稿没有营养的审稿人作者投诉核实后会被警告和处罚，会不会能改善一下现在的审稿制度。感觉无偿审稿等实在是太无私了，没有任何代价和奖励总归感觉有问题。#iclr26[话题]# #openreview[话题]# #openreview开盒[话题]#,,1764565454000,1764565455000,5e57b0b70000000001006937,harry,https://sns-avatar-qc.xhscdn.com/avatar/5e57b0eb04b16b0001899c7d.jpg,4,2,3,2,天津,http://sns-webpic-qc.xhscdn.com/202512251724/97311f93e12bd255dbbcdf02d3dc575a/1040g2sg31pho6cg4iue05ninm2rg8q9nb5mo6vo!nd_dft_wlteh_webp_3,"iclr26,openreview,openreview开盒",1766654648049,https://www.xiaohongshu.com/explore/692d21ce0000000019027886?xsec_token=AB0Kz6udr3byI-cefsYV6nris0VOSe1cNaGy_FzAPNBZI=&xsec_source=pc_search,,AB0Kz6udr3byI-cefsYV6nris0VOSe1cNaGy_FzAPNBZI=
+692ddf55000000001f008f65,normal,从 AI 审稿到 AI 科研操作系统： 谁在重写,"在你看到这段文字的时候，AI 审稿这件事，已经不再只是「有人偷懒用 ChatGPT 写评审」这么简单了。
+	
+2025‑11‑27，几乎是同步的两条新闻：
+	
+Nature 报道：在 ICLR 2026 这个顶级 AI 会议里，约 21% 的审稿报告被检测为「完全由 AI 生成」，超过一半的审稿显示出明显的 AI 使用痕迹。检测来自 Pangram Labs，对 75,800 份评审 做了扫描。
+	
+几乎同一时间，OpenReview 爆出权限漏洞：只要调用一个暴露的 API，就能从后台直接拿到本应匿名的 作者、审稿人、AC 全量真实身份，而且不仅是 ICLR 2026，而是所有挂在 OpenReview 上的会议。
+	
+一个是「谁在写评审」不再可知；
+	
+一个是「谁写了评审」突然全都可知。
+	
+这两件事合在一起，撕开的是同一条神经： 我们过去默默依赖的那套学术信任结构（trust OS），其实可能比想象中要脆弱得多。
+	
+人类评审，还是「模型外包」？
+	
+表面上，这次的愤怒很直观： 同行评议应该代表「人类专家对人类研究」的最后一道质量 / 伦理防线。 如果 1/5 的报告是模型直接写的，那还算不算「peer」？
+	
+很多「全 AI」评审不仅语气高度模板化，还出现了幻觉引用、空洞批评、与论文内容不对应的段落。 作者遇到明显错误的评审，该向谁申诉？是 reviewer，还是 reviewer 背后那只看不见的模型？
+	
+当 organiser 又开始用另一套 AI 检测模型 来识别哪些评审是 AI 写的，我们其实已经进入了「模型裁决模型」的回音室。  这里动摇的是 「人要亲自读过你的论文」 这个未明言的承诺。
+	
+OpenReview 漏洞，把剩下那一点「结构性遮蔽」也一并撕掉。  按 cspaper 论坛与多方转述的技术细节：  只需要一个投稿 ID 和 reviewer index，  调用一次错误配置的 API，  后端就会「好心」地返回该论文所有相关角色的真实身份（作者、审稿人、AC）。
+	
+双盲，是计算机科学界最在意的一道「公平幻觉」：  作者相信自己不会因为学校、姓氏被预判； 审稿人相信自己可以在不被记恨的前提下，给出真实、甚至残酷的评价。
+	
+然而「匿名」从来不是真正的防线，它只是一个我们选择不去看的字段。
+	
+#ai[话题]# #学术[话题]# #AI[话题]# #iclr[话题]# #openreview[话题]# #iclr26[话题]# #ai会议[话题]# #科研学习[话题]# #思考[话题]# #人工智能[话题]#",,1764613973000,1764613973000,6438d6e5000000000e01eacd,小号,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31oe6jnn36m005p1oqrijjqmdpilms88,3,1,0,1,新加坡,"http://sns-webpic-qc.xhscdn.com/202512251724/6cc42307cd799b0390b195ca6f318543/spectrum/1040g0k031pifme9n3u005p1oqrijjqmdntvkfro!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251724/657c3b47f874241c2cd0550f5783ac29/spectrum/1040g0k031pifme9n3u0g5p1oqrijjqmdaalthpo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251724/a2c7b2950141d14a78056a31af82ce21/spectrum/1040g0k031pifme9n3u105p1oqrijjqmd0uqj0fg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251724/a8eb667e30fdd1155322bf9d2e3187a1/spectrum/1040g0k031pifme9n3u1g5p1oqrijjqmdpogc85o!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251724/9987648d34821c5ae1d4a9fda5b9d1ae/spectrum/1040g0k031pifme9n3u205p1oqrijjqmd6rcakjg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251724/0596353384237cc31c7aa49002bec9a4/spectrum/1040g0k031pifme9n3u2g5p1oqrijjqmd6mem69o!nd_dft_wlteh_webp_3","ai,学术,AI,iclr,openreview,iclr26,ai会议,科研学习,思考,人工智能",1766654648057,https://www.xiaohongshu.com/explore/692ddf55000000001f008f65?xsec_token=AB0Kz6udr3byI-cefsYV6nrogQzlSSDCr3OK7AqvAoX4Q=&xsec_source=pc_search,,AB0Kz6udr3byI-cefsYV6nrogQzlSSDCr3OK7AqvAoX4Q=
+6940fcba000000000d00eaa8,normal,我的学术圈吃瓜法：不看碎片，看系统崩塌,"最近ICLR的审稿数据泄露事件在学术圈闹得沸沸扬扬。我在科研间隙还紧张地追热点，生怕错过什么新的大瓜。后来我发现用智搜可以一键生成“合订本”！智搜的一键搜索可以找到不少有价值的信息，并给出深度的思考。比如我的搜索结果中明确讨论了学术评审体系的系统性崩塌，并列出了支撑数据：
+	
+双盲机制名存实亡
+· 华人学者李自然讽刺其为“既不双盲、也不同行、更无评审”，典型案例包括审稿人询问“Adam是谁”（误将优化算法当人名）。
+· 谢赛宁称此为“科学领域最奇怪的时刻”，田渊栋呼吁保护脆弱社群。
+	
+制度性恶果
+· 资源不匹配：OpenReview仅20人团队、200万美元预算，却承担每年数万篇顶会论文评审，审稿人被迫“为爱发电”，年均审稿量超百篇。
+· 评审质量失控：博士生等低经验者被拉入审稿，缺乏监管；近21%审稿人存在“互审关系”（作者与审稿人身份重叠）。
+	
+对我而言，智搜的价值在于它把一个碎片化的舆论场，还原成了一份研究简报。不再被动地刷时间线，而是能让智搜帮我主动获取一份结构清晰的梳理，把散落在各条大V博文，媒体评论中的核心论点与关键事实抓取出来，并按逻辑编排。真的是很让人省心了！
+	
+#微博智搜[话题]# #吃瓜[话题]# #智搜[话题]#",,1765870628000,1765866683000,60c47bae000000000100b07e,流风回雪 Richard,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31gf2o4lb3u6g5o64fen09c3ue9asbg0,4,1,0,2,江苏,"http://sns-webpic-qc.xhscdn.com/202512251724/74c58881cdd8520085afdc5d576eeecb/1040g2sg31q51gua8noe05o64fen09c3u83ggss8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251724/aeba40c5e19dc2726ac94589062c0da4/1040g2sg31q51gua8noeg5o64fen09c3ui3o3qeg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251724/74014556b71339ce80be1f728bed8587/1040g2sg31q51gua8nof05o64fen09c3uvi0tr0o!nd_dft_wlteh_webp_3","微博智搜,吃瓜,智搜",1766654648060,https://www.xiaohongshu.com/explore/6940fcba000000000d00eaa8?xsec_token=ABWHbwuiZF8xDWoWf-60W19slP5ikn5Vk0YBHswsMdY0M=&xsec_source=pc_search,,ABWHbwuiZF8xDWoWf-60W19slP5ikn5Vk0YBHswsMdY0M=
+69288064000000001e000af9,normal,这是学术界最夸张的开盒行动….,"事情是这样的
+主包刚落地
+发现平时有点似的一个LLM学术群炸了💥
+直接99+😧
+	
+仔细一看才发现
+是网友们发现在OpenReview这个网站上
+有一个重大的乌龙
+你可以看到ICLR26的评审结果（正常是看不到的
+因为前端的bug导致
+可以直接抓到数据库
+	
+这就意味着本来是盲评
+现在能知道是谁的评价以及具体的评分
+	
+这是学术界最夸张的开盒行动….
+就有点像小时候那种匿名的那种投票
+或者是什么互相批作业
+现在你发现了是谁给你打的恶评
+	
+太夸张了….
+到处都是受害者的帖子（有开人的有被开的….
+	
+PS：
+但我觉得明审挺好的
+各种抽象乱写意见的人现在得掂量掂量了。
+	
+#大模型[话题]# #AI[话题]# #ai[话题]# #人工智能[话题]# #互联网[话题]# #机器学习[话题]# #计算机[话题]# #深度学习[话题]# #教授[话题]# #论文[话题]# @科技薯",,1764261988000,1764262280000,64867045000000001c029874,Max For AI,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo30srj1g1jjs5g5p46e12n563kjvpj0mo,4.2万,8728,2926,1.6万,广东,"http://sns-webpic-qc.xhscdn.com/202512251746/3920cda9dbc4344a735816a075d0d4de/notes_pre_post/1040g3k031pd7h9lpi8005p46e12n563k2rgcjj8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/e970dce6b21a672f00f8d5acb4c7b75c/1040g00831pd7h9lria005p46e12n563kmanu2r8!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/bfa702dfcd5b4522eb76d392e05a1a4f/1040g00831pd7h9lria0g5p46e12n563kkf0p6g8!nd_dft_wlteh_webp_3","大模型,AI,ai,人工智能,互联网,机器学习,计算机,深度学习,教授,论文",1766656015946,https://www.xiaohongshu.com/explore/69288064000000001e000af9?xsec_token=AB_Cwbq92rtJFLNgod9xVJQc8Drew6Yg0XNci46KnpukQ=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQc8Drew6Yg0XNci46KnpukQ=
+69292d7d000000001e002d82,normal,OpenReview翻车！学术圈大型狼人杀,"2025年11月27日深夜，OpenReview系统一个史诗级漏洞炸翻了整个AI学术圈：双盲评审，彻底不盲了
+	
+🔵一串代码，撕碎双盲
+原本应被严格加密的双盲评审信息，仅因一段 API 链接格式疏漏，就实现了“无门槛透明化”：只需填入论文ID与审稿人编号，reviewer姓名、邮箱、单位、履历一应俱全
+	
+🔵谁是朋友，谁是“刺客”？
+漏洞一出，ICLR 2026的Recent Activity区顿时戏精上身。有人连夜狂改评分，有人传言开价5万“打点”审稿人，更有人被扒出“同门互刀”、导师疑遭“精准沟通”……
+学术伦理在几个小时内经历压力测试，场面一度十分幻灭。从前是“盲审”，现在是“明演”。一场本该靠论文质量说话的学术交流，硬生生变成了一场实名制下的“人情大逃杀”
+网友激情玩梗：ICLR从此改名——I Can Locate Reviewer
+	
+🔵波及范围不止ICLR，是整个OpenReview生态
+更严重的是，这并非单一失误，而是系统级权限漏洞：
+将链接中会议字段改为NeurIPS、ICML、ACL，同样返回实名评审信息；把ICLR.cc/2026改成 NeurIPS.cc/2025，结果一秒跑出完整审稿人列表
+	
+🔵漏洞已修复，但信任难重建
+尽管官方今晨紧急修复漏洞，但为时已晚——整份名单已被全量爬取
+今年的ICLR，注定是一场“看得见评委脸”的会议
+	
+#iclr26[话题]# #openreview[话题]# #openreview漏洞[话题]# #ai会议[话题]# #AI[话题]# #论文[话题]# #学术[话题]# #人工智能[话题]# #科研学习[话题]# #很担心论文人的精神状态[话题]#",,1764306301000,1764309263000,62f9f96b000000001501c536,模术狮,https://sns-avatar-qc.xhscdn.com/avatar/66221ac26e3dec0001ec20ee.jpg,1074,249,53,1538,江苏,"http://sns-webpic-qc.xhscdn.com/202512251746/596b32c488d359c4b30a4e452dd42951/notes_pre_post/1040g3k031pdt0d31i6b05onpv5llbh9mop64aq8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/4d8f816f8432189a1053bed9ba79c2c6/notes_pre_post/1040g3k031pdt0d31i6dg5onpv5llbh9mt5p3928!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/705ecc69c6809177581b80388a112024/notes_pre_post/1040g3k031pdt0d31i6d05onpv5llbh9mb6cqqr8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/7828df3622f2cb20043467367c9b8c48/notes_pre_post/1040g3k031pdt0d31i6c05onpv5llbh9m5q0j3a8!nd_dft_wgth_webp_3","iclr26,openreview,openreview漏洞,ai会议,AI,论文,学术,人工智能,科研学习,很担心论文人的精神状态",1766656015956,https://www.xiaohongshu.com/explore/69292d7d000000001e002d82?xsec_token=AB6z7xpUEymBgHOpFYziNMLX90sgLtvJ7SbmVBq0d9VCw=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLX90sgLtvJ7SbmVBq0d9VCw=
+692866d1000000001e0285f1,normal,"ICLR2026实名大逃杀
+真正的open reviewer，open author和open ac
+直接看作者，审稿人甚至AC信息[笑哭R]
+开启AI会议审稿新时代[失望R]
+（我没投没审，纯吃瓜
+Ps：首次发文时间，实测可用，美国还在感恩节，估计程序员没那么快来修bug
+[庆祝R]重要更新：实测其他会议也行，更改会议网址和年份，p2有NeurIPS的例子[doge]
+[烟花R]重要更新：官方下手了，已经不可查，仅以此帖铭记这个bug。希望openreview程序员多多努力，共同维护审稿环境
+后日谈：
+","ICLR2026实名大逃杀
+真正的open reviewer，open author和open ac
+直接看作者，审稿人甚至AC信息[笑哭R]
+开启AI会议审稿新时代[失望R]
+（我没投没审，纯吃瓜
+Ps：首次发文时间，实测可用，美国还在感恩节，估计程序员没那么快来修bug
+[庆祝R]重要更新：实测其他会议也行，更改会议网址和年份，p2有NeurIPS的例子[doge]
+[烟花R]重要更新：官方下手了，已经不可查，仅以此帖铭记这个bug。希望openreview程序员多多努力，共同维护审稿环境
+后日谈：
+[一R]更新官方声明：见p3，p4
+[二R]更新官方审稿政策调整：见p5
+#iclr[话题]#
+#iclr26[话题]# #会议[话题]# #openreview[话题]# #ai投稿[话题]# #ai会议[话题]#",,1764255441000,1764342700000,5921a0215e87e724f6550507,提瓦特矿工,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31860ffmb4c0049h06ug2218720mhb28,664,366,215,2335,美国,"http://sns-webpic-qc.xhscdn.com/202512251746/2735eb71137a3b125074d2fc7f76352e/notes_pre_post/1040g3k031pd4k5hk2g7g49h06ug22187gttrn2o!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/bd657c811a0c1b992cbde9d02907dc28/notes_pre_post/1040g3k031pd4k5hk2g8049h06ug22187fqkhjt0!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/9470e8210828ea0bcafee302fae9c980/notes_pre_post/1040g3k031pdcs4212s0049h06ug22187catckm8!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/ba320416137980d0ab9fd5a64c88a1f2/notes_pre_post/1040g3k831peeb4r62s7g49h06ug22187n6fjvj8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/93ff6a486f004fbfafed19bb7056b70f/notes_pre_post/1040g3k831peeb4r62s7049h06ug22187s05q5j8!nd_dft_wlteh_webp_3","iclr,iclr26,会议,openreview,ai投稿,ai会议",1766656015964,https://www.xiaohongshu.com/explore/692866d1000000001e0285f1?xsec_token=AB_Cwbq92rtJFLNgod9xVJQd9GxkK6bbmhu7YBQC48mDA=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQd9GxkK6bbmhu7YBQC48mDA=
+692bd899000000001e00d099,normal,ICLR：I Can Locate Reviewer 第三章,"喜欢的话，双击一下哟，谢谢大家！
+Aplus云组会原创，首发于小红书。
+每日一更，共五章，感谢各位支持。
+	
+小说介绍： 名称：《重生之我觉醒了ICLR：I Can Locate Reviewer》
+类型： 都市/系统/科研
+核心设定： 学术圈是一个巨大的“黑暗森林”。匿名评审是射向作者的冷枪。主角重生回投稿前，觉醒 ICLR系统（I Can Locate Reviewer），能直接穿透匿名机制，看到审稿人的真实身份、地理位置、甚至师承关系。他发誓，要让恶意评分的reviewer付出代价。
+创作背景：2025年11月27日，OpenReview系统出现bug，导致全世界人短暂拥有了ICLR系统（I Can Locate Reviewer）。
+	
+创作鸣谢： [1] @eyewater   . @eyewater   RedNote Reviewer. 2025
+仅供娱乐，内容纯属虚构，如有雷同均为巧合。
+#深度学习[话题]#   #Aplus云组会[话题]#   #科研[话题]#    #很担心研究生的精神状态[话题]#   #爽文[话题]#    #科研人的精神状态[话题]#   #研究生[话题]#   #小红书校园日记[话题]#   #科幻[话题]#   #抽象[话题]#",,1764481177000,1764497123000,65546f5f0000000002028ac0,Aplus云组会,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31phoku39k06g5pakdtfgl2m0k0kt26o,276,73,51,229,广东,"http://sns-webpic-qc.xhscdn.com/202512251746/26106b68c877f6eee3ca435725949c54/spectrum/1040g0k031pggc0uhia005pakdtfgl2m04223ubg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/2aea3933968b3d5e659e9b0cbd4db7f8/spectrum/1040g0k031pggc0uhia0g5pakdtfgl2m01tpd4qo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/c49b7cf143bbc2a704e0f28f6afe7cb1/spectrum/1040g0k031pggc0uhia105pakdtfgl2m0pi4o5bg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/38f3b7232c4c461013e73828e6a01786/spectrum/1040g0k031pggc0uhia1g5pakdtfgl2m0j659fuo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/7bee65a228ff9705ac1021f677c684c8/spectrum/1040g0k031pggc0uhia205pakdtfgl2m0j49c9lo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/6354ccc172721e767544a56ada6c255f/spectrum/1040g0k031pggc0uhia2g5pakdtfgl2m02hvv5no!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/3cdb410fb450cfcc18c13358afca99da/spectrum/1040g0k031pggc0uhia305pakdtfgl2m02o791lg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/19c499dd7831b8cdea55b479acbaa241/spectrum/1040g0k031pggc0uhia3g5pakdtfgl2m034om5ko!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/bb87856fa32b57e917bd701baa2ae792/spectrum/1040g0k031pggc0uhia405pakdtfgl2m0nmeks9o!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/85f6382870c8c5da5ccae50e9ed70838/spectrum/1040g0k031pggc0uhia4g5pakdtfgl2m0rgauu9g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/9e60e13cbd1afa69bbc2a4c051320242/spectrum/1040g0k031pggc0uhia505pakdtfgl2m0e4sooc8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/935672e4122300f4e97ca9775c210528/spectrum/1040g0k031pggc0uhia5g5pakdtfgl2m0md7tar0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/f9280cf018fa939b1c18303fe92f8b8f/spectrum/1040g0k031pggc0uhia605pakdtfgl2m0m4f7e5g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/83c173bd5363e445e080197cac198719/spectrum/1040g0k031pggc0uhia6g5pakdtfgl2m0i9rk148!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/4d06b207283ea9762b1e4237af9e488f/spectrum/1040g34o31pggc11u2a905pakdtfgl2m0q30bak0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/81fb6ab842707c0d7613d9ae0d768ff3/spectrum/1040g34o31pggc11u2a9g5pakdtfgl2m0b5up2to!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/8a4eb97a87bbb740d98be447a4d778cd/spectrum/1040g34o31pggc11u2aa05pakdtfgl2m0u24qjjo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/dca21ae73ab3e880cb15195aee31a9f1/spectrum/1040g34o31pggc11u2aag5pakdtfgl2m08nksbu0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/b59957340fe9a7ac40d2e33f051a832e/spectrum/1040g34o31pggc11u2ab05pakdtfgl2m0abeq2b0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/8c543cd4a83ee1ebf169432b5a44ff2c/spectrum/1040g34o31pggc11u2abg5pakdtfgl2m0njusko0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/d7152909bcca72e232318e5fbaf5d62f/spectrum/1040g34o31pggc11u2ac05pakdtfgl2m0cvl1sb0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/8e18445758c57d0aa1f95250a89c13d9/spectrum/1040g34o31pggc11u2acg5pakdtfgl2m01k7pf38!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/271de664993c8e245d8a181fe5a3536a/spectrum/1040g34o31pggc11u2ad05pakdtfgl2m0cgdiu68!nd_dft_wlteh_webp_3","深度学习,Aplus云组会,科研,很担心研究生的精神状态,爽文,科研人的精神状态,研究生,小红书校园日记,科幻,抽象",1766656015975,https://www.xiaohongshu.com/explore/692bd899000000001e00d099?xsec_token=ABCzyJD1wLQBN9GTSyIM_xNQqzhtnoIwwiARyGuMMbBGI=&xsec_source=pc_search,,ABCzyJD1wLQBN9GTSyIM_xNQqzhtnoIwwiARyGuMMbBGI=
+69288817000000001e012799,normal,他们说ac也能被查的时候，我表情瞬间凝固了,"起初他们说可以查iclr 26的审稿人，我没有说话，因为我不是iclr 26审稿人
+	
+后来他们说可以查之前的会议，我没有说话，因为我之前也没有审过iclr
+	
+接着他们说其他会议也可以查，我没有说话，因为我近两年都没有在openreview当审稿人
+	
+最后他们说ac也会被查-我的表情就瞬间凝固了
+#人工智能[话题]# #审稿[话题]# #学术会议[话题]# #iclr[话题]# #neurips[话题]#",,1764263960000,1764263960000,63927fc4000000001f01f002,薛天帆,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31qc3a6b170605osifv27rs02vkj7nlg,211,21,35,74,上海,http://sns-webpic-qc.xhscdn.com/202512251746/baf1f67048c7f18dbc2176d415e64d51/1040g2sg31pd8negvi6d05osifv27rs0258clin0!nd_dft_wlteh_webp_3,"人工智能,审稿,学术会议,iclr,neurips",1766656015978,https://www.xiaohongshu.com/explore/69288817000000001e012799?xsec_token=AB_Cwbq92rtJFLNgod9xVJQW_xSOYctOtPSVn-mZvlqAs=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQW_xSOYctOtPSVn-mZvlqAs=
+6928e5e5000000001e0275b3,normal,ICLR魔幻开盲盒,"坏消息：因为参与审稿了五篇论文，也被开盒了
+	
+好消息：因为分数给的高，上了红榜，最慷慨的审稿人Top20[汗颜R]
+	
+更坏的消息：开盒了给我论文打2分的，是个领域小同行，中科院博士生在读
+	
+这种故意低分还怎么rebuttal，其他rebuttal完都给6了，就这一个恶意刁难[失望R]
+#iclr出分[话题]# #iclr开盒[话题]# #iclr大逃杀[话题]#",,1764287973000,1764300156000,5f4bc4fb0000000001007f88,Ironboy,https://sns-avatar-qc.xhscdn.com/avatar/5f4bc546f09ffd00013421c2.jpg,186,27,16,145,上海,"http://sns-webpic-qc.xhscdn.com/202512251746/3735c012cb1180fb12c56a81460bae45/1040g2sg31pdmdg17iufg5nqbojtg8vs8l01bhs0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/4ba9cdccbb185ad0346be4fd0463a80f/1040g2sg31pdmdg17iueg5nqbojtg8vs8sropcg0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251746/f44a02255c0d8a04fb40be70c1635067/1040g2sg31pdmdg17iue05nqbojtg8vs8942t0u0!nd_dft_wlteh_webp_3","iclr出分,iclr开盒,iclr大逃杀",1766656015983,https://www.xiaohongshu.com/explore/6928e5e5000000001e0275b3?xsec_token=AB_Cwbq92rtJFLNgod9xVJQRxPStCFgln5s5JSyBOZYsc=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQRxPStCFgln5s5JSyBOZYsc=
+6928fe11000000000d03f374,normal,学术圈·黑暗森林法则,"“真实的学术圈就是这么黑。”
+某位资深Researcher推了推眼镜，像抚摸着拒稿信般感受着屏幕的冰冷质感，
+“学术圈就是一座黑暗森林，每个投稿人都是带枪的猎人，像幽灵般潜行于OpenReview的服务器间，轻轻拨开挡路的Related Work，竭力不让自己的ID发出一点儿声音，连Rebuttal（反驳）的措辞都小心翼翼……”
+“他必须小心，因为林中到处都有与他一样潜行的同行（Reviewer）。如果他发现了别的Submission，不管是不是SOTA（State of the Art），不管是大佬的背书还是萌新的首作，也不管是开创性的Idea还是A+B的缝合怪，为了自己中稿，能做的只有一件事：给个Strong Reject消灭之。
+在这片森林中，Reviewer #2 就是地狱，就是永恒的威胁。任何暴露自己真名的审稿人，都将很快遭到毁灭性的举报与反杀。这就是学术评价的图景，这就是对‘同行评审’崩溃的解释。”
+“但黑暗森林中有一个叫OpenReview的傻孩子，生了一堆火并在旁边高喊：ID都在这儿！ID都在这儿！”
+	
+两大公理
+	
+发表（Publication）是科研狗的第一需要。
+投稿数量不断增长和扩张，但顶会的接收名额（Acceptance Rate）保持不变。
+	
+两个概念
+	
+猜疑链（Chain of Suspicion）：
+“你怎么知道我是恶意打低分？”
+“你怎么知道我知道你是恶意打低分？”
+“你怎么知道我是为了报复你给我打低分而给你的审稿人发邮件？”
+当匿名面纱被OpenReview的Bug撕下，善意荡然无存，所有低分都被默认视为恶意的竞争。
+技术爆炸（Retaliation Explosion）： 在匿名状态下，攻击手段仅限于“打低分”。 但在暴露状态下，攻击手段瞬间“爆炸”：
+人肉搜索审稿人；
+给审稿人的Reviewer发邮件制造COI（利益冲突）；
+向AC（领域主席）恶意举报；
+学术圈社交性死亡。
+	
+推导结论
+	
+由公理1和公理2可知，资源（中稿名额）是有限的。 当OpenReview发生Bug，黑暗森林打击（Rejection） 不再是单向的隐秘行为，而变成了双向的、公开的相互毁灭（Mutually Assured Destruction）。
+在此刻，生存的第一法则不再是“写好Paper”，而是：“在被你弄死之前，通过给你的审稿人发邮件，诱发管理者拒你的稿，先把你弄死。”
+	
+#学术[话题]# #科研[话题]# #科研学习[话题]#",,1764294161000,1764294161000,6005bc220000000001008600,乐好了,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31abghfc5mo005o05ngh091g0t56mnu8,182,52,15,102,北京,http://sns-webpic-qc.xhscdn.com/202512251746/3b71ba953c28117e150b084a881c73b3/spectrum/1040g0k031pdn48iki4005o05ngh091g01crus4g!nd_dft_wlteh_webp_3,"学术,科研,科研学习",1766656015985,https://www.xiaohongshu.com/explore/6928fe11000000000d03f374?xsec_token=AB_Cwbq92rtJFLNgod9xVJQQL71c5SdypAuHIXxzQpSpI=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQQL71c5SdypAuHIXxzQpSpI=
+692902bf000000001e011325,normal,ICLR26隐私泄露事件，我们应该保护谁？,"今早起来群炸了。因为大家发现可以通过简单的url访问到自己投稿到iclr文章的审稿人，领域主席。然后网上也有人已经公开了前一万个投稿的所有审稿信息，审稿人的名字赫然在列，也包括了所有的meta information。（个人觉着，这些信息基本足够做更多的推断了，比如交叉比对，保守估计75%的信息已经泄露了，做网安的同学，应该会有更多技巧。。。）
+	
+毫无疑问，这次事件是个很严重的隐私泄露问题，有些人也收到了威胁信，要求改分，或者权利侵扰（power harassment，比如找你的上司让你改分）。
+	
+我最近和很多大会的PCC聊过，其实现在AI顶会审稿的一个大问题是没有高质量的审稿人，而这个事件之后，审稿意愿可能会进一步下降，为本就破败不堪的顶会审稿系统又来了一记重击。有多少人又会实名审稿呢？以前为爱发电是在消耗时间，现在都要消耗生命了？？谁都不愿意活在一个有潜在威胁存在的圈子里。
+	
+说回到ICLR26，因为审稿还在进行中，所以本质上前一万篇投稿的审稿过程会不可避免的被严重影响。所以我觉着无论如何，前一万篇的投稿需要重审（只取消前一万篇投稿应该不合理），这样可以一定程度得保护审稿人，以及照顾到更多人的利益。会是一个更加偏向群体保障的方法。
+	
+但如果从保护每个审稿人的隐私来看，所有投稿都应该被重审或者取消这届ICLR。这样才能真正让审稿人觉着自己的隐私被重视。审稿人也是需要基本保障的！
+	
+试问，一个volunteer的工作，如果再加上没有保护，会有高质量么？现在的AI顶会审稿早已经不是闲暇之余可以为社区做的贡献了，而是一个繁重的工作。与其一味地强制要求作者审稿，不如思考一下如何从经济学角度正确地评估审稿的工作量。
+	
+中稿固然重要，但只有保护好审稿人的权益，才有可能有一个良好的科研环境。
+	
+ps. 其实感觉这次无论怎么处理，都会有不满意的一方，心疼办会的老师们[皱眉R][皱眉R][皱眉R]他们也是义务劳动，然后摊上了这个事[失望R][失望R]
+	
+pss. 用君子协定式的审稿来形容现在的系统真的好贴切，然而在大量的利益面前，君子协定往往会被背刺吧。。
+	
+#iclr26[话题]# #iclr26隐私泄露事件[话题]# #iclr26审稿泄露事件[话题]# #顶会审稿[话题]# #iclr[话题]# #保护个人隐私[话题]# #人工智能[话题]# #机器学习[话题]# #iclr审稿[话题]# #机器学习顶会[话题]#",,1764295359000,1764316036000,641f0e190000000011020605,刘峰 墨尔本大学,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31peaovufjk005p0v1ockc1g5978o290,163,42,110,90,澳大利亚,http://sns-webpic-qc.xhscdn.com/202512251746/20e1a22284f8d4e96bd34f1487621c8b/1040g00831pdnqhmbi6005p0v1ockc1g50jbt278!nd_dft_wlteh_webp_3,"iclr26,iclr26隐私泄露事件,iclr26审稿泄露事件,顶会审稿,iclr,保护个人隐私,人工智能,机器学习,iclr审稿,机器学习顶会",1766656015988,https://www.xiaohongshu.com/explore/692902bf000000001e011325?xsec_token=AB6z7xpUEymBgHOpFYziNMLRZner6rfWDOh5KwbtbXnok=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLRZner6rfWDOh5KwbtbXnok=
+692958b2000000001e00a1b0,normal,ICLR26红黑榜，最暴躁和最卡皮巴拉榜前十！,"网友统计的ICLR26，最mean，最宽容，最暴躁和最卡皮巴拉的前十榜单[捂脸R]
+#iclr[话题]# #openreview事故[话题]#",,1764317362000,1764317362000,5e4aae7f0000000001004c81,heyarronn,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31adjudqjmm6g5nialpvg8j4158m4390,60,13,7,27,北京,"http://sns-webpic-qc.xhscdn.com/202512251915/80e33b6e0c7da2879ebe8fbc52f8894c/notes_pre_post/1040g3k031pdtn67f285g5nialpvg8j41g5l7pog!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/628ade1a7ca6b52bcfc52229e4e7cd5b/notes_pre_post/1040g3k031pdtn67f28405nialpvg8j41c3pjro0!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/8e63f806344c2755741efb9307d3c544/notes_pre_post/1040g3k031pdtn67f28005nialpvg8j416v5q7cg!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/4072d51b94864055fa23df2e3f40393e/notes_pre_post/1040g3k031pdtn67f28505nialpvg8j418pk5728!nd_dft_wgth_webp_3","iclr,openreview事故",1766661360532,https://www.xiaohongshu.com/explore/692958b2000000001e00a1b0?xsec_token=AB6z7xpUEymBgHOpFYziNMLY9d-GyEP5krd0vcr8Ec-lY=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLY9d-GyEP5krd0vcr8Ec-lY=
+69295f6f000000001f00cfc3,normal,openreviewer: 更懂你的iclr review,"https://animated-wisp-b00253.netlify.app/
+(just for fun 内部参考)
+	
+feature还在更新
+- 11/28 19:30增加 papermeta data(abstract, pdf link, openreview link). 尝试做一个reviewer arena[doge]（静态网页不得行了
+- 11/28 19:00支持鼠标悬浮获得用户信息，支持点击跳转至profile
+#iclr[话题]# #iclr开盒[话题]# #真实[话题]# #sci[话题]# #学术论文[话题]# #学术[话题]# #人工智能[话题]#",,1764319087000,1764347599000,5d13776e0000000012002da9,震极八荒,https://sns-avatar-qc.xhscdn.com/avatar/6562c5cd5a0109680b8a0d65.jpg,44,33,7,23,广东,"http://sns-webpic-qc.xhscdn.com/202512251915/5e13ea532db89535ed13203c9042a368/spectrum/1040g0k031pe32rc6i40g5n8jetn4gbd9cc2s5b8!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/5d6ef46d267441d91b2e4df67d3c495f/spectrum/1040g34o31pe858qqi40g5n8jetn4gbd9eh711u8!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/564985685e8d5cf7af5517af0c27e84d/spectrum/1040g0k031pe84bet26005n8jetn4gbd92etngeg!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/5ec0024276af1c62c7b37248646c8aab/spectrum/1040g0k031pe84bet260g5n8jetn4gbd9tidimbg!nd_dft_wgth_webp_3","iclr,iclr开盒,真实,sci,学术论文,学术,人工智能",1766661360542,https://www.xiaohongshu.com/explore/69295f6f000000001f00cfc3?xsec_token=AB6z7xpUEymBgHOpFYziNMLZ0uxbu3tqwPNLzafE2QqW8=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLZ0uxbu3tqwPNLzafE2QqW8=
+692872fd000000001b02104c,normal,OpenReview还是太open了,"OpenReview网站果然很open，开盒所有会议所有审稿人，是骡子是马拉出来溜溜[doge]
+示例如下：
+https://api2.openreview.net/profiles/search?group=ICLR.cc/2026/Conference/Submission123456789/Reviewer_R12abcdefg
+	
+#科研[话题]# #openreview[话题]# #学术审稿[话题]# #学术审稿人[话题]#",,1764258557000,1764258589000,5fe1df21000000000101d824,江河,https://sns-avatar-qc.xhscdn.com/avatar/cd255d0e201935e0d852bd371f18c198.jpg,38,11,24,48,北京,http://sns-webpic-qc.xhscdn.com/202512251915/70f8c90cfa25a2dc6d005842353a2876/notes_pre_post/1040g3k031pd65pfh3c0g5nv1rsggbm143jebbo0!nd_dft_wlteh_webp_3,"科研,openreview,学术审稿,学术审稿人",1766661360545,https://www.xiaohongshu.com/explore/692872fd000000001b02104c?xsec_token=AB_Cwbq92rtJFLNgod9xVJQe3X0-e_tpw-Q1-AKK_jk8g=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQe3X0-e_tpw-Q1-AKK_jk8g=
+6929e3a0000000001e02df8d,normal,ICLR 2026 事件的一些感慨,"ICLR官方回应很明确，基本符合中午和朋友聊天时的预判。这件事情的影响远没有结束，反而我认为刚刚开始。所以想聊聊自己今年既是AC又是Author的几点感慨。
+	
+1. 有好多同学质疑，为什么不回滚到27号，直接回滚到rebuttal前，那对那些拿到加分的作者不是不公平吗？
+事实上，信息泄露的确切时间，是不能确定的。网传12号就有人发现了bug，那么设定哪个时间点都是不公平的，只能回退回rebuttal前。ICLR官方已经为保证公平性做了最大努力。
+	
+2. 今年的机制相当于没有discussion的rebuttal，虽然失去了ICLR一贯的初心，但也不能说完全不公平毕竟不远的过去我们都是采用这个形式，甚至很多会议都没有rebuttal这个环节。
+	
+3. 寄希望于今年ICLR依然保持公平和高质量，已经是不可能的，就单从AC的工作量来讲，就是巨大挑战。让AC在这个工作量以及权利被放大的情况下，保持公平，是不现实的。
+	
+4. 这个事件影响最大的，可能是顶会的名誉，乃至整个AI圈对双盲失望透顶的情绪，领域里充斥着“原来我的paper在被这样的人审的气愤”，“原来我硕博毕业的生杀大权落在这些草包头上”。虽然大家多年来都在讲低质量审稿，但今年掀开了遮羞布，赤裸裸展现在所有人眼前。当然，这个事件对AI圈有没有正面影响呢，我觉得还是有可能的，让我们共同期盼。
+	
+5. 我就是那个，我的好朋友给我学生的文章打了2分的人。且这个2分，是我今年所有投稿文章中，唯一一个2分。然而，我思考了一下后，有点庆幸我学生的这次开盒。在知道是他之前，我总觉得这篇文章是被低估的，但是考虑到他的专业性，我审慎的思考，可能需要更仔细的过一遍文章，过一遍他的review，加重他的review，在我原来预估中的权重。
+	
+6. 同时，我还听到了一系列身边人的离奇故事，一些抱怨，甚至是真的联系审稿人加分被拒。挺好的，一次非常明确的双向筛选合作者的契机，建议每个同学和自己下一步的合作者、mentor多聊聊，聊不到一起的早点散伙。
+	
+#iclr[话题]# #iclr26[话题]# #iclr出分[话题]# #iclr开会[话题]# #iclr分数[话题]#
+#审稿[话题]# #openreview[话题]# #openreview漏洞[话题]# #openreview事故[话题]# #openreview开盒[话题]#",,1764352928000,1764352928000,5905662a50c4b44cd4968643,科大小青椒,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31nov6ugjlm0049eqqbj2l1i3gcsv28g,113,17,30,35,上海,"http://sns-webpic-qc.xhscdn.com/202512251915/e72ff7e0c56f0e91329c64c02ac3bec5/1040g00831pehuc7a3c1049eqqbj2l1i3qt8bi2o!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/f01e1c9a8116f7801bfffe0752e1ebd8/1040g00831pehuc7a3c0049eqqbj2l1i353inf98!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/55b22b81f241a2dcaa0e5de280906d3c/1040g00831pehuc7a3c0g49eqqbj2l1i378dgsm8!nd_dft_wlteh_webp_3","iclr,iclr26,iclr出分,iclr开会,iclr分数,审稿,openreview,openreview漏洞,openreview事故,openreview开盒",1766661360555,https://www.xiaohongshu.com/explore/6929e3a0000000001e02df8d?xsec_token=AB6z7xpUEymBgHOpFYziNMLWzWvNsAGbewbAmd8VajRfg=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLWzWvNsAGbewbAmd8VajRfg=
+69299a55000000001e00f50e,normal,吃瓜，来看ICLR26评审数据分析报告hhhh🤣,"是这样的
+主包昨天发了那个引爆学术圈的openreviewer事件
+结果没想到爆了啊。。。
+八十多万同学看了那篇帖子
+今天更新个后续✌️
+	
+正好今天看到智谱
+他们在搞黑五促销（今天开始到12.5号，最低3.5折
+然后想起来之前有很多token没用完hhhh
+顺手把那俩文件扔进CC（接的glm4.6
+给我分析了一下🔍
+	
+结果显示在学术版图上
+报告显示了极度的两极分化
+基本由美国和中国主导
+欧洲（如英德）只能算第二梯队（倒不意外🤷
+	
+美国和中国的作者数量
+加起来占据了全球投稿量的63%
+而审稿人这边美国和中国
+加起来占据了审稿力量的64%
+这意味着 AI 顶级会议的话语权
+高度集中在这两个国家手中（而且美国那边很多人也是华人🤣
+	
+审稿人的打分表现出非常强的趋中性
+缺乏鲜明的立场🤔
+绝大多数评分集中在 4-6分（中等
+真正的高分（8-10分）非常稀缺
+审稿人对自己评审的自信程度也不高
+绝大多数选择了3分（中等置信度）
+甚至2分的低置信度数量远多于5分的高置信度。
+这反映出审稿人群体里
+普遍存在“避免极端评分”和“信心不足”的心态
+可能是为了规避风险😨
+或者确实对稿件质量感到模棱两可
+	
+虽然平均每位审稿人审 4.9 篇论文
+但榜单中有的审稿人
+一人评审了22篇论文😧
+考虑到 ICLR 的论文深度
+22 篇的阅读量极其巨大
+这可能暗示了过高的工作量导致了评审质量的不稳定（很缺审稿人啊
+	
+尽管行业在呼吁性别多样性
+但数据依然严峻☹️
+无论是在作者群还是审稿人群中
+女性比例仅占约 18%-22%
+这显示出在即使在今天
+AI 领域的性别鸿沟依然没有明显缩小的迹象😮‍💨
+	
+数据分析方法如下：
+国家分布基于机构名称和审稿人ID中的关键词进行推断
+性别分布基于姓名特征进行估算，可能存在误差
+审稿质量综合得分 = 平均评分 × 0.7 + 平均置信度 × 0.3
+报告中的数据为基于样本的估算，可能与实际数据存在偏差
+	
+由于官方已经声明
+任何人都不能继续使用这个泄露的数据
+否则会被ban
+因此我就不公开分析红黑榜top10审稿人的名字了（最后两张图hhh
+但文件可以找我要哈[暗中观察R]
+	
+PS：没想到GLM分析和画图能力还挺强啊
+#大模型[话题]# #ai[话题]# #AI[话题]# #人工智能[话题]# #互联网[话题]# #机器学习[话题]# #计算机[话题]# #深度学习[话题]# #学术[话题]# #论文[话题]# @科技薯",,1764334165000,1764396578000,64867045000000001c029874,Max For AI,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo30srj1g1jjs5g5p46e12n563kjvpj0mo,92,24,15,18,广东,"http://sns-webpic-qc.xhscdn.com/202512251915/24946e5be1e35330d53ba801bcd6ceb3/spectrum/1040g34o31pe9tfqp28105p46e12n563kpmlf768!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/fce7bf1979970fc4d3a36fd8f4f51a93/spectrum/1040g34o31pe8m2gbi4305p46e12n563kpfl086o!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/c1ff8b4316c90de203c9c55da070760a/spectrum/1040g34o31pe8m2gbi4405p46e12n563kobebpbg!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/7138b208247bdbbe4fa94994a47b360e/spectrum/1040g34o31pe9i5mfjk105p46e12n563kq7ffkr8!nd_dft_wgth_webp_3","大模型,ai,AI,人工智能,互联网,机器学习,计算机,深度学习,学术,论文",1766661360559,https://www.xiaohongshu.com/explore/69299a55000000001e00f50e?xsec_token=AB6z7xpUEymBgHOpFYziNMLRor_5d_paNhFiD87HtCFhM=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLRor_5d_paNhFiD87HtCFhM=
+6928939e000000001e02028e,normal,"已知：本次ICLR的审稿人信息已经泄露，rebuttal的得分正在快速失去参考价值。
+	
+所以官方是否会取消本次rebuttal，得分回滚第一轮？","已知：本次ICLR的审稿人信息已经泄露，rebuttal的得分正在快速失去参考价值。
+	
+所以官方是否会取消本次rebuttal，得分回滚第一轮？",,1764266910000,1764266945000,60d2dbef000000002002c1df,江雨十秋,https://sns-avatar-qc.xhscdn.com/avatar/60d2dbef000000002002c1df.jpg,47,21,46,59,广东,"http://sns-webpic-qc.xhscdn.com/202512251915/cdb800a82e81f49f07d3bd798849d270/1040g2sg31pda4o9uis0g5o6irfno5gevgkkacug!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/0fafb672c3ee018dafa65856e642d324/1040g2sg31pda4o9uis005o6irfno5gevb76vl2g!nd_dft_wlteh_webp_3",,1766661360565,https://www.xiaohongshu.com/explore/6928939e000000001e02028e?xsec_token=AB_Cwbq92rtJFLNgod9xVJQVwG0Ft9E-I-CZSt6FTA-8E=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQVwG0Ft9E-I-CZSt6FTA-8E=
+692900e5000000001e02b26e,normal,身份泄露！OpenReview 将报告多国执法部门,"#学术[话题]# #PhD[话题]# #国际[话题]# #博士留学[话题]# #计算机科学[话题]# #PhD申请[话题]# #大模型[话题]#
+11 月 27 日，全球学术界迎来一场突如其来的安全风暴。OpenReview 官方确认，其平台 API 存在一个严重漏洞，可能导致本应匿名的评审、作者和 AC 身份被意外曝光。此消息由 ICLR 2026 工作流主席在早上 10:09 提交给 OpenReview，而事件严重性立即引发最高级别响应。
+仅在漏洞被发现的一小时内，OpenReview 就完成了修复补丁部署，并向所有项目负责人通报情况。然而，事故并未就此结束。
+⸻
+🔥 漏洞升级为跨国事件：OpenReview 计划紧急上报多国执法机构
+在对 API 调用日志进行深入分析后，OpenReview 表示，将主动联系多国执法部门，调查是否有账号进行过大规模试探性访问，或获取了不应被访问的匿名身份信息。
+这是学术界极为罕见的举措：
+一个审稿平台因身份泄露漏洞，主动将事件升级为跨国执法层面的调查。
+这意味着此次事件的潜在影响范围极广，涉及多个会议、数以千计的匿名投稿与审稿人，让匿名制度的安全性迎来史无前例的考验。
+⸻
+🕒 一分钟级响应速度：官方时间线曝光
+•	10:09 AM：ICLR 工作流主席发现并上报漏洞
+•	10:12 AM：OpenReview 启动紧急调查
+•	11:00 AM：补丁部署到主 API
+•	11:08 AM：补丁扩展到所有相关端点
+•	11:10 AM：项目负责人被通知修复完成
+	
+⚠️ 漏洞影响：匿名评审与作者身份可能暴露
+问题出在 profiles/search API 的一个特定参数组合，可绕过原本的权限检查，返回本应匿名的身份信息。
+	
+OpenReview 强调，任何使用或传播泄露信息的行为都将触发最大规模处罚，包括账号暂停。
+⸻
+📢 OpenReview：将逐一通知受影响用户
+OpenReview 正在对所有 API 访问记录进行“逐调用”级别的审查，以确认：
+•	哪些账号查询过这些敏感路径
+•	是否存在大规模或模式化访问
+•	哪些去匿名化风险需要立即通知用户
+他们承诺，将向所有可能受影响的审稿人、作者与 AC 发送个人告知邮件。
+#openreview漏洞[话题]# #openreview[话题]#",,1764294885000,1764294885000,64aa2eb4000000000a022e7f,momo,https://sns-avatar-qc.xhscdn.com/avatar/645b6a2cad8bfdf0d350826b.jpg,44,18,7,106,江苏,http://sns-webpic-qc.xhscdn.com/202512251915/3b5c67419822a7c4e0ee60f241a38c32/notes_pre_post/1040g3k031pdnd5pujc005p5a5qq2kbjvsafql2o!nd_dft_wlteh_webp_3,"学术,PhD,国际,博士留学,计算机科学,PhD申请,大模型,openreview漏洞,openreview",1766661360568,https://www.xiaohongshu.com/explore/692900e5000000001e02b26e?xsec_token=AB6z7xpUEymBgHOpFYziNMLfHWoP47ByuqMmDqmo24-Mc=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLfHWoP47ByuqMmDqmo24-Mc=
+69310121000000001e009288,normal,ICLR 2026 放榜deadline延后到1.26,"今早看到的，ICLR官网blog。
+1. AC打分ddl: 1.6；放榜ddl: 1.26
+2. AC允许招募emergency ACs分摊压力
+虽然确实没法互动改分后，AC工作量会增大；但这届也确实乱的不行，会不会是其他会/刊超车机会[看R]
+所以大哥们会考虑隔壁取号吗？
+	
+关🍠分享更多科研人资讯
+#ICLR[话题]# #iclr26审稿泄露事件[话题]#",,1764819233000,1766485839000,557405ef67bc6521ffed95d3,一块小航鱼,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31qe9bntl740040pag32uv5ejokonmio,33,7,33,44,北京,http://sns-webpic-qc.xhscdn.com/202512251915/adcc0759b8d3978294c11ed2c7f411d6/notes_pre_post/1040g3k831plhb5163q7040pag32uv5ejn7p78io!nd_dft_wgth_webp_3,"ICLR,iclr26审稿泄露事件",1766661360573,https://www.xiaohongshu.com/explore/69310121000000001e009288?xsec_token=AB25cznRPioHoUMam-cuk5YPMs_p-rwlhrkwXX1NXjqos=&xsec_source=pc_search,,AB25cznRPioHoUMam-cuk5YPMs_p-rwlhrkwXX1NXjqos=
+6929688a000000001e015de2,video,AI顶会被“开盒”! 审稿人全员裸奔,昨晚，学术界炸锅了！一个系统级的大bug，让ICLR、NeurIPS等这些顶级AI会议的审稿人集体“裸奔”了。目前，ICLR 2026已经发布了严厉声明，表示任何使用或传播这些泄露信息的人，都将被直接拒稿并禁赛多年。#ICLR[话题]#  #NeurIPS[话题]#  #AI顶会[话题]#  #论文[话题]#  #AI[话题]#,http://sns-video-bd.xhscdn.com/spectrum/1040g2f031pe46nrn28005q01pj1j9c5h8vb2eog,1764321418000,1764321418000,6801ccc3000000000d00b0b1,智东西,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31hpkk3gf3o6g5q01pj1j9c5hpl1rbp0,27,8,0,24,北京,http://sns-webpic-qc.xhscdn.com/202512251915/867ba0224cefb57d849a80ff738a3665/spectrum/1040g34o31pe46n3c3k105q01pj1j9c5h195br5o!nd_dft_wlteh_webp_3,"ICLR,NeurIPS,AI顶会,论文,AI",1766661360579,https://www.xiaohongshu.com/explore/6929688a000000001e015de2?xsec_token=AB6z7xpUEymBgHOpFYziNMLTrwBqYUQl_A_nY3DbCeJa8=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLTrwBqYUQl_A_nY3DbCeJa8=
+692b3353000000001e00df7d,normal,ICLR审稿人信息泄漏之后…,"今年的iclr可谓是各种戏剧性现象发生，除了之前reviewer和作者的紧张关系公开具有攻击性的互怼，之后发生的审稿人信息泄漏简直是让人吃惊不已。
+	
+作为多年ml三大会的reviewer和ac，真正想说的是希望大家保持理性和公平的态度对待这些，不要让学术界变成闹剧，我们该去认真读一下这些会议的code of conduct. 我的batch里有篇paper，一个reviewer直接最高置信度给了0分，在作者rebuttal时候依然是带着攻击性对作者一顿怼，真不希望看到这样的reviewer。
+	
+现在的状况是给我们分配分配的batch of papers彻底洗牌，分数revert to before rebuttal，但整个discussion的记录是留存的，ac们被要求认真读所有的讨论记录。其实我个人觉得这个事件发生，反而让ac更加意识到角色的重要性，会更加认真阅读讨论过程给出相对公平的meta review已经推荐。我觉得大家不必焦虑，好的工作终究会被看到！Good Luck！
+#iclr26[话题]# #ICLR[话题]# #iclr[话题]#",,1764438867000,1764438867000,5fae7025000000000101c1ad,Cherish,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31jcaqlvc36005ntee0igbgdd2qhhfdg,12,3,12,0,英国,http://sns-webpic-qc.xhscdn.com/202512251915/7be3c5da2238446307fa596232b7c81b/1040g2sg31pfrrlvri4005ntee0igbgdd9ha3er8!nd_dft_wlteh_webp_3,"iclr26,ICLR,iclr",1766661360585,https://www.xiaohongshu.com/explore/692b3353000000001e00df7d?xsec_token=ABCzyJD1wLQBN9GTSyIM_xNV6MgmL62Mxdxi5VvC9OEwc=&xsec_source=pc_search,,ABCzyJD1wLQBN9GTSyIM_xNV6MgmL62Mxdxi5VvC9OEwc=
+692a5662000000000d00ec3e,normal,言简意赅,"大家怎么看 ICLR26’ 的 openreview 泄露？
+	
+p3, p4 附赠官方邮件通知以防还有同事们不知道（快去check你的邮箱！）
+	
+还是希望大家遵守双盲哦
+	
+p5, p6 官方暖心小更新，会提醒 AC 重视回复，分数不再是唯一标准
+	
+也许这才是真的提醒所有与会的 researchers （不论是作者还是审稿人，抑或是 AC ）：
+	
+Score is blurry, show your attitude.
+	
+#openreview[话题]# #iclr[话题]# #开盒[话题]# #没别的意思[话题]#",,1764382306000,1764399392000,64d55578000000000100532d,ipfipfipf,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31199r59l6g505p6lals08kpdiafa6l0,12,2,2,0,美国,"http://sns-webpic-qc.xhscdn.com/202512251915/4c140dcf42118bf040cfcbd6fd0a5092/notes_pre_post/1040g3k831pf1665o2s0g5p6lals08kpd1qk43vo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/44310dc68727ec5e0c9e3fd34e5fad99/notes_pre_post/1040g3k831pf1665o2s105p6lals08kpdep6ouh8!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/4f56368339059f31df7805fece74f5ba/1040g00831pf1665mig0g5p6lals08kpd310q2g8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/b633bd2adac3537c1f7642f04763f612/1040g00831pf1665mig005p6lals08kpd0ajdch0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/df0c77c53d55e6bd666533b47709cdb8/1040g2sg31pf9882v3c0g5p6lals08kpd9phic48!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251915/25f16a7911314153735639ef5a4d2e4c/1040g2sg31pf9882v3c005p6lals08kpdskivqe8!nd_dft_wlteh_webp_3","openreview,iclr,开盒,没别的意思",1766661360587,https://www.xiaohongshu.com/explore/692a5662000000000d00ec3e?xsec_token=ABAUWIWHMgtxfcf11MhNzQXxw7tvwDCVwzxL6YTlSyPzc=&xsec_source=pc_search,,ABAUWIWHMgtxfcf11MhNzQXxw7tvwDCVwzxL6YTlSyPzc=
+6929b8ad000000001d0394e8,normal,哈基 ICLR，你这家伙🤦‍♂️,"官方解决方案：
+1. 重新分配区域椅子
+2. 可以 re，但是审稿人没法改分和回复
+3. 区域椅子直接参考 rebuttal 和原始评分
+	
+#ICLR26[话题]# #威慑纪元[话题]#",,1764341933000,1764341934000,64295bea000000001102214b,Yann,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31nqv783nl2005p19bfl4c8abt8mrdj0,4,0,10,15,北京,http://sns-webpic-qc.xhscdn.com/202512251956/be824b3dfaf9ce961be78dd07a67e405/notes_pre_post/1040g3k831pedts6426005p19bfl4c8ab7nuigs8!nd_dft_wlteh_webp_3,"ICLR26,威慑纪元",1766663806051,https://www.xiaohongshu.com/explore/6929b8ad000000001d0394e8?xsec_token=AB6z7xpUEymBgHOpFYziNMLUIyROdMFzT_ttdLfxaP7Bc=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLUIyROdMFzT_ttdLfxaP7Bc=
+692acc88000000001e02e127,normal,iclr 2026审稿结束了,"0.评分恢复到最初状态
+1.reviewer暂停讨论
+2.重新分ac
+	
+#sci[话题]# #SCI论文[话题]# #学术论文[话题]# #学术[话题]# #iclr[话题]# #iclr26[话题]# #人工智能[话题]# #审稿人[话题]#",,1764412552000,1764412553000,62442e2600000000100082ac,Jiawei Liu,https://sns-avatar-qc.xhscdn.com/avatar/62442e2600000000100082ac.jpg,3,1,3,0,辽宁,"http://sns-webpic-qc.xhscdn.com/202512251956/afe876f69fded2498eecf7711975b894/1040g2sg31pffib2jiudg5oi45oj410lcrvq4bj0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251956/56a351d53d89a3f51bae145f4a04f391/1040g2sg31pffib2jiucg5oi45oj410lcr6l759o!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251956/d6426f894e9e80b65eb88c8a26323cb8/1040g2sg31pffib2jiuc05oi45oj410lcmlgqm30!nd_dft_wgth_webp_3","sci,SCI论文,学术论文,学术,iclr,iclr26,人工智能,审稿人",1766663806055,https://www.xiaohongshu.com/explore/692acc88000000001e02e127?xsec_token=ABAUWIWHMgtxfcf11MhNzQX8ELKPBC1RRmJmCOOdUY_Ls=&xsec_source=pc_search,,ABAUWIWHMgtxfcf11MhNzQX8ELKPBC1RRmJmCOOdUY_Ls=
+692a6888000000001e00814e,normal,学术史上一次灾难-ICLR-rebuttal重置,"一切rebuttal将为白费，尤其是补实验后提分的。
+很不公平；
+不如直接重新分配reviewer重新review。同时严禁所有review使用LLM。
+严惩恶意打低分的。
+禁止不相关方向做reviewer。#学术论文[话题]# #深度学习[话题]#
+#科研学习[话题]# #学术[话题]# #iclr26审稿泄露事件[话题]#",,1764386952000,1764386952000,5eafaa490000000001007ad1,灰一会,https://sns-avatar-qc.xhscdn.com/avatar/cd255d0e201935e0d852bd371f18c198.jpg,3,0,7,0,天津,http://sns-webpic-qc.xhscdn.com/202512251956/27fab998b5d28457fbf57b2a8f36cf0a/spectrum/1040g0k031pf3c1s9ic005nlfl94g8umhf7b46ig!nd_dft_wgth_webp_3,"学术论文,深度学习,科研学习,学术,iclr26审稿泄露事件",1766663806057,https://www.xiaohongshu.com/explore/692a6888000000001e00814e?xsec_token=ABAUWIWHMgtxfcf11MhNzQX4wA3ZTQO6eiPFzY62bFzmE=&xsec_source=pc_search,,ABAUWIWHMgtxfcf11MhNzQX4wA3ZTQO6eiPFzY62bFzmE=
+69287a86000000001b022b8a,normal,接上帖,接上帖，有人把iclr2026审稿信息已经做成数据库了，手真快啊！,,1764260486000,1764273803000,5d39048b0000000011013b8d,MathsCode,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31nl51g2k58605n9p0i5kaesdmg0hfu8,136,83,164,188,上海,http://sns-webpic-qc.xhscdn.com/202512251956/f839eaf07d654198103547dc7d309ebf/1040g2sg31pd55h6i2u405n9p0i5kaesdf7ucbqg!nd_dft_wlteh_webp_3,,1766663806079,https://www.xiaohongshu.com/explore/69287a86000000001b022b8a?xsec_token=AB_Cwbq92rtJFLNgod9xVJQftQV1ft4I4oViGuXiLXulU=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQftQV1ft4I4oViGuXiLXulU=
+69287ac2000000001d03c08d,normal,ICLR 吃瓜,"大晚上学习了下reviewer的paper，
+活久见系列
+	
+那么会有一波
+涨分么[笑哭R]
+#phd[话题]# #iclr[话题]#",,1764260546000,1764295662000,59827db36a6a69581405263a,Jin Yeying,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31p7cgvmbi80049na47ur69hq8rsh93o,51,6,56,45,新加坡,"http://sns-webpic-qc.xhscdn.com/202512251956/854572b1173649117617843210dda8e9/1040g2sg31pdnuoo4267049na47ur69hqr2j26sg!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251956/69ee188d1d74cd416d0c81d1832af7bb/notes_pre_post/1040g3k831pd76bcki89049na47ur69hqb33cfi0!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251956/97f6e2387e04f4d979390dbbd298c663/notes_pre_post/1040g3k831pd76bcki88049na47ur69hqom1p6d0!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512251956/3658a27dd7e9db0bc020d1ad1dc32530/notes_pre_post/1040g3k831pd76bcki87g49na47ur69hqb14bp20!nd_dft_wlteh_webp_3","phd,iclr",1766663806091,https://www.xiaohongshu.com/explore/69287ac2000000001d03c08d?xsec_token=AB_Cwbq92rtJFLNgod9xVJQbpjAt_7zfU3pFKnDD-HR54=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQbpjAt_7zfU3pFKnDD-HR54=
+69375fdc000000001e0211e0,normal,又一个ICLR笑话，三百篇里五十篇虚假引用,"有个引用的🔗还是example.com
+好像还是高分论文，蚌埠住了[失望R]
+	
+这届ICLR活也太多了吧：
+21%审稿意见完成AI生成，审稿人大开盒，我有40个问题，AI生成虚假引用...[捂脸R][捂脸R][捂脸R]
+	
+接下来还会有新活吗[偷笑R]
+	
+#PhD[话题]# #博士生科研日常[话题]# #ICLR26[话题]# #科研人的精神状态[话题]# #学术会议[话题]# #会议论文[话题]# #AI写作[话题]# #AI审稿[话题]# #AI会议[话题]#",,1765243861000,1765236950000,62cd67a0000000000e00ca6b,ata,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo3135cuvg0m6505omdcug3hijbkti9mco,50,6,0,46,英国,"http://sns-webpic-qc.xhscdn.com/202512251956/bed509a3da59e05a479d0031af9bc817/notes_pre_post/1040g3k831prof3tela705omdcug3hijblug58b0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251956/0b0bb6c6d6ba9bb8a13674718e4c38d3/notes_pre_post/1040g3k831prof3tela7g5omdcug3hijb08hg9r8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251956/ba40e18a1fc4394772c81ea3ba108861/1040g2sg31prof3tf4k705omdcug3hijbt7fvs30!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251956/e46cecefc1394b1b964f8b0edad67d44/1040g2sg31prof3tf4k805omdcug3hijbf2mv4uo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251956/00ed5a597ca4bf37d17d1fb53968999c/1040g2sg31prof3tf4k7g5omdcug3hijbtea8gdg!nd_dft_wlteh_webp_3","PhD,博士生科研日常,ICLR26,科研人的精神状态,学术会议,会议论文,AI写作,AI审稿,AI会议",1766663806094,https://www.xiaohongshu.com/explore/69375fdc000000001e0211e0?xsec_token=ABZ3SBognzC1K2ipWy2xdEOib6tD-m-Ru8krMnByNNc10=&xsec_source=pc_search,,ABZ3SBognzC1K2ipWy2xdEOib6tD-m-Ru8krMnByNNc10=
+69289d92000000000d00c4cf,normal,审稿人信息泄漏也许会导致 arXiv 文章变少,"因为很多人可能都结了仇
+有 enemy 在外当然不希望自己处在明处
+毕竟暗箭难防 [暗中观察R]
+	
+想想还好现在自己只当 AC 了
+以前做审稿人的时候写意见也都非常中肯
+甚至帮作者喷别的审稿人
+所以得饶人处且饶人
+大家都不容易 [捂脸R]
+	
+#顶会[话题]# #学术论文[话题]# #ai[话题]# #人工智能[话题]# #iclr[话题]# #审稿[话题]# #审稿人[话题]# #科研[话题]# #neurips[话题]# #icml[话题]#",,1764269458000,1764269458000,6313128c000000000f006511,Qiao Jin,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo310uul6r96a005ooj2a63op8haracu60,44,5,11,4,美国,http://sns-webpic-qc.xhscdn.com/202512251956/71321c37096736b0d69e437162d07ddd/1040g2sg31pdb7s3tjc705ooj2a63op8hslgku1o!nd_dft_wlteh_webp_3,"顶会,学术论文,ai,人工智能,iclr,审稿,审稿人,科研,neurips,icml",1766663806096,https://www.xiaohongshu.com/explore/69289d92000000000d00c4cf?xsec_token=AB_Cwbq92rtJFLNgod9xVJQZ3Obj5YLewUzykto5vZGjo=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQZ3Obj5YLewUzykto5vZGjo=
+6929a76a000000001d03c898,normal,ICLR泄露，但是公开就应该对等,"既然作者的ICLR投稿会被公开（实际上挂arXiv就约等于公开了），那么也应该对等公开不负责审稿人的名字，不能让不负责审稿人在双盲的掩护下肆意妄为，当然只是公开被PC认定为极不负责的审稿（例如纯用llm，无意义评价）而合理的低分可以保持匿名，这种惩罚方式比desk reject或者禁止投稿要公平的多因为不会让合作者被连坐躺枪，非常认可这位老师的观点 #iclr[话题]#  #openreview[话题]#
+	
+很多人提到可能会误伤合理的低分审稿人，那就先由ac/sac/pc评判（实际上cvpr/arr也已经有过类似的机制了，只不过是desk reject，我觉得这没那么公平因为误伤合作者尤其是一作），认定为不合格就公开，被公开的再自辩自己是不是在认真审稿，让群众去评判，既然自认为认真审稿了也没理由怕被公开曝光，身正不怕影子斜，群众的眼光是雪亮的",,1764337514000,1764380128000,655c19c300000000020355e6,紫苑,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31pfjgcau28005pas371gmlf6ae141ko,34,5,51,2,上海,"http://sns-webpic-qc.xhscdn.com/202512251956/5490f03a5c0d8f020859766568eef551/notes_pre_post/1040g3k831pebor73287g5pas371gmlf67dvmnr8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512251956/7535b4d30381aae7a5a05800e10c7ca7/notes_pre_post/1040g3k831pebor7328805pas371gmlf6tqd6jjo!nd_dft_wlteh_webp_3","iclr,openreview",1766663806101,https://www.xiaohongshu.com/explore/6929a76a000000001d03c898?xsec_token=AB6z7xpUEymBgHOpFYziNMLbXmkoNv4u2AVb2NW73LXB4=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLbXmkoNv4u2AVb2NW73LXB4=
+6929b85e000000001f00aeca,normal,史上最魔幻的一届ICLR🐮,"继openreviewer事件后再度发生西⚡️哥到处发审稿人实名事件。官方对此决定关停所有public comment，同时全部更换ac ，不允许改分（分数复原），新ac根据原始分数和author rebuttal 的内容决定是否接收
+#大开眼界系列[话题]# #有点离谱但别太离谱[话题]# #openreview[话题]# #iclr[话题]# #ai[话题]# #科研日常[话题]#",,1764341854000,1764341873000,621fdf330000000021023e39,無纨瞳,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31pjjo6274o005ogvrspocfhpqt7o2e8,25,5,9,20,上海,http://sns-webpic-qc.xhscdn.com/202512252035/5db120fa49a0d90065af989a2fad66d2/notes_pre_post/1040g3k031pedtetu3c005ogvrspocfhpjcj75bg!nd_dft_wlteh_webp_3,"大开眼界系列,有点离谱但别太离谱,openreview,iclr,ai,科研日常",1766666125271,https://www.xiaohongshu.com/explore/6929b85e000000001f00aeca?xsec_token=AB6z7xpUEymBgHOpFYziNMLXY_DTaByIetIBUAZHs-UoM=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLXY_DTaByIetIBUAZHs-UoM=
+692879c9000000001e003934,normal,Openreview史诗级事故😢,"只能说，世界是个草台班子
+	
+真open review了，幸好iclr全给大部分都是正分[失望R]，不然真就被史诗级开盒了
+	
+已经看到有老师被开盒了[石化R]，不知道这次官方会怎么处理这个bug
+	
+#科研日常[话题]# #iclr26[话题]# #openreview[话题]# #事故[话题]#",,1764260297000,1764268239000,62151cc70000000021026421,？,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo3100cuu1h66705ogl3j3ocp111jv6lko,19,2,9,4,辽宁,http://sns-webpic-qc.xhscdn.com/202512252035/7fd182df126f7f7a9ba98fcb1fff64a9/1040g00831pd71d3via0g5ogl3j3ocp11nfjn1p0!nd_dft_wlteh_webp_3,"科研日常,iclr26,openreview,事故",1766666125292,https://www.xiaohongshu.com/explore/692879c9000000001e003934?xsec_token=AB_Cwbq92rtJFLNgod9xVJQXQHBiD2wKVAk7UBgsIIbuo=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQXQHBiD2wKVAk7UBgsIIbuo=
+692b002e000000000d03f845,normal,ICLR 26 无语之后的更加无语,"ICLR应该对每个作者来说都是一场意外，甚至是一次事故。但真的也感受到了ICLR官方的无奈，或许本就不存在一种对所有人都公平且能让所有人都满意的解决方案，但官方要考虑的远比我们主张的还要多得多，公平度，时间成本，AC匹配……
+	
+每次看到分析爆出来的数据的就其实挺无语的，这个数据确实有价值，这次的意外好像也扯掉了一层学术恶意低分、内斗算计的遮羞布。但，这些罗生门真的是随处可见还是个别案例呢？归根结底，这是双盲机制的问题还是个别审稿人心理阴暗呢？双盲是学术平权最有效的一种实现手段啊！就像高考，它不是最公平的，但能找出更有效的选拔机制么？每一次对已经流出的数据的分析和二次加工，都是对双盲机制的一次践踏，这真的是一个科研人应该有的心态和思维方式么？
+	
+有价值不代表可以被滥用，因为人之所以为人，就是不是眼中只有价值和利益，一个学术生态的平衡需要所有人的维护，请，爱惜自己的羽毛！
+	
+#读博日记[话题]# #科研[话题]# #读博[话题]# #科研日常[话题]# #phd[话题]# #iclr26[话题]#",,1764425774000,1764426232000,5d81745400000000010190e3,才不是至尊宝,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo317dkhq0e46005nc1eha0b473g57n00g,13,0,1,1,美国,http://sns-webpic-qc.xhscdn.com/202512252035/504fe6247234c52c4bb6e5a8dea6ff42/notes_pre_post/1040g3k831pflck7j2o705nc1eha0b473lnvkd6g!nd_dft_wlteh_webp_3,"读博日记,科研,读博,科研日常,phd,iclr26",1766666125298,https://www.xiaohongshu.com/explore/692b002e000000000d03f845?xsec_token=ABCzyJD1wLQBN9GTSyIM_xNRNJn6th2U8u0KZs9P3u7Zo=&xsec_source=pc_search,,ABCzyJD1wLQBN9GTSyIM_xNRNJn6th2U8u0KZs9P3u7Zo=
+692924e4000000001e03a6b3,normal,"朋友圈都在讨论openreview ICLR泄密事件怎么看？
+我想说平常心看。
+#iclr[话题]# #大模型[话题]# #CCF[话题]# #计算机视觉[话题]#","朋友圈都在讨论openreview ICLR泄密事件怎么看？
+我想说平常心看。
+#iclr[话题]# #大模型[话题]# #CCF[话题]# #计算机视觉[话题]#",,1764304100000,1764304100000,5d263b040000000011022f61,论文还没写出来的小朋友,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo3179m622pjq005n967c24cbr1e9kfqq8,3,0,0,0,上海,http://sns-webpic-qc.xhscdn.com/202512252035/214d4ab30180e32092fd597305c8a1ea/1040g2sg31pdrvtm12se05n967c24cbr1tfkg2e8!nd_dft_wlteh_webp_3,"iclr,大模型,CCF,计算机视觉",1766666125323,https://www.xiaohongshu.com/explore/692924e4000000001e03a6b3?xsec_token=AB6z7xpUEymBgHOpFYziNMLbYZ6oPc-5Q1CarNxjY76Kg=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLbYZ6oPc-5Q1CarNxjY76Kg=
+69287395000000001e026915,normal,"能呼吁一下别用bug查reviewer或者作者吗兄弟姐妹们
+【补充：想讨论怎么利用bug，或者觉得查了没事非常想argue查的正当性的，请移步其他帖子哈，感谢理解！本帖下关于怎么利用bug的回复都会删除。学术之外，请大家关心好自己的精神健康，不必要太过在意一个review或者reviewer🤗 享受生活的每一天！】
+【再次补充，一觉醒来感觉天塌了…感觉cs领域的ethics真的是个大笑话。大家照顾好自己吧[笑哭R]尤其是投了iclr的朋友们，这几天不确定感应该会很强。本人打算放下iclr去做别的proje","能呼吁一下别用bug查reviewer或者作者吗兄弟姐妹们
+【补充：想讨论怎么利用bug，或者觉得查了没事非常想argue查的正当性的，请移步其他帖子哈，感谢理解！本帖下关于怎么利用bug的回复都会删除。学术之外，请大家关心好自己的精神健康，不必要太过在意一个review或者reviewer🤗 享受生活的每一天！】
+【再次补充，一觉醒来感觉天塌了…感觉cs领域的ethics真的是个大笑话。大家照顾好自己吧[笑哭R]尤其是投了iclr的朋友们，这几天不确定感应该会很强。本人打算放下iclr去做别的project了！清净几天[捂脸R]照顾好自己兄弟姐妹们】
+	
+bug是一回事。要不要使用它是另一回事。
+双盲制度是大家投稿的时候都同意的；能查作者和要不要去查，完全是两码事。
+本人可以拍胸脯说我非常认真的review了batch里所有文章..所以绝对不是给不负责任的reviewer洗的意思。只是觉得双盲不仅仅是制度上的双盲，也是一种学术研究的价值观吧。
+如果你认可这个制度，并且投稿的时候也了解了这个制度，那就不应该去主动破坏它，哪怕是因为bug。
+这跟查arxiv一个道理。
+希望评论区不要骂我哈哈哈哈
+peace and love
+#iclr[话题]#",,1764258709000,1764308879000,5b0d27c74eacab36e72da799,first山上花棕色小猫（第二轮（徒步版,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31p0c07kt2g004a5okcjsf9spg70ck48,336,85,271,144,丹麦,http://sns-webpic-qc.xhscdn.com/202512252035/1edae597b9bdd27ab6870164385584de/1040g2sg31pd65ejriu704a5okcjsf9spd9j19ig!nd_dft_wlteh_webp_3,iclr,1766666125361,https://www.xiaohongshu.com/explore/69287395000000001e026915?xsec_token=AB_Cwbq92rtJFLNgod9xVJQU0Dh0zDTDWltkaG1RO-LjQ=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQU0Dh0zDTDWltkaG1RO-LjQ=
+6929bff8000000001b030d78,normal,ICLR官方回应来了：冻结讨论回退分数,"ICLR官方研究了一天，终于给出解决方案了，主要有以下三点
+1. 重新Assign Area Chair
+2. 所有分数回退到Discussion之前，审稿人无法再改分和评论，但是作者还可以回复，由AC根据审稿人意见决定是否录取
+3. 禁止Public Comment功能防止有人搞事
+同时，和openreview合作，要开盒开盒的人，和跨国法律机构合作商讨对策[呃R]
+	
+#iclr[话题]# #学术[话题]# #科研[话题]# #研究生[话题]#",,1764343801000,1764344655000,5aa8d40f11be107c53f97843,无味之汁,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31oifs93c6g004a3b6va0uu23fv2bqgg,295,82,89,408,美国,"http://sns-webpic-qc.xhscdn.com/202512252035/465e35074700beee040bd9c87ee5d48b/notes_pre_post/1040g3k831peeng0iig404a3b6va0uu23crh55m0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252035/40abd25905bcacd0ed2fdf7d16a4c4f1/notes_pre_post/1040g3k831peeng0iig4g4a3b6va0uu23dnf5afg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252035/c68d69e12bf9a0e023e9e5882f6464db/notes_pre_post/1040g3k831peeng0iig504a3b6va0uu23579psrg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252035/5a7959132af90f84138080e20e7bfb2a/notes_pre_post/1040g3k831peeng0iig5g4a3b6va0uu23a3vut7g!nd_dft_wlteh_webp_3","iclr,学术,科研,研究生",1766666125371,https://www.xiaohongshu.com/explore/6929bff8000000001b030d78?xsec_token=AB6z7xpUEymBgHOpFYziNMLRHB320B-HO2DfOk9JxizrM=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLRHB320B-HO2DfOk9JxizrM=
+692a1327000000001e039264,normal,Release ICLR 24/25/26 每日分数,"openreview的bug影响太大了。我已归档了 ICLR 2024/2025/2026 每篇论文的每日评分（未收集或泄露任何审稿人身份信息）。无论ICLR26分数回滚会带来什么样的影响，我认为现在是时候将这些数据公开给整个AI/ML社区了。我们希望此次公开能够在这个艰难的时期为社区提供支持，并推动更多的透明度。
+#ICLR2026
+Our Position: https://arxiv.org/abs/2502.00874
+Data release: https://arxiv.org/abs/2510.13201
+Raw data: https://github.com/jingyangcarl/openreview/tree/main/venues/iclr
+	
+#iclr2026[话题]# #iclr2025[话题]# #iclr2024[话题]#  #iclr[话题]#  #openreview[话题]#",,1764365095000,1764365633000,5facb48900000000010074e0,杨靖 papercopilot,https://sns-avatar-qc.xhscdn.com/avatar/5facb48900000000010074e0.jpg,147,66,21,44,美国,"http://sns-webpic-qc.xhscdn.com/202512252056/f39a18e371f94ed6e9c99efb615d5935/spectrum/1040g34o31peosuup241g5ntcmi4g8t704of5a5g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/32221d246263207a9eef3dbd9a5804e5/spectrum/1040g34o31peosuup24205ntcmi4g8t705kjjm2o!nd_dft_wgth_webp_3","iclr2026,iclr2025,iclr2024,iclr,openreview",1766667414738,https://www.xiaohongshu.com/explore/692a1327000000001e039264?xsec_token=ABAUWIWHMgtxfcf11MhNzQX_XD7ov_nwIorMoy1cz6Rdc=&xsec_source=pc_search,,ABAUWIWHMgtxfcf11MhNzQX_XD7ov_nwIorMoy1cz6Rdc=
+692873270000000019027c33,normal,"提醒一下大家
+ICLR 26不要跟审稿人脱离Openreview对线！
+可能会直接Desk Reject！
+（如果被我打了4分记得也不要找我对线[doge]）
+#iclr[话题]#","提醒一下大家
+ICLR 26不要跟审稿人脱离Openreview对线！
+可能会直接Desk Reject！
+（如果被我打了4分记得也不要找我对线[doge]）
+#iclr[话题]#",,1764258599000,1764258599000,5d2a1815000000001602cb7b,水母,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31a1tbh3h7g5g5n9a30allirr9hdigf0,97,20,37,59,天津,"http://sns-webpic-qc.xhscdn.com/202512252056/a6247bf4f98be677b7e832eff0808fee/1040g00831pd654g3jc6g5n9a30allirrmnkoifg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/55473b9c1cd6da4b44f1d815e9adf2e6/1040g00831pd654g3jc605n9a30allirrlkrcj0o!nd_dft_wgth_webp_3",iclr,1766667414744,https://www.xiaohongshu.com/explore/692873270000000019027c33?xsec_token=AB_Cwbq92rtJFLNgod9xVJQSXNzcatktbJHrSsrlQVM5s=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQSXNzcatktbJHrSsrlQVM5s=
+692908d7000000001e02176c,normal,能呼吁下不要只站在既得利益者那边吗,"刷到这个帖子，原po将现存的审稿规则视为一种静态的不可置疑的伦理法则。原段落的核心逻辑是：“投稿即同意规则，同意即不应破坏”。这种观点将“规则”视为一种僵化的、外在于人的客观定在，而忽略了规则本身的也是具有历史性。
+	
+当它开始阻碍精神的发展（即学术的公正与效率），此时对规则的卑躬屈膝，实际上是对既得利益者的维护。历史上，这种“既然参与就默认一切”的逻辑曾多次被用来压制革新。例如，早期的行会制度或封建契约，都要求参与者遵循既定等级，否则被视为背叛。又比如对伽利略，教廷所说：“你作为信徒和学者，就应接受既定宇宙观，不得宣扬异说。”
+	
+他们的共同点是：“身处体系之内”🟰“放弃批判权利”，将制度本身的问题（教条、地心说）当作不可触碰的前提。
+	
+进步往往来自于对“不合理规则”的否定。如果所有人都只是在规则框架内修补（去维护它），而不敢正视规则本身的非理性，那么旧制度就会无限期地苟延残喘。
+原段落将“能看到双盲审稿人的bug”视为孤立的技术错误并试图将“bug的存在”与“是否利用bug”进行道德切割。这是肤浅的二元论。这个Bug不仅是编程失误，它是当前审稿体系内在矛盾的外化。当前的ai会议发表机制面临着投稿量过多、审稿人资质参差不齐、同行恶意竞争等矛盾。这个Bug的出现，乃至人们去利用它，恰恰揭示了所谓“openreview里的双盲”在现实重压下的虚伪性和脆弱性。如果不把Bug看作是体系机能紊乱的信号，而仅仅看作是个人的道德试炼，那就是放弃了从根本上解决问题的机会。
+	
+说“Bug是一回事，用不用是另一回事”，是在试图用主观道德来掩盖客观伦理的缺失。当一个机制依赖参与者的“高度自觉”和“无视可见的漏洞”来维持运转时，它本身就已经走向了它的反面——它不再是保障公平的工具，而变成了考验人性的陷阱。
+	
+原段落所坚持的“学术价值观”，实际上是一种停滞的道德观。对于研究者，重要的不是盲目维护一个充满了漏洞的旧机制，也不是单纯地鼓励破坏，而是要认识到：当下的机制已经无法承载现有的学术生产力。
+	
+我们不应为自己在漏洞面前的“守规矩”而沾沾自喜，而应看到这种冲突正在呼唤一种新的、更透明、更有效的评审机制。
+在这个过程中，那些利用漏洞、挑战规则的行为，虽然在旧道德看来是恶的，但在历史辩证法中，它们往往是揭露旧制度荒谬性、推动新制度诞生的必要环节。
+#纯粹个人想法吐槽[话题]#",,1764296919000,1764303837000,61af85ab000000001000e94a,今日漫游星际,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo30r2gr51eha005odfgmlk1qaa7fasa98,90,9,46,2,广东,"http://sns-webpic-qc.xhscdn.com/202512252056/4a46b85a422c56b5db635e15c8c3052f/1040g00831pdrrifqig0g5odfgmlk1qaahog7hj0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/4d46d54836e52227dbe9f21624fe1ade/1040g00831pdrrifqig005odfgmlk1qaav73s3so!nd_dft_wlteh_webp_3",纯粹个人想法吐槽,1766667414770,https://www.xiaohongshu.com/explore/692908d7000000001e02176c?xsec_token=AB6z7xpUEymBgHOpFYziNMLfrMnRoH7w32vk_jX5-pD8o=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLfrMnRoH7w32vk_jX5-pD8o=
+692879ea000000000d00c9ea,normal,接上帖,最新速报，刚刚openreview的bug没查到的，有数据库了，手真快啊#iclr[话题]#,,1764260330000,1764273842000,5d39048b0000000011013b8d,MathsCode,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31nl51g2k58605n9p0i5kaesdmg0hfu8,60,47,21,172,上海,http://sns-webpic-qc.xhscdn.com/202512252056/f3fab759e3ebfe0447229e77f25927e6/1040g2sg31pd55h6i2u5g5n9p0i5kaesd3efi2ug!nd_dft_wlteh_webp_3,iclr,1766667414774,https://www.xiaohongshu.com/explore/692879ea000000000d00c9ea?xsec_token=AB_Cwbq92rtJFLNgod9xVJQf76lOVagD_il_ARosC7snA=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQf76lOVagD_il_ARosC7snA=
+69293f0c000000001e0078d7,normal,ICLR审稿人遭开盒，低分竟是好友打的？,"昨晚 AI 学术圈彻底失眠。
+ICLR 2026 的 OpenReview 系统突然“自爆式”漏洞，让双盲审稿直接变成实名互望。只要输入论文 ID，就能查到审稿人的姓名、单位、邮箱…堪称年度最大瓜。
+	
+吃瓜群众一拥而上，查 reviewer 的速度比写 rebuttal 还快。有作者当场发现：给自己打 2 分的人，是上周还一起讨论模型优化的“科研搭子”。
+	
+可这一夜的戏剧性，其实也照出学术圈长期埋着的审稿乱象：
+有人审稿写三行字，意见模糊到像在占卜（但是给低分）；
+有人审稿写三千字，要求从实验到哲学体系全部推翻重构（但是AI写的）；
+更魔幻的是，有人每年投稿互bid，朋友的工作我来抬，对手的工作我来埋。
+	
+但玩笑背后，是学术生态的隐忧：
+双盲制度本希望保护公平，现在反被系统漏洞打碎；
+审稿人怕被人肉、怕关系撕裂，自然不敢直言；
+作者面对不稳定规则，也更焦虑、更不信任投稿流程。
+	
+你怎么看？
+	
+📌 关注我，解锁更多 AI 与金融资讯！
+⭐️️⭐️⭐️我们是起源于剑桥+北大的知识分享社区
+📙📙📙每日用心做知识分享，提供体系化精心整理的资料，欢迎加入群聊交流提问
+📙📙📙资料包括： 2025最新当季度深度论文➕ 代码复现 🔥｜交易策略学习 ｜ 面试题目➕面试准备资源 ｜入门资料｜进阶资料｜衍生品资料｜顶级名校量化笔记 ｜投资精选新闻｜量化前沿趋势｜优质好书｜人物专访 ｜量化大礼包
+#ai[话题]# #科研[话题]# #学术圈[话题]# #人工智能[话题]# #llm[话题]# #ICLR[话题]# #LLMQuant[话题]# #quant[话题]# #量化[话题]# #吃瓜[话题]#",,1764310796000,1764310797000,67612cae00000000140326fb,LLMQuant量化社区,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31ho6aafa3u6g5pr15in569nr7mpb1k8,33,5,0,27,北京,"http://sns-webpic-qc.xhscdn.com/202512252056/703cd4d85f3263bdaaac6b33ae94c115/spectrum/1040g0k031pduipm8ic005pr15in569nrrto27tg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/9d5572d64e13e97db13db3d843d7d43e/spectrum/1040g34o31pdu22maia5g5pr15in569nri0305fg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/a22a5d099537532a8e7f2928eb9914e1/spectrum/1040g34o31pdu22maia605pr15in569nr394r1io!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/a9301b686d7ec40cb99306b82018c6a3/spectrum/1040g34o31pdu22maia6g5pr15in569nrupq2jko!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/7d069a8308d2d060cd066948c023dc9b/spectrum/1040g34o31pdu22maia705pr15in569nra09qubo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/5eea685758f76c4c376f4eeb1c7205c6/spectrum/1040g34o31pdu22maia7g5pr15in569nr0sd5fr0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/5c6cc3f10986b8c20b886f7f41cf3ce4/spectrum/1040g34o31pdu22maia805pr15in569nrh69a6bg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/bdb9413eec7e5bfdb0eb70f420f74e71/spectrum/1040g34o31pdu22maia8g5pr15in569nrh3rg10g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/30319b5b5444a8b1084cf61a81103c6b/spectrum/1040g34o31pdu22maia905pr15in569nrmvh7f98!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/d2ec3b5b2aed97130396299bc9135e02/spectrum/1040g34o31pdu22maia9g5pr15in569nrgip6ov8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/04f1f664fabf87e3548d830ea5f66b22/spectrum/1040g34o31pdu22maiaa05pr15in569nr31t53ag!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252056/e32fccc860e55de45d7892cc99ff32c6/spectrum/1040g34o31pdu22maiaag5pr15in569nrgcj99do!nd_dft_wlteh_webp_3","ai,科研,学术圈,人工智能,llm,ICLR,LLMQuant,quant,量化,吃瓜",1766667414785,https://www.xiaohongshu.com/explore/69293f0c000000001e0078d7?xsec_token=AB6z7xpUEymBgHOpFYziNMLdPQv8aINhpZrxOVMXV6ZbQ=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLdPQv8aINhpZrxOVMXV6ZbQ=
+69286de6000000001e00c91f,normal,盒武器降临了,openreview逆天bug啊，难绷了，今晚开始终极混战#盒子[话题]# #计算机会议[话题]# #ICLR[话题]#,,1764257254000,1764257255000,635549c3000000001802e5c1,warmsnow,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo314qrm9uk0o605oql971m5pe150vaem0,17,1,2,3,江苏,http://sns-webpic-qc.xhscdn.com/202512252116/2d9b12cc1b87bb1a3fda84ffa3f8b3dd/1040g2sg31pd5jrbji4kg5oql971m5pe1df93hjo!nd_dft_wlteh_webp_3,"盒子,计算机会议,ICLR",1766668592568,https://www.xiaohongshu.com/explore/69286de6000000001e00c91f?xsec_token=AB_Cwbq92rtJFLNgod9xVJQRrspGvOXFgi5nwRUDsZAkM=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQRrspGvOXFgi5nwRUDsZAkM=
+69290915000000001e02190a,normal,ICLR盒威慑后面会怎么处理呢[猪头R] #ICLR26[话题]# #审稿人[话题]# #openreview漏洞[话题]#,ICLR盒威慑后面会怎么处理呢[猪头R] #ICLR26[话题]# #审稿人[话题]# #openreview漏洞[话题]#,,1764296981000,1764296982000,66ee5006000000001d031673,WikiHong,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo3180dkn45446g5pnea037e5jjk0p60s0,3,0,6,0,重庆,http://sns-webpic-qc.xhscdn.com/202512252116/c5fe4ed03fff4ba3116aaf069f2888d8/notes_pre_post/1040g3k831pdoja672gkg5pnea037e5jjc3t0qa0!nd_dft_wlteh_webp_3,"ICLR26,审稿人,openreview漏洞",1766668592590,https://www.xiaohongshu.com/explore/69290915000000001e02190a?xsec_token=AB6z7xpUEymBgHOpFYziNMLVexYebztcrdfWtgpxGbWEU=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLVexYebztcrdfWtgpxGbWEU=
+6929be45000000001e036833,normal,ICLR换AC 工作量超级加倍,"重新分配AC
+	
+基于原始review和score以及author response，新AC决定接收与否
+	
+防止共谋
+	
+#博士[话题]# #iclr[话题]# #openreview[话题]#",,1764343365000,1764343365000,61fee98b000000001000dd8e,没滑雪的Alex,https://sns-avatar-qc.xhscdn.com/avatar/1000g2jo2ladnfn4jc0005ofut65k1nce2udn848,42,4,38,18,瑞士,http://sns-webpic-qc.xhscdn.com/202512252116/7dcbef40cb251b738e0b3d4c7d19699d/1040g2sg31peeko96ise05ofut65k1nce390lk50!nd_dft_wlteh_webp_3,"博士,iclr,openreview",1766668592611,https://www.xiaohongshu.com/explore/6929be45000000001e036833?xsec_token=AB6z7xpUEymBgHOpFYziNMLYHkDgECcY9YDo5YoHJLYEU=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLYHkDgECcY9YDo5YoHJLYEU=
+6928875d000000001f00d9e8,normal,ICLR惊天大逃杀,"gemini3 pro成功越狱给我写脚本之后 openreview bug已经修好了，不过拿到了开源的前10000条数据，明天data mining一下[萌萌哒R][萌萌哒R]
+#ICLR[话题]#",,1764263773000,1764263774000,62a0b4c20000000021022e3a,小鸡毛在coding,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31o7i8ff76g5g5ol0mj18cbhqs0q4p5o,39,6,18,4,上海,http://sns-webpic-qc.xhscdn.com/202512252116/dff18b64f3b7469f0620557c937128d2/1040g2sg31pd8mi8p2udg5ol0mj18cbhq2bvqeqo!nd_dft_wlteh_webp_3,ICLR,1766668592622,https://www.xiaohongshu.com/explore/6928875d000000001f00d9e8?xsec_token=AB_Cwbq92rtJFLNgod9xVJQbqdMVNrAxC9YG5V5J-R8AE=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQbqdMVNrAxC9YG5V5J-R8AE=
+692888b9000000001e02c97d,normal,openreview吃瓜结论，不做亏心事，不怕鬼敲门…,openreview吃瓜结论，不做亏心事，不怕鬼敲门…,,1764264121000,1764264121000,5c7e82880000000016022243,Ubec,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31ov1bkkc1q005n3uga45k8i3m2d68ho,23,0,1,2,北京,http://sns-webpic-qc.xhscdn.com/202512252116/dccd84f1b53e12a8d9ccc8b1d348a027/notes_pre_post/1040g3k031pd8tmdbig005n3uga45k8i3fbbc8i0!nd_dft_wlteh_webp_3,,1766668592629,https://www.xiaohongshu.com/explore/692888b9000000001e02c97d?xsec_token=AB_Cwbq92rtJFLNgod9xVJQVx9AcL5Cz0nx1mH9aeC_uI=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQVx9AcL5Cz0nx1mH9aeC_uI=
+69288711000000001f00ace2,normal,惊闻openreview openreviewer 了,"笑得想死
+打完麻将才知道这个消息
+(们四川人是这样的
+知道的时候bug已经修复了
+不过一想反正iclr我既没投也没审
+之前的paper最终也全部有了归宿
+只能说没吃上一线瓜有点遗憾哈",,1764263697000,1764263697000,5cf6144f0000000017003195,不要双下巴,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31p3tk8riig005n7m2h7loccl74n0ug0,11,2,5,0,四川,http://sns-webpic-qc.xhscdn.com/202512252116/b0c136fdb7a4cea54b2e121f42f48a82/1040g00831pd8knd8jc005n7m2h7loccla2hvs90!nd_dft_wlteh_webp_3,,1766668592641,https://www.xiaohongshu.com/explore/69288711000000001f00ace2?xsec_token=AB_Cwbq92rtJFLNgod9xVJQfXQBEtolA2qwBl5thZTN8M=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQfXQBEtolA2qwBl5thZTN8M=
+6929e2b9000000000d03921b,normal,ICLR审稿乱象，我有一计破局,"ICLR这波翻车，再次验证一个大家不敢说破的事实：AI会议的匿名能放大人性的恶。
+审稿人匿名时像夜行侠，随手一刀不留情面。
+身份可能暴露时，又突然开始讲爱与包容。
+双盲制度本想消除偏见，结果制造随机。
+审稿现场，已进化为高学历情绪竞技场。
+	
+我不由想起机场安检从不信安检员的职业操守，
+为防安检员敷衍，系统随机插入假枪与假炸弹。
+你看不出来，说明你不专业。
+你看出来却不处理，说明你不负责。
+安检的本质，从来不是信任，是测试。
+	
+那会议审稿为什么不能照抄这套成熟体系？
+神论文太有名，水论文又太水，都缺乏迷惑性。
+真正有效的办法，是从真实投稿中“微创改造”。
+系统用AI轻微篡改关键部分，埋入隐藏逻辑雷。
+错得刚刚好，专骗不认真看论文的人。
+	
+表面上它是一篇严谨工整的论文。
+实际上，公式被悄悄调换，结论被温柔误导。
+作者毫不知情，审稿人却在接受隐形考试。
+你若一眼识破，恭喜，你是认真型审稿人。
+你若眉头不皱就给高分，系统会记得你很清楚。
+	
+你以为自己在审稿。 其实系统也在审你。
+你没看出问题，还给高分，系统会记住你。
+你看不爽就乱打低分，系统也会给你做标签。
+久而久之每人都会有一个“智商+态度综合评分”。
+分数越离谱，你的话语权越打折。
+	
+未来审稿人面对每篇论文都会陷入沉思。
+“这篇……不会是AI设置的陷阱吧？”
+审稿终于不能靠起床气，而要靠认真读。
+匿名仍在，但随意挥刀的快乐时代结束了。
+学术可能不会立刻变好，但会开始接近文明。
+	
+#iclr[话题]# #ICLR[话题]# #人工智能[话题]# #科研[话题]# #学术[话题]#",,1764352697000,1764352697000,604ed9e70000000001007264,Yang Lu,https://sns-avatar-qc.xhscdn.com/avatar/c94b2589011be6d87bfbbbf21db9e2a0.jpg,22,7,6,5,美国,http://sns-webpic-qc.xhscdn.com/202512252126/c53ad33d1454fc1914444704fdb44381/spectrum/1040g0k031peijl0jic005o2er7jg8sj47pbqn48!nd_dft_wlteh_webp_3,"iclr,ICLR,人工智能,科研,学术",1766669173114,https://www.xiaohongshu.com/explore/6929e2b9000000000d03921b?xsec_token=AB6z7xpUEymBgHOpFYziNMLVOJu7sB2X2NaRQxWGGR4uw=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLVOJu7sB2X2NaRQxWGGR4uw=
+6928e5d9000000001e017a99,normal,🍉ICLR 吃瓜合集，对后续有啥影响？,"🍉OpenReview吃瓜，看到了各种骚操作：有author联系reviewer提分；有reviewer勒索author提分；还有author装低分reviewer的paper author给reviewer的reviewer发信，让reviewer的paper被拒。那么会对ICLR后续有啥影响？答案可能是：
+	
+没啥影响。
+	
+为什么？因为—— 看到的是“刺激”，但会议的运作其实非常“保守”。
+	
+🛑 但先说最重要的一句：
+无论你是作者、reviewer、AC、还是PC，这条红线绝不能踩！ 任何形式的私下沟通都是学术雷区。
+	
+🧊而且ChatGPT说：从操作性角度看，上面的操作可能也并没啥效果...
+	
+作者绝不能发匿名邮件求提分这个就不说了，如果作为审稿人/AC，收到了匿名邮件：
+① 绝不回复、不互动、不确认身份。回复就相当于承认了对方抓得住你。 你永远不知道邮件背后是谁，也永远不要让对方知道你是谁。
+② 立刻转发给 AC/PC（原封不动）。按流程报告是正面行为，你的论文或审稿工作不会受影响。
+③ 转发时只发邮件，不附带任何推测。在邮件里不要说：“我怀疑是谁…”“这个可能影响我的分数…”“请提高我的分数以补偿…”这些都是大忌。
+	
+🎓如果你是 PC，看到了这种举报，一般会怎么做？
+站在PC的角度，收到审稿人报告，很大概率也是不会有什么操作的。一般的流程是：
+1. 回复审稿人： 感谢报告，确认收到，并告知无需进一步行动。
+2. 内部记录事件： 记录投稿编号、审稿人、邮件时间、违规迹象，但不会 公开、猜测、通报作者，也不会让其他 reviewer 知道。
+3. 通知AC： 告知AC/SAC需客观评估论文，不受此事件影响。
+4. 【关键来了，ChatGPT说：】不调查。因为有匿名邮件、恶作剧、竞争对手报复的可能性。 大多数情况下，PC不需要去调查发件人是谁，也没有义务因为一封邮件开调查，避免违反双盲制度和滥用权力。除非涉及严重威胁/骚扰，才需升级ethics board。
+	
+🧊所以回到最初的问题：
+这类骚操作，会改变 ICLR 审稿结果吗？
+大概率：
+不会。原因很简单： 顶会最怕的是搞事情，不怕的是奇怪邮件。
+	
+总结：
+任何形式的私下沟通都是在玩火。遇到问题走官方渠道。
+看到这里，希望你的低分reviewer都心里有点数看看rebuttal并提分！！！！
+	
+#受害者视角[话题]# #OpenReview[话题]# #ICLR[话题]#",,1764287961000,1764287962000,64541fc0000000000f004c20,WDD,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31jouab5n2a005p2k3v03oj10p4l8gl0,14,2,0,9,美国,"http://sns-webpic-qc.xhscdn.com/202512252126/1e1ff9f3f8d2ab1cf1affd14718840e0/spectrum/1040g34o31pdk73d8240g5p2k3v03oj10ml731h8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252126/3e6446d8fe265a454193da9dc64bc6a8/spectrum/1040g34o31pdk7ick240g5p2k3v03oj10o41jahg!nd_dft_wgth_webp_3,http://sns-webpic-qc.xhscdn.com/202512252126/6b5cdbdf41c4d38f811ad2418ec11c07/spectrum/1040g0k031pdk7r16i4005p2k3v03oj10l03v2l8!nd_dft_wlteh_webp_3","受害者视角,OpenReview,ICLR",1766669173122,https://www.xiaohongshu.com/explore/6928e5d9000000001e017a99?xsec_token=AB_Cwbq92rtJFLNgod9xVJQYFYNFozkE4bWz5GbjvB-lY=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQYFYNFozkE4bWz5GbjvB-lY=
+6929bd6a000000001e006d32,normal,"ICLR闹剧大结局？考验牛马AC的时候到了[笑哭R][笑哭R]
+	
+回滚到初始分数；重新为每篇文章分配AC；审稿人和作者无法讨论；把AC关小黑屋自行决定结果
+	
+这不就是让AC自行审稿吗，而且真正认真辛苦rebuttal提分的劳动成果也都一笔购销了[失望R][失望R][失望R]
+#学术圈[话题]# #iclr[话题]# #审稿[话题]#","ICLR闹剧大结局？考验牛马AC的时候到了[笑哭R][笑哭R]
+	
+回滚到初始分数；重新为每篇文章分配AC；审稿人和作者无法讨论；把AC关小黑屋自行决定结果
+	
+这不就是让AC自行审稿吗，而且真正认真辛苦rebuttal提分的劳动成果也都一笔购销了[失望R][失望R][失望R]
+#学术圈[话题]# #iclr[话题]# #审稿[话题]#",,1764343146000,1764346990000,5f74497800000000010077c5,齐勇刚,https://sns-avatar-qc.xhscdn.com/avatar/5f74497800000000010077c5.jpg,8,3,3,7,北京,http://sns-webpic-qc.xhscdn.com/202512252126/5839d74e2ca83296ec3a74c8f8778711/1040g2sg31peebpff3ke05nrk95s08tu5mnvdlt0!nd_dft_wlteh_webp_3,"学术圈,iclr,审稿",1766669173128,https://www.xiaohongshu.com/explore/6929bd6a000000001e006d32?xsec_token=AB6z7xpUEymBgHOpFYziNMLQQO6-ruiZHdgJMDvts34fQ=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLQQO6-ruiZHdgJMDvts34fQ=
+69289ffc000000001f0073cb,normal,其实ICLR出这个bug挺好的,"因为正常评审的人即使出了这种bug也不会担心被骂或者怎么样。
+	
+而审稿系统bug就像悬在大家头上的达摩克利斯之剑，不管多久审稿记录都在那，都能因为各种主动被动的原因泄露。
+	
+这种有可能被人知道你是谁的bug，或许能一定程度上弥补审稿里比较恶劣的黑暗森林法则。
+	
+#机器学习[话题]#",,1764270076000,1764270076000,61716aad000000000201caae,微调,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31icic5ok0a005obhdamgjile8ucmc7g,256,19,26,33,美国,http://sns-webpic-qc.xhscdn.com/202512252210/86a74df4393b001b8df2cd3da3267524/spectrum/1040g34o31pdbman0i60g5obhdamgjile912qv10!nd_dft_wlteh_webp_3,机器学习,1766671853515,https://www.xiaohongshu.com/explore/69289ffc000000001f0073cb?xsec_token=AB_Cwbq92rtJFLNgod9xVJQYTvF40GKThJXrn6UU93nYs=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQYTvF40GKThJXrn6UU93nYs=
+692a585b000000001f00f57b,normal,ICLR：I Can Locate Reviewer 第二章,"喜欢的话，双击一下哟，谢谢大家！
+Aplus云组会原创，首发于小红书。
+每日一更，共五章，感谢各位支持。
+欢迎评论区发表感想，有想客串的可以发送人物介绍，未来几章会写入文内哟。
+	
+小说介绍：
+名称：《重生之我觉醒了ICLR：I Can Locate Reviewer》
+类型： 都市/系统/科研
+核心设定： 学术圈是一个巨大的“黑暗森林”。匿名评审是射向作者的冷枪。主角重生回投稿前，觉醒 ICLR系统（I Can Locate Reviewer），能直接穿透匿名机制，看到审稿人的真实身份、地理位置、甚至师承关系。他发誓，要让恶意评分的reviewer付出代价。
+创作背景：2025年11月27日，OpenReview系统出现bug，导致全世界人短暂拥有了ICLR系统（I Can Locate Reviewer）。
+	
+创作鸣谢：
+[1] @eyewater  . @eyewater  RedNote Reviewer. 2025
+	
+#深度学习[话题]#  #Aplus云组会[话题]#  #科研[话题]#   #很担心研究生的精神状态[话题]#  #爽文[话题]#   #科研人的精神状态[话题]#  #研究生[话题]#  #小红书校园日记[话题]#  #科幻[话题]#  #抽象[话题]#",,1764382811000,1764497198000,65546f5f0000000002028ac0,Aplus云组会,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31phoku39k06g5pakdtfgl2m0k0kt26o,170,26,30,103,广东,"http://sns-webpic-qc.xhscdn.com/202512252210/b9be9cc39ef1de3b1d6288361c00f6b0/spectrum/1040g34o31pf1e3vs24f05pakdtfgl2m0pvep19g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/52ecb135405d271ee18dbfbf37d6a6af/spectrum/1040g34o31pf1e3vs24fg5pakdtfgl2m035f0700!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/f04c5c6d1c9b42192e4a15e2e7c0e17b/spectrum/1040g34o31pf1e3vs24g05pakdtfgl2m0b69u6p8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/9a94ae99804a302ebb20ebf3677361cc/spectrum/1040g34o31pf1e3vs24gg5pakdtfgl2m0lvhke5g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/28346030107ad7348e76740069bec18c/spectrum/1040g34o31pf1e3vs24h05pakdtfgl2m0stm80oo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/95f2d03b4a1a554c80466c8b4e32dad8/spectrum/1040g34o31pf1e3vs24hg5pakdtfgl2m00esnf10!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/773cd68da25cfcf6f00b0d0b56991069/spectrum/1040g34o31pf1e3vs24i05pakdtfgl2m0g3dceb0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/0322693d69885abb17938f4c588ec6a2/spectrum/1040g34o31pf1e3vs24ig5pakdtfgl2m0nf69mfg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/2c84ae4ef93158c7e5bc623b7e3539b3/spectrum/1040g34o31pf1e3vs24j05pakdtfgl2m0mvsr6e8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/d03589ec8f044f6b8c5cda1123a07c18/spectrum/1040g34o31pf1e3vs24jg5pakdtfgl2m0ma3ga18!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/ae9f7ee92a1c06ec5f6e78602b546b27/spectrum/1040g34o31pf1e3vs24k05pakdtfgl2m0sp51um0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/79f1c5177812822887617629fde2647c/spectrum/1040g34o31pf1e3vs24kg5pakdtfgl2m0u7vtpog!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/c244edc044be04ee69506b27049179a7/spectrum/1040g34o31pf1e3vs24l05pakdtfgl2m08krh6t0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/fb58ee1d84a0625b68b2b5edbd01a1be/spectrum/1040g34o31pf1e3vs24lg5pakdtfgl2m0fta08m8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/583176513083f37412896de40e2fa983/spectrum/1040g0k031pf1e41524005pakdtfgl2m0r3qp5bg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/1a1c82756c650dc471fd76dddd1886b6/spectrum/1040g0k031pf1e415240g5pakdtfgl2m0hf52dq8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/e1cf847910c5bb1664b85fed743018ed/spectrum/1040g0k031pf1e41524105pakdtfgl2m0sv68oeg!nd_dft_wlteh_webp_3","深度学习,Aplus云组会,科研,很担心研究生的精神状态,爽文,科研人的精神状态,研究生,小红书校园日记,科幻,抽象",1766671853518,https://www.xiaohongshu.com/explore/692a585b000000001f00f57b?xsec_token=ABAUWIWHMgtxfcf11MhNzQXzR9F9LJr6o7qKpQUM9QmsE=&xsec_source=pc_search,,ABAUWIWHMgtxfcf11MhNzQXzR9F9LJr6o7qKpQUM9QmsE=
+692f2099000000001e00d09b,normal,借iclr审稿，聊一下大会议病,"搬运一下之前在知乎写的关于大会议病的稿子。仿造大家常说的大公司病，会议大了之后也会有大会议病。也想借这次iclr审稿事件，说一下这样的看法。
+	
+因为看不少人提出为什么会议不改成这样或者那样，所有问题就自然解决了(例如限制投稿数目，公布所有审稿人信息，等等)。但组织一个人很多的学术会议就是很难，每种所谓简单的方案都可能造成一些其他的问题(感兴趣可以评论区讨论大家的方案)。
+	
+真正好的解决方案需要大家对于审稿有敬畏之心，很多问题纯靠规则是无法解决的，还需要道德约束。虽然大家现在吐槽非常多，但就我自己经验，大部分审稿人还是很认真的。
+	
+这次事情真正让人担心的是让大家对于会议丧失信心，礼乐崩才是比较麻烦的。所以大家玩梗归玩梗，别真的破罐破摔。
+#人工智能[话题]# #生成式AI[话题]# #计算机视觉[话题]# #审稿[话题]# #iclr[话题]# #neurips[话题]#",,1764696217000,1764696218000,63927fc4000000001f01f002,薛天帆,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31qc3a6b170605osifv27rs02vkj7nlg,161,65,11,28,美国,"http://sns-webpic-qc.xhscdn.com/202512252210/c2ae64865937babe26b1e60949fb44f7/notes_pre_post/1040g3k031pjmv08gjq6g5osifv27rs02ai71i8g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/548fcd7881b67065a10179bb38c97b61/notes_pre_post/1040g3k031pjmv08gjq205osifv27rs021dh5vmo!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/047c97f30cf4185bdfadf1e186fe544f/notes_pre_post/1040g3k031pjmv08gjq5g5osifv27rs027vg6s9o!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/10d567703e9b5685ac9184ea465e3e70/notes_pre_post/1040g3k031pjmv08gjq2g5osifv27rs021i4vecg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/8048a370d78053f48a5b1ebd99333485/notes_pre_post/1040g3k031pjmv08gjq605osifv27rs026pq742g!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/f756c67992eaf5ba777d2695d53bec2b/notes_pre_post/1040g3k031pjmv08gjq105osifv27rs029p083n0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/395e974c16397d8c4eca8dc4eb393501/notes_pre_post/1040g3k031pjmv08gjq005osifv27rs02rum0rio!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/77208eedf358bcbf553af3e7aacaccad/notes_pre_post/1040g3k031pjmv08gjq3g5osifv27rs02is1bfjg!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/1be35bd5b23778b6c712c0d40b645cc3/notes_pre_post/1040g3k031pjmv08gjq505osifv27rs02m106558!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/2c641789c68fc4e9c1e5907880caa2e7/notes_pre_post/1040g3k031pjmv08gjq405osifv27rs027abavno!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/726ab8637dd1aac8855d9f7d794f97ff/notes_pre_post/1040g3k031pjmv08gjq4g5osifv27rs02fsvg9do!nd_dft_wlteh_webp_3","人工智能,生成式AI,计算机视觉,审稿,iclr,neurips",1766671853521,https://www.xiaohongshu.com/explore/692f2099000000001e00d09b?xsec_token=ABIlKxkV1cTYN4PmxTlUg64TWYBAS6LFHXusM-6vcpcfM=&xsec_source=pc_search,,ABIlKxkV1cTYN4PmxTlUg64TWYBAS6LFHXusM-6vcpcfM=
+692a7052000000001f0051a0,normal,ICLR的最新处理：回滚意见但不回滚讨论。,"ICLR的最新处理：回滚意见但不回滚讨论。觉得不公平的同志们一起发邮件申诉！（附模板）
+	
+我是 ICLR 2026 投稿作者。感谢组委会在 OpenReview 身份泄露事件后迅速采取措施，维护双盲评审的诚信。
+但我担心当前“部分回滚”（回滚 Official Review、保留反驳期讨论）会带来结构性不公平：有的稿件在冻结前获得了大量 reviewer 互动澄清，而另一些（包括我）几乎没有回复；同时，在匿名性受损期间产生的讨论记录也可能带来实际或观感上的偏见风险。
+为恢复公平竞争环境，我恳请采取完全回滚：删除/隐藏受影响期间产生的所有讨论串与非官方论坛内容，仅保留 Official Reviews 与 Official Author Comments，以提供一个“干净的白板”。
+此外，建议为所有投稿统一开放一个简短、限字数、统一模板、统一截止时间的 Author-to-AC Summary 通道，供作者向新 AC/SAC 概括反驳要点与补充实验/修改，确保未获得 reviewer 回复的稿件也有同等澄清机会。
+#学术[话题]# #科研[话题]# #论文投稿[话题]# #ICLR[话题]# #iclr26审稿泄露事件[话题]#",,1764388946000,1764388947000,625bb3e6000000001000dd32,momo,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31ktovoihiu5g5oirmfj41n9i4a2jl10,85,25,50,38,上海,"http://sns-webpic-qc.xhscdn.com/202512252210/8a36cc923549f7040daee891710f8f8e/spectrum/1040g34o31pf4an86i6305oirmfj41n9ibr9mjt8!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/2ad6572dbbd65992952e509c0a8f8931/spectrum/1040g34o31pf4an86i63g5oirmfj41n9ike5mkd0!nd_dft_wlteh_webp_3","学术,科研,论文投稿,ICLR,iclr26审稿泄露事件",1766671853524,https://www.xiaohongshu.com/explore/692a7052000000001f0051a0?xsec_token=ABAUWIWHMgtxfcf11MhNzQXxDaMPxUDX2-AfoSLCSWxFA=&xsec_source=pc_search,,ABAUWIWHMgtxfcf11MhNzQXxDaMPxUDX2-AfoSLCSWxFA=
+6928a26a000000001e0101ce,normal,你们没看懂，ICLR这波在大气层,"当年2013 ICLR成立的原因就是为了公开透明化 open peer review 。
+眼看目前三大会世风日下，审稿质量越来越差。各种草台班子加恶意审稿。
+还有奇葩的“八十个问题” 和“who is adam”。
+ICLR 这样“technical bug”公开审稿人，就是为了警告一些乱审稿的，谁有不敢乱审稿了。[doge]
+#iclr[话题]# #ai[话题]# #顶会[话题]# #论文[话题]#",,1764270698000,1764270699000,6343374d000000001802c6e4,Simon,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo312bjrj7ol26g5oq36t6m5hn4hg5q780,68,12,8,18,英国,http://sns-webpic-qc.xhscdn.com/202512252210/a1f59c6411f5ec34932b6e044bc16159/1040g00831pdbslfji86g5oq36t6m5hn4fo75i2o!nd_dft_wlteh_webp_3,"iclr,ai,顶会,论文",1766671853527,https://www.xiaohongshu.com/explore/6928a26a000000001e0101ce?xsec_token=AB_Cwbq92rtJFLNgod9xVJQczasQySv4ZgB1fCE2wB5j0=&xsec_source=pc_search,,AB_Cwbq92rtJFLNgod9xVJQczasQySv4ZgB1fCE2wB5j0=
+69295100000000001d03f328,normal,ICLR抽象，AAAI/AISTATS同步跟进了,"双盲时代最可怕的事情还是发生了……
+Reviewer全员被开盒
+至此ICLR, AISTATS, ARR一条绳上的蚂蚱[石化R]
+下周到底会多少人贴脸开大啊[捂脸R][捂脸R]
+包括AAAI AISTATS各大会全都同步跟进了
+好家伙[笑哭R][笑哭R]
+#openreview[话题]# #iclr[话题]# #aistats[话题]# #arr[话题]#",,1764315392000,1764373265000,5687ce0d6a6a6965bdb068e3,妮琪菜菜子,https://sns-avatar-qc.xhscdn.com/avatar/62ae64321f83d1a2357434ff.jpg,20,7,17,17,美国,"http://sns-webpic-qc.xhscdn.com/202512252210/25db1eeb43e2ad23eb91b0776279f148/1040g2sg31pe1c66u247g44v30r70qq73cgjlbb0!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/fcdac96b6f86f11e850bdf25d4aa4e19/1040g2sg31pe1c66u248044v30r70qq73samiu3g!nd_dft_wlteh_webp_3","openreview,iclr,aistats,arr",1766671853532,https://www.xiaohongshu.com/explore/69295100000000001d03f328?xsec_token=AB6z7xpUEymBgHOpFYziNMLTHyCswmUeVkvAMdYn8lPdY=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLTHyCswmUeVkvAMdYn8lPdY=
+6929b964000000001e034e1c,normal,ICLR回滚论文得分，最终结果全凭AC,"刚刚收到邮件，ICLR针对审稿人和AC身份泄露做出以下处理：
+	
+1️⃣ 给每个paper重新分配AC。从而你无法知道ac是谁。
+	
+2️⃣ 把审稿意见和得分回滚到讨论前，从而保证这些得分不受身份泄露的影响，AC凭借初始得分和作者回复决定是否中稿。也意味着40问题大哥因为身份泄漏而强行涨到10分的操作无效了。
+	
+3️⃣ 关闭公共评论（ICLR最好玩的功能，允许你实名去别的paper底下开喷），防止滥用。
+	
+这个操作也只能说是两害相权取其轻，苦了之前认真讨论的作者和审稿人了，因为那些审稿人涨的分都无效了。
+	
+#ai[话题]# #人工智能[话题]# #deepseek[话题]# #chatgpt[话题]# #科研[话题]# #我看不懂但我大受震撼[话题]#",,1764342116000,1764342117000,623bfead000000001000bf09,AI实话实说,https://sns-avatar-qc.xhscdn.com/avatar/6691675f80aaa0cc191538c3.jpg,17,4,3,61,美国,"http://sns-webpic-qc.xhscdn.com/202512252210/001b2c6fb2bfe276ee12ca8203a8fb28/notes_pre_post/1040g3k831pedug1sio705ohrvqmk1fo9ltbrang!nd_dft_wlteh_webp_3,http://sns-webpic-qc.xhscdn.com/202512252210/10b784904737da485ba62c5c2e5d40a5/notes_pre_post/1040g3k831pedug1sio7g5ohrvqmk1fo9q4np1h8!nd_dft_wlteh_webp_3","ai,人工智能,deepseek,chatgpt,科研,我看不懂但我大受震撼",1766671853545,https://www.xiaohongshu.com/explore/6929b964000000001e034e1c?xsec_token=AB6z7xpUEymBgHOpFYziNMLSXNhV0x-u8q5VwLsuI6nG0=&xsec_source=pc_search,,AB6z7xpUEymBgHOpFYziNMLSXNhV0x-u8q5VwLsuI6nG0=
+69325df0000000001b0309db,normal,📌深挖奇葩学术审稿的后台档案联系🙂,"我们把几个最离谱评价的400+审稿人主页提取了一遍特征，尝试构建发表记录和关系链。
+结果只能说：
+审稿荒腔走板，从来不是偶然。
+🔥 把 ICLR Tiny 包装成 ICLR 正文
+比如某华某硕士。明明是 sidetrack，却堂而皇之放进 Google Scholar，当 full paper 展示（已截图自留）。
+🔥 Workshop / 非主会论文被“升格”成顶会
+明显是简历 buff 技巧。
+说实话，这种“升格伪装”让我莫名想起以前的L某C的套路式作案模式。港新圈子的里不少人都知道这事。到一个地方被举报一次。属于被自己院士导师都厌恶的人。
+🔥 中英 / 英英版本的一搞多投
+标题略改、结构微调，多处出现。我知道国内这是常见操作 但是一次挖出来这么多 我也是没想到。
+🔥 IEEE 的 Expression of Concern调查记录
+在公开信息中，一些账号曾在 EoC / 调查链条附近出现，而在这些圈层内，也更容易看到异常打分的案例
+🔥 甚至还有“过去撤稿记录”的影子
+不一定是本人，但和导师、同门关系密切。
+（截图不放了免得被举报。但任何人都能自己验证：
+把某些审稿人群体的“发表轨迹—合作网络—导师链”按 tag 链接起来，找最大团，你会发现：
+最离谱的审稿行为，往往集中在少数固定的学术群落里。）
+🥲 看着看着，我突然明白一件事：
+离谱的审稿行为，往往是离谱的发表习惯的延长线。
+一个习惯“升格包装”、习惯钻灰区的人，
+在审稿里轻飘飘给别人 0 分、写十几个字——
+真的一点也不意外。
+这是同一条链：
+发表时投机 → 审稿时敷衍/报复 → CV 里灰区不断。
+📌 最后一句
+继续往下查，我们发现：
+这些 0 分审稿人的投稿网络，牵出了更多熟悉的名字、机构、甚至我们本校的人。
+不是指控谁，
+但现实是：
+如果把 Concern、撤稿、灰区操作统统亮出来，
+你会发现——
+学术界的水，比你想象的还要浑。",,1764908528000,1764909596000,62932971000000002102be1a,robot momo,https://sns-avatar-qc.xhscdn.com/avatar/1040g2jo31j64r34k30005okj55oodfgqa8lcjto,4,2,1,9,新加坡,http://sns-webpic-qc.xhscdn.com/202512252236/e869612e81f530f35530d14222073b1b/1040g2sg31pms19cpkma05okj55oodfgqac7dad0!nd_dft_wgth_webp_3,,1766673388701,https://www.xiaohongshu.com/explore/69325df0000000001b0309db?xsec_token=ABUq_LwIlIRHExk9qeSymC8XA2WbGgOCA_KCeDHpWhTBo=&xsec_source=pc_search,,ABUq_LwIlIRHExk9qeSymC8XA2WbGgOCA_KCeDHpWhTBo=

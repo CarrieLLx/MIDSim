@@ -16,6 +16,7 @@ from .events import *
 from .embedding_client import cosine_similarity, get_embeddings, load_embedding_config
 from onesim.utils.midsim_params import recommender_sampling_params, interest_recommendation_candidate_limits, memory_similarity_gate_params
 from .user_agent_gates import MemorySimilarityGate
+from .utils import format_popularity_distribution, format_historical_summary, to_float
 
 class Algorithm(GeneralAgent):
     """Platform Algorithm"""
@@ -36,17 +37,17 @@ class Algorithm(GeneralAgent):
         # Recommendation algorithm mapping
         self.type_to_algorithm: Dict[str, str] = {
             "Random Recommendation": "random",
-            "Hot Recommendation": "hot",
+            "Popularity Recommendation": "popularity",
             "Interest Recommendation": "interest",
         }
         
         self.recommendation_algorithms: Dict[str, Callable] = {
             "random": self._random_recommendation,
-            "hot": self._hot_recommendation,
+            "popularity": self._popularity_recommendation,
             "interest": self._interest_recommendation,
         }
-        self.default_algorithm = "hot"
-        self._comment_count_dist_7d_cache: Optional[Dict[int, int]] = None
+        self.default_algorithm = "popularity"
+        self._popularity_distribution_cache: Optional[Dict[int, int]] = None
 
         # Search algorithm mapping
         self.type_to_search: Dict[str, str] = {
@@ -58,44 +59,20 @@ class Algorithm(GeneralAgent):
         }
         self.default_search = "relevant"
 
-    def _parse_comment_count_dist_rows(self, rows: Any) -> Dict[int, int]:
-        """Parse a list (or similar structure) from profile into comment_count -> post_count."""
-        out: Dict[int, int] = {}
-        if not isinstance(rows, list):
-            return out
-        for row in rows:
-            if not isinstance(row, dict):
-                continue
-            raw_cc = row.get("comment_count")
-            raw_pc = row.get("post_count")
-            if raw_cc is None or raw_pc is None:
-                continue
-            try:
-                cc = int(float(str(raw_cc).strip()))
-                pc = int(float(str(raw_pc).strip()))
-            except (TypeError, ValueError):
-                continue
-            if pc <= 0:
-                continue
-            out[cc] = out.get(cc, 0) + pc
-        return out
-
     async def update_current_notes(self, event: Event) -> None:
         """Update current notes."""
         current_notes = event.current_notes
         if not isinstance(current_notes, dict) or not current_notes:
             logger.warning("No current notes found")
         self.profile.update_data("current_notes", current_notes)
-        self._comment_count_dist_7d_cache = None
+        self._popularity_distribution_cache = None
 
-    def _sample_recommendation_limit_bernoulli(self, alpha: float, max_limit: int = 3) -> int:
+    def _sample_bernoulli(self, alpha: float, max_limit: int = 3) -> int:
         """Sample recommendation limit with Bernoulli distribution."""
         try:
             alpha = float(alpha)
         except (TypeError, ValueError):
             alpha = 0.5
-
-        # Constrain alpha to [0, 1]
         alpha = max(0.0, min(1.0, alpha))
         max_limit = max(1, int(max_limit))
 
@@ -112,34 +89,22 @@ class Algorithm(GeneralAgent):
     _RANDOM_REC_MAU_DEFAULT = 240_000_000   # Default Monthly Active Users (MAU)
     _RANDOM_REC_AVG_POSTS_PER_USER_MONTH_DEFAULT = 1.1182   # Default avg posts per user per month
 
-    def _parse_positive_float(self, raw: Any, fallback: float) -> float:
-        if raw is None or (isinstance(raw, str) and not raw.strip()):
-            return fallback
-        try:
-            return float(raw)
-        except (TypeError, ValueError):
-            return fallback
-
     def _random_rec_mau_avg_posts(self) -> Tuple[float, float]:
         """profile: random_rec_mau and random_rec_avg_posts_per_user_month."""
         mau = float(Algorithm._RANDOM_REC_MAU_DEFAULT)
         avg_posts = float(Algorithm._RANDOM_REC_AVG_POSTS_PER_USER_MONTH_DEFAULT)
         if self.profile is not None:
-            mau = self._parse_positive_float(
+            mau = to_float(
                 self.profile.get_data("random_rec_mau", None),
-                mau,
+                default=mau,
             )
-            avg_posts = self._parse_positive_float(
+            avg_posts = to_float(
                 self.profile.get_data("random_rec_avg_posts_per_user_month", None),
-                avg_posts,
+                default=avg_posts,
             )
         if mau <= 0:
             mau = float(Algorithm._RANDOM_REC_MAU_DEFAULT)
         return mau, avg_posts
-
-    def _random_rec_per_note_weight(self) -> float:
-        mau, avg_posts = self._random_rec_mau_avg_posts()
-        return (1.0 / mau) * avg_posts
 
     def _random_recommendation(self, recommended_note_ids: List[str], contents: Dict[str, Dict[str, Any]], current_timestamp: float, limit: int = 10) -> Dict[str, Dict[str, Any]]:
         """Random recommendation, sample with equal probability (1/(MAU×avg)) from candidate pool."""
@@ -178,22 +143,22 @@ class Algorithm(GeneralAgent):
             if ok:
                 selected.append(nid)
 
-        w = self._random_rec_per_note_weight()
+        w = (avg_posts / mau) if mau > 0 else 0.0
         logger.debug( "random recommendation: MAU={:.4g} avg_posts={:.6g} => p=1/(MAU×avg)={:.6e}; weight=(1/MAU)×avg={:.6e}",
             mau, avg_posts, p_hit, len(note_ids), limit, len(selected), w)
         return {note_id: contents[note_id] for note_id in selected}
     
-    # ---------- Hot recommendation ----------
-    def _get_comment_count_dist_7d_map(self) -> Dict[int, int]:
-        """Get comment count distribution map for hot recommendation."""
-        if self._comment_count_dist_7d_cache is not None:
-            return self._comment_count_dist_7d_cache
+    # ---------- Popularity recommendation ----------
+    def _get_popularity_distribution_map(self) -> Dict[int, int]:
+        """Get popularity distribution map for popularity recommendation."""
+        if self._popularity_distribution_cache is not None:
+            return self._popularity_distribution_cache
 
         merged: Dict[int, int] = {}
         if self.profile is not None:
-            raw = self.profile.get_data("comment_count_dist_7d", [])
-            merged.update(self._parse_comment_count_dist_rows(raw))
-        self._comment_count_dist_7d_cache = merged
+            raw = self.profile.get_data("popularity_distribution", [])
+            merged.update(format_popularity_distribution(raw))
+        self._popularity_distribution_cache = merged
         return merged
 
     def _calculate_popularity(self, note: Dict[str, Any]) -> float:
@@ -207,8 +172,8 @@ class Algorithm(GeneralAgent):
         comment_count = note.get("comment_count", 0)
         return float(comment_count) if isinstance(comment_count, (int, float)) else 0.0
 
-    def _hot_recommendation(self, recommended_note_ids: List[str], contents: Dict[str, Dict[str, Any]], current_timestamp: float, limit: int = 10) -> Dict[str, Dict[str, Any]]:
-        """Hot recommendation: mix candidate note popularity with experience comment count distribution, and take the high-popularity notes."""
+    def _popularity_recommendation(self, recommended_note_ids: List[str], contents: Dict[str, Dict[str, Any]], current_timestamp: float, limit: int = 10) -> Dict[str, Dict[str, Any]]:
+        """Popularity recommendation: mix candidate note popularity with experience popularity distribution, and take the high-popularity notes."""
         if not contents:
             return {}
         note_ids = list(contents.keys())
@@ -221,7 +186,7 @@ class Algorithm(GeneralAgent):
             return {}
 
         # Get comment count distribution map
-        dist_map = self._get_comment_count_dist_7d_map()
+        dist_map = self._get_popularity_distribution_map()
         if not dist_map:
             notes_with_popularity: List[Tuple[str, Dict[str, Any], float]] = []
             for note_id in note_ids:
@@ -232,7 +197,7 @@ class Algorithm(GeneralAgent):
             notes_with_popularity.sort(key=lambda x: x[2], reverse=True)
             return {note_id: note for note_id, note, _ in notes_with_popularity[:limit]}
 
-        # Mix candidate notes with experience comment count distribution, and sort by popularity
+        # Mix candidate notes with experience popularity distribution, and sort by popularity
         buckets: Dict[int, List[Optional[str]]] = defaultdict(list)
         for cc, cnt in dist_map.items():
             try:
@@ -279,16 +244,6 @@ class Algorithm(GeneralAgent):
         return out
 
     @staticmethod
-    def _historical_summary_head_tail(text: Any) -> str:
-        """Truncate historical_summary to 100 characters, and keep the first 50 and last 50 characters with "…" in between."""
-        if text is None:
-            return ""
-        s = str(text).strip()
-        if len(s) > 100:
-            return s[:50] + "…" + s[-50:]
-        return s
-
-    @staticmethod
     def _compact_user_profile_for_interest_rec(
         user_profile: Optional[Dict[str, Any]],
     ) -> Dict[str, Any]:
@@ -302,7 +257,7 @@ class Algorithm(GeneralAgent):
                 continue
             v = user_profile[k]
             if k == "historical_summary":
-                v = Algorithm._historical_summary_head_tail(v)
+                v = format_historical_summary(v)
             elif k == "description" and isinstance(v, str) and len(v) > 400:
                 v = v[:400] + "…"
             out[k] = v
@@ -482,7 +437,6 @@ class Algorithm(GeneralAgent):
         if not ordered_ids:
             return {}
         top_ids = ordered_ids[: max(0, int(limit))]
-        logger.info(f"Algorithm length of top_ids: {len(top_ids)}")
 
         # Filter target notes from ranked result
         def _note_from_contents_only(sid: str) -> Optional[Dict[str, Any]]:
@@ -500,7 +454,6 @@ class Algorithm(GeneralAgent):
             n = _note_from_contents_only(sid)
             if n is not None:
                 out[sid] = n
-        logger.info(f"Algorithm length of out: {len(out)}")
         return out
 
     async def send_recommendation_results(self, event: Event) -> List[Event]:
@@ -525,9 +478,7 @@ class Algorithm(GeneralAgent):
         got_s = str(type_value).strip() if type_value is not None else ""
         if exp_s != got_s:
             if not exp_s and got_s:
-                logger.debug(
-                    f"Algorithm: event.type is empty, process with type={got_s!r}"
-                )
+                logger.debug(f"Algorithm: event.type is empty, process with type={got_s!r}")
             else:
                 raise ValueError(
                     f"Algorithm: recommendation algorithm type mismatch — "
@@ -545,7 +496,7 @@ class Algorithm(GeneralAgent):
 
         # Bernoulli sampling
         alpha, max_limit = await recommender_sampling_params(self, mode="recommendation")
-        recommendation_limit = self._sample_recommendation_limit_bernoulli(alpha, max_limit=max_limit)
+        recommendation_limit = self._sample_bernoulli(alpha, max_limit=max_limit)
         logger.info(f"Algorithm recommendation_limit: {recommendation_limit}")
 
         # Get candidate note ids by user
@@ -805,21 +756,16 @@ class Algorithm(GeneralAgent):
         algorithm_name = self.type_to_search.get(type_value, self.default_search)
         if algorithm_name not in self.search_algorithms:
             algorithm_name = self.default_search
-            logger.warning(
-                f"Unknown search algorithm type '{type_value}', using default: {self.default_search}"
-            )
+            logger.warning(f"Unknown search algorithm type '{type_value}', using default: {self.default_search}")
 
         search_func = self.search_algorithms[algorithm_name]
 
         # Bernoulli sampling
         alpha, max_limit = await recommender_sampling_params(self, mode="search")
-        recommendation_limit = self._sample_recommendation_limit_bernoulli(alpha, max_limit=max_limit)
-        top_k = max(1, min(max_limit, recommendation_limit))
-        logger.info(
-            f"Algorithm search algorithm={algorithm_name}, "
-            f"max_limit={max_limit}, sampled top_k={top_k}"
-        )
+        search_limit = self._sample_bernoulli(alpha, max_limit=max_limit)
+        logger.info(f"Algorithm search algorithm={algorithm_name}, max_limit={max_limit}, sampled search_limit={search_limit}")
 
+        # Get search query
         search_query = str(getattr(event, "search_query", "") or "")
         cfg = MemorySimilarityGate.load_config(await memory_similarity_gate_params(self))
 
@@ -828,7 +774,7 @@ class Algorithm(GeneralAgent):
             search_results = await search_func(
                 current_notes,
                 current_timestamp,
-                top_k,
+                search_limit,
                 search_query=search_query,
                 embedding_config_path=cfg.embedding_config_path,
             )

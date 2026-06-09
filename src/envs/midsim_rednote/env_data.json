@@ -4,6 +4,7 @@
   "current_notes": {},
   "mention_pool": {},
   "reference_embedding_path": "datasets/rednote/embeddings/bge-base-zh-v1.5_embeddings.json",
+  "reference_csv_path": "datasets/rednote/comments.csv",
   "content_pool": {
     "6928ff5f000000001e03721b": {
       "note_id": "6928ff5f000000001e03721b",

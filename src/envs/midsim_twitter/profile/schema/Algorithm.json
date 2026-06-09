@@ -11,7 +11,7 @@
         "default": "Random Recommendation",
         "private": false,
         "sampling": "default",
-        "choices": ["Hot Recommendation", "Random Recommendation"],
+        "choices": ["Popularity Recommendation", "Random Recommendation"],
         "description": "Algorithm of recommendation system"
     },
     "limit": {
@@ -28,7 +28,7 @@
         "sampling": "none",
         "description": "Dictionary of post content pushed by recommendation algorithm. The key is the note ID, the value is a dictionary containing note ID, title, content, publisher ID, publisher nickname, publication time, and other fields."
     },
-    "current_notes":{
+    "current_tweets":{
         "type": "dict",
         "default": {},
         "private": false,

@@ -22,6 +22,15 @@ from onesim.distribution.distributed_lock import  get_lock
 from onesim.utils.work_graph import WorkGraph
 from datetime import datetime
 
+from onesim.agent.locale import get_general_agent_locale
+from onesim.agent.general_agent_prompts import (
+    build_profile_tags_prompt_text,
+    memory_fallback_sentence,
+    memory_locale_instructions,
+    mem_planning_gate,
+    profile_tags_system_prompt,
+)
+
 
 class GeneralAgent(AgentBase):
     _reaction_semaphore = asyncio.Semaphore(4)
@@ -60,6 +69,7 @@ class GeneralAgent(AgentBase):
         if self.memory:
             self.memory.set_agent_context(self.create_context())
         self.stopped=False
+        self._prompt_locale = get_general_agent_locale()
         self._run_subtasks: set = set()
         self._hooks = {
             'before_event_handling': [],
@@ -270,16 +280,7 @@ class GeneralAgent(AgentBase):
 
         Based on the agent's profile and the complete event that occurred (the instruction received, what was observed, and how the agent reacted), generate a single sentence memory that captures this experience from the agent's perspective. The memory should be personal and reflect the complete interaction including what the agent was asked to do, what they perceived, and how they responded.
 
-        【记忆为必填】无论 Reaction 是否包含评论、回复、点赞等，你**必须**输出恰好一条非空的 memory 字符串。**即便**结果完全无互动（例如所有 comment=false），仍须按下方句式完成一句记忆，例如「划过去了」「未评论」「保持沉默」，并结合 Reaction 简要说明未参与的原因（如与此前话题重复、没有新信息等）。**不得**因无互动而跳过记忆、返回空串，或使用与本事件无关的泛泛套话。
-
-        规定句式（方括号内填入本事件中的具体信息；第一人称）：
-        通过 [渠道] 我了解到/刷到了 [话题]；核心是 [关键事实]。我 [互动方式]，并表达了 [态度倾向]。
-
-        记忆质量（尽量全部满足）：
-        - 将 [关键事实] 及同一话题的相关细节**压缩为一句**，像给朋友口述现状；若有姓名、时间、数字尽量写上。
-        - 若 Observation 中有可抓手的信息，优先使用：人名、时间、数字、规则/产品名等；避免只有评价性空话（如「很严重」「希望平台…」「值得关注」）。
-        - 若未评论或明确选择沉默，在 [互动方式] 或 [态度倾向] 中直白写出（如仅浏览未评论/保持沉默）；不要编造并未发生的评论。仍须输出该条记忆。
-        - 仅一句；总长度宜 ≤120 字（中文或英文）。
+        {memory_locale_instructions(self._prompt_locale)}
 
         Structure the response in JSON format with a single 'memory' field containing this sentence. Format the response in a json fenced code block as follows:
         ```json
@@ -314,7 +315,7 @@ class GeneralAgent(AgentBase):
                     f"{self.profile.agent_type}(ID:{self.profile_id}) generate_memory: "
                     f"missing/empty 'memory' in parsed keys={list(parsed.keys())}; using fallback sentence."
                 )
-                memory = "已处理本次事件并完成决策；模型未返回符合格式的 memory 字段。"
+                memory = memory_fallback_sentence(self._prompt_locale)
             if not isinstance(memory, str):
                 memory = str(memory)
             # memory_msg=Message(self.name, memory, role="assistant")
@@ -353,14 +354,7 @@ class GeneralAgent(AgentBase):
             logger.info(f"{self.profile.agent_type}(ID:{self.profile_id}) after planning.plan")
 
             if memory.strip():
-                _mem_planning_gate = (
-                    "【Planning 自检 · Memory 非空】若你打算 comment=true，并认为相对 ### Memory 有新信息："
-                    "请核对 **### Planning 中的新颖性判断**（最终 JSON 里将对应 memory_reflection 的那部分）是否成立——"
-                    "即是否确为新信息、未与 Memory 重复、且不与完整 ### Memory 正文矛盾。"
-                    "检查 ### Planning：是否只是在复述 Memory，或充斥「很严重」「希望平台…」「值得关注」等空话？"
-                    "若 Planning 误判新颖性、仅重复 Memory，或充满此类空洞表述，你必须设 comment=false，且 comment_content 留空；"
-                    "最终 JSON 的 memory_reflection 须写明：对照 Memory 复核 Planning 后，并无新的硬事实，故选择沉默。\n\n"
-                )
+                _mem_planning_gate = mem_planning_gate(self._prompt_locale)
             else:
                 _mem_planning_gate = ""
 
@@ -1131,9 +1125,9 @@ Respond in JSON format with a single 'message' field containing your response. F
             import re
             patterns = [
                 r"your request has (\d+) input tokens",
-                r"请求有 (\d+) 个输入 token",
+                r"request has (\d+) input tokens",
                 r"(\d+) input tokens",
-                r"超过.*?(\d+)",
+                r"exceeds.*?(\d+)",
             ]
             for pattern in patterns:
                 match = re.search(pattern, error_msg, re.IGNORECASE)
@@ -1148,7 +1142,7 @@ Respond in JSON format with a single 'message' field containing your response. F
             return None
         
         def truncate_notes_by_tokens(notes_str: str, excess_tokens: int) -> str:
-            """根据超出的 token 数量截断 notes_str"""
+            """Truncate notes_str based on estimated excess tokens."""
             if not notes_str or notes_str == "(none)":
                 return notes_str
             
@@ -1161,40 +1155,28 @@ Respond in JSON format with a single 'message' field containing your response. F
             return truncated
         
         def build_prompt(notes_str: str) -> tuple:
-            """构建 prompt，返回 (prompt_text, formatted_prompt)"""
-            prompt_text = f"""Based on the following user information, generate interest tags (interest_tags).
-
-            User information:
-            - Nickname: {nickname}
-            - Gender: {gender}
-            - Bio / description: {description}
-            - Location: {location}
-            - Historical notes: {notes_str}{existing_tags_info}
-
-            Social statistics:
-            - Following count: {following_count}
-            - Follower count: {follower_count}
-            - Interactions (likes and saves): {interaction}
-
-            Tasks:
-
-            1. From nickname, gender, description, location, and historical notes, produce 5–10 interest tags (interest_tags).
-            Tags should be short keywords reflecting interests and preferences; **use the same primary language** as the user's historical posts/notes when possible.{f' (Existing tags: {", ".join(existing_tags)}; generate new tags and avoid duplicates.)' if append_mode and existing_tags else ''}
-
-            Return JSON in this form:
-            ```json
-            {{
-                "interest_tags": ["Tag1", "Tag2", "Tag3", ...]
-            }}
-            ```
-
-            Requirements:
-            - interest_tags is a list of 5–10 strings
-            - Tags are concise keywords in Chinese or English as appropriate
-            """
+            """Build prompt; returns (prompt_text, formatted_prompt)."""
+            prompt_text = build_profile_tags_prompt_text(
+                locale=self._prompt_locale,
+                nickname=nickname,
+                gender=gender,
+                description=description,
+                location=location,
+                notes_str=notes_str,
+                existing_tags_info=existing_tags_info,
+                following_count=following_count,
+                follower_count=follower_count,
+                interaction=interaction,
+                append_mode=append_mode,
+                existing_tags=existing_tags,
+            )
             prompt = self.model.format(
-                Message("system", self.sys_prompt if self.sys_prompt else "You are a professional user-profile analysis assistant.", role="system"),
-                Message("user", prompt_text, role="user")
+                Message(
+                    "system",
+                    profile_tags_system_prompt(self._prompt_locale, self.sys_prompt),
+                    role="system",
+                ),
+                Message("user", prompt_text, role="user"),
             )
             return prompt_text, prompt
         
@@ -1208,7 +1190,7 @@ Respond in JSON format with a single 'message' field containing your response. F
                 prompt_text, prompt = build_prompt(current_notes_str)
                 
                 response = await self.model.acall(prompt)
-                break  # 成功则跳出循环
+                break  # Success; exit retry loop
                 
             except Exception as e:
                 error_msg = str(e)
@@ -1218,21 +1200,30 @@ Respond in JSON format with a single 'message' field containing your response. F
                     excess_tokens = extract_excess_tokens(error_msg)
                     
                     if excess_tokens and attempt < max_retries:
-                        logger.warning(f"Token 超限（超出约 {excess_tokens} tokens），尝试截断 historical_notes 后重试（第 {attempt + 1}/{max_retries} 次）")
+                        logger.warning(
+                            f"Token limit exceeded (~{excess_tokens} tokens over); "
+                            f"truncating historical_notes and retrying ({attempt + 1}/{max_retries})"
+                        )
                         current_notes_str = truncate_notes_by_tokens(current_notes_str, excess_tokens)
-                        logger.info(f"已截断 historical_notes，当前长度: {len(current_notes_str)} 字符（原始长度: {len(original_historical_notes_str)} 字符）")
-                        continue  # 重试
+                        logger.info(
+                            f"Truncated historical_notes; current length: {len(current_notes_str)} chars "
+                            f"(original: {len(original_historical_notes_str)} chars)"
+                        )
+                        continue  # Retry
                     else:
                         if attempt >= max_retries:
-                            logger.error(f"Token 超限且已达到最大重试次数，最后一次尝试使用最小 historical_notes")
+                            logger.error(
+                                "Token limit exceeded after max retries; "
+                                "last attempt with minimal historical_notes"
+                            )
                             current_notes_str = "(none) (content too long; fully truncated)"
-                            # 最后一次尝试
+                            # Final attempt
                             try:
                                 prompt_text, prompt = build_prompt(current_notes_str)
                                 response = await self.model.acall(prompt)
                                 break
                             except Exception as final_e:
-                                logger.error(f"最后一次重试也失败: {final_e}")
+                                logger.error(f"Final retry also failed: {final_e}")
                                 raise
                         else:
                             raise
@@ -1246,32 +1237,38 @@ Respond in JSON format with a single 'message' field containing your response. F
             result = res.parsed
             
             if "interest_tags" not in result:
-                raise ValueError("LLM 响应缺少必要字段：interest_tags")
+                raise ValueError("LLM response missing required field: interest_tags")
             
             new_tags = result["interest_tags"]
             
             if not isinstance(new_tags, list):
-                raise ValueError(f"interest_tags 应该是列表，但得到 {type(new_tags)}")
+                raise ValueError(f"interest_tags must be a list, got {type(new_tags)}")
             if len(new_tags) < 5 or len(new_tags) > 10:
-                logger.warning(f"新生成的 interest_tags 数量为 {len(new_tags)}，期望 5-10 个")
+                logger.warning(f"Generated interest_tags count is {len(new_tags)}, expected 5–10")
             
             if append_mode and existing_tags:
                 all_tags = existing_tags + [tag for tag in new_tags if tag not in existing_tags]
                 interest_tags = all_tags
-                logger.info(f"追加模式：保留 {len(existing_tags)} 个现有标签，添加 {len(new_tags)} 个新标签，去重后共 {len(interest_tags)} 个标签")
+                logger.info(
+                    f"Append mode: kept {len(existing_tags)} existing tags, added {len(new_tags)} new tags, "
+                    f"{len(interest_tags)} total after dedup"
+                )
             else:
                 interest_tags = new_tags
             
             await self.update_data("interest_tags", interest_tags)
-            logger.info(f"成功生成并更新 profile：interest_tags={interest_tags}")
+            logger.info(f"Updated profile interest_tags={interest_tags}")
             
             return {
                 "interest_tags": interest_tags
             }
             
         except (json.JSONDecodeError, KeyError) as e:
-            logger.error(f"LLM 响应格式不正确: {e}\nPrompt: {prompt_text}\nResponse: {response.text if hasattr(response, 'text') else response}")
-            raise ValueError(f"LLM 响应格式不正确: {e}")
+            logger.error(
+                f"Invalid LLM response format: {e}\nPrompt: {prompt_text}\n"
+                f"Response: {response.text if hasattr(response, 'text') else response}"
+            )
+            raise ValueError(f"Invalid LLM response format: {e}")
         except Exception as e:
-            logger.error(f"生成 profile 标签时出错: {e}")
+            logger.error(f"Error generating profile tags: {e}")
             raise

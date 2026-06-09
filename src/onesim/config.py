@@ -201,13 +201,15 @@ class AgentConfig:
     profile: Dict[str, Dict[str, Any]] = field(default_factory=dict)
     planning: Optional[str] = None
     memory: AgentMemoryConfig = field(default_factory=AgentMemoryConfig)
+    general_agent_locale: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert instance to a dictionary for JSON serialization"""
         return {
             "profile": self.profile,
             "planning": self.planning,
-            "memory": self.memory.to_dict()
+            "memory": self.memory.to_dict(),
+            "general_agent_locale": self.general_agent_locale,
         }
 
 @dataclass_json
@@ -348,6 +350,8 @@ class OneSimConfig:
 
             if "agent" in loaded_config:
                 agent_config = loaded_config["agent"]
+                if "general_agent_locale" in agent_config:
+                    self.agent_config.general_agent_locale = agent_config["general_agent_locale"]
                 # Handle agent profile configuration
                 if "profile" in agent_config:
                     self.agent_config.profile = agent_config["profile"]

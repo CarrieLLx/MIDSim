@@ -597,12 +597,9 @@ class SimEnv(BasicSimEnv):
                     key=event.key,
                     success=success
                 )
-
-                # Dispatch the response event through the event bus
                 await self.event_bus.dispatch_event(response_event)
 
         except Exception as e:
-            # Send the error response
             error_response = AddCommentResponseEvent(
                 from_agent_id=self.name,
                 to_agent_id=event.from_agent_id,
@@ -614,10 +611,7 @@ class SimEnv(BasicSimEnv):
             await self.event_bus.dispatch_event(error_response)
 
     async def update_mention_pool(self, key: str, data: Any) -> Any:
-        """
-        Update the shared data (asynchronously, using a lock)
-        """
-        # Use an asynchronous lock
+        """Update the shared data (asynchronously, using a lock)"""
         async with self._lock:
             if "." in key:
                 # Parse the note_id and the field path
@@ -628,7 +622,6 @@ class SimEnv(BasicSimEnv):
                 comment_id = parts[2]
                 
                 mention_pool = self.data.get("mention_pool", {})
-                # Ensure mention_pool is a dictionary
                 if not isinstance(mention_pool, dict):
                     mention_pool = {}
                     logger.warning("mention_pool is not a dict, converting from list format")
@@ -692,12 +685,9 @@ class SimEnv(BasicSimEnv):
                     key=event.key,
                     success=success
                 )
-
-                # Dispatch the response event through the event bus
                 await self.event_bus.dispatch_event(response_event)
 
         except Exception as e:
-            # Send the error response
             error_response = MentionPoolUpdateResponseEvent(
                 from_agent_id=self.name,
                 to_agent_id=event.from_agent_id,

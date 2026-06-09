@@ -11,7 +11,7 @@
         "default": "Random Recommendation",
         "private": false,
         "sampling": "default",
-        "choices": ["Hot Recommendation", "Random Recommendation"],
+        "choices": ["Popularity Recommendation", "Random Recommendation"],
         "description": "Algorithm of recommendation system"
     },
     "limit": {

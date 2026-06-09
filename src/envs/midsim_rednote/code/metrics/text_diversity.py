@@ -24,7 +24,7 @@ try:
         embed_content_pool_comments,
         records_to_embedding_payload,
     )
-    from .comment_text_utils import tokenize
+    from ..utils import tokenize
 except ImportError:
     import sys
 
@@ -39,7 +39,7 @@ except ImportError:
         embed_content_pool_comments,
         records_to_embedding_payload,
     )
-    from comment_text_utils import tokenize
+    from utils import tokenize
 
 DEFAULT_TRUNCATE_TOKENS = 32
 DEFAULT_DISTINCT_SAMPLE_SIZE = 1000
@@ -185,7 +185,7 @@ def calculate_text_diversity(data: Dict[str, Any]) -> Any:
         "_comment_embeddings": [],
         "content_pool_with_embeddings": {},
     }
-    metric_id = "comment_diversity"
+    metric_id = "text_diversity"
     try:
         if not data or not isinstance(data, dict):
             log_metric_error(metric_id, ValueError("Invalid data input"), {"data": data})

@@ -248,7 +248,7 @@ MIDSim/
 ```json
 {
   "exposure": {
-    "social": { "probability": 1 },
+    "social": { "probability": 1, "social_feed_budget": 0 },
     "recommendation": {
       "probability": 1,
       "types": ["Interest Recommendation"],
@@ -264,17 +264,8 @@ MIDSim/
   "user": {
     "own_note_cap_days": 7.0,
     "memory_similarity": {
-      "policy": "memory_nonempty,keyword,embedding",
-      "multi_combine": "or",
-      "keyword_enabled": true,
-      "embedding_enabled": true,
       "min_common_tokens": 2,
-      "embed_threshold": 0.65,
-      "include_historical_summary": true,
-      "embedding_config_path": "",
-      "embed_max_chars": 400,
-      "embed_max_chunks": 12,
-      "embed_chunk_agg": "mean"
+      "embed_threshold": 0.65
     },
     "freshness": {
       "stale_days": 7.0,
@@ -304,6 +295,7 @@ MIDSim/
 | 字段 | 说明 |
 |------|------|
 | `exposure.social.probability` | 有关注流内容时发送社交推荐事件的概率 |
+| `exposure.social.social_feed_budget` | 每轮社交关注流最多展示条数（0 表示不限制条数逻辑由代码处理） |
 | `exposure.recommendation.probability` | 每种算法推荐请求独立触发的概率 |
 | `exposure.recommendation.types` | 每轮用户请求的推荐算法类型列表 |
 | `exposure.recommendation.alpha` | 推荐流深度的伯努利继续概率 |
@@ -313,19 +305,14 @@ MIDSim/
 | `exposure.search.alpha` | 搜索结果深度的伯努利继续概率 |
 | `exposure.notification.attention_budget` | 每轮最多处理的 @ 提及数，超出则随机抽样 |
 | `user.own_note_cap_days` | 自有笔记/关注流时间下界最多回溯天数；0 表示不截断 |
-| `user.memory_similarity.policy` | Memory 相似度门控注入策略（`memory_nonempty` / `keyword` / `embedding` 等，逗号分隔） |
-| `user.memory_similarity.multi_combine` | 多策略合成：`or`（任一命中）或 `and`（全部命中） |
-| `user.memory_similarity.keyword_enabled` / `embedding_enabled` | 是否启用关键词重叠 / 向量相似度分支 |
-| `user.memory_similarity.min_common_tokens` | 话题与 memory 共同词下限 |
-| `user.memory_similarity.embed_threshold` | 向量相似度余弦阈值 |
-| `user.memory_similarity.include_historical_summary` | memory 侧是否拼上 `historical_summary` |
-| `user.memory_similarity.embedding_config_path` | Embedding 配置路径；空则用 `config/model_config.json` |
-| `user.memory_similarity.embed_max_chars` / `embed_max_chunks` / `embed_chunk_agg` | 长文本 embedding 切分与聚合 |
+| `user.memory_similarity.min_common_tokens` | Memory 门控：话题与 memory 共同词下限 |
+| `user.memory_similarity.embed_threshold` | Memory 门控：向量相似度余弦阈值 |
 | `user.freshness.stale_days` | 时效门控判定内容「时效已弱」的天数阈值 |
 | `user.freshness.low_activity_time_module_threshold` | （可选）低活跃度下才注入时间 coaching 的阈值 |
 | `user.activity.remap.out_min` / `out_max` | 将 profile `activity_level` 线性重映射到 `[out_min, out_max]` |
 | `user.activity.low_activity_memory_gate_threshold` | 低活跃度下启用严格 memory 门控的 `activity_level` 上限 |
-| `user.interaction_threshold.*` | 互动强度采样：`support` 与 `probs` 数组 |
+| `user.interaction_threshold.*` | 互动强度采样：`support` 与 `probs` 数组（Twitter 另有 `propagation_type` / `mention_type`） |
+| `agent.general_agent_locale` | （可选）GeneralAgent prompt 语言：`zh` / `en`（Twitter 默认 `en`） |
 | `simulator.max_step` | 仿真总轮数（写入 `StartEvent.max_step`） |
 | `simulator.max_span_days` | 仿真总时间跨度（天），各轮时间窗长度之和的上界 |
 | `simulator.timestamp_schedule_type` | 各轮时间窗长度分配方式：`power` 或 `sigmoid` |
@@ -333,7 +320,7 @@ MIDSim/
 | `simulator.timestamp_sigmoid_scale` | Sigmoid 调度平滑参数（`schedule_type=sigmoid` 时生效） |
 | `simulator.timestamp_sigmoid_center_ratio` | Sigmoid 拐点位置比例（0–1） |
 
-profile 中的 `limit` 以及代码内的上下界（推荐 ≤ 15、搜索 ≤ 50）不在 params 里配置。
+profile 中的 `limit` 以及代码内的上下界（推荐 ≤ 15、搜索 ≤ 50）不在 params 里配置。`memory_similarity` 的 `policy`、`multi_combine`、`embedding_enabled`、长文本切分等高级项有代码默认值（见各 env 的 `user_agent_gates.py`），一般实验无需写入 params。
 
 ### 模型配置（`config/model_config.json`）
 

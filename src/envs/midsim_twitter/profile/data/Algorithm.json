@@ -6,9 +6,9 @@
     },
     {
         "id": "recomment_agent_0002",
-        "type": "Hot Recommendation",
+        "type": "Popularity Recommendation",
         "limit": "5",
-        "propagation_count_dist_7d": [
+        "popularity_distribution": [
             {
                 "propagation_count": 0,
                 "post_count": 182
@@ -29303,18 +29303,8 @@
         }
     },
     {
-        "id": "search_agent_0002",
-        "type": "Hot Search",
-        "limit": "5"
-    },
-    {
-        "id": "search_agent_0003",
+        "id": "search_agent_0001",
         "type": "Relevant Search",
-        "limit": "5"
-    },
-    {
-        "id": "search_agent_0004",
-        "type": "LLM Search",
         "limit": "5"
     }
 ]

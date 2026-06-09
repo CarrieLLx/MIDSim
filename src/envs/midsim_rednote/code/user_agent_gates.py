@@ -17,7 +17,7 @@ from onesim.utils.midsim_params import (
     user_stale_days,
 )
 
-from .utils import format_sim_ms_utc, to_sim_time_ms
+from .utils import time_to_format_utc, time_to_ms
 from .embedding_client import cosine_similarity, default_embedding_config_path, get_embeddings, load_embedding_config
 
 ReactionContext = Literal["recommendation", "mention"]
@@ -87,7 +87,7 @@ class MemorySimilarityGate:
         "自己", "如果", "因为", "所以", "但是", "然后", "而且", "或者",
     }
     _VALID_POLICIES = frozenset(
-        ("memory_nonempty", "keyword", "embedding", "hybrid_or", "hybrid_and")
+        ("memory_nonempty", "keyword", "embedding")
     )
 
     def __init__(self, agent: Any) -> None:
@@ -114,6 +114,7 @@ class MemorySimilarityGate:
         *,
         min_common: int = 2,
     ) -> bool:
+        """Calculate the keyword overlap degree"""
         a = cls.tokenize(topic_text)
         b = cls.tokenize(memory_side_text)
         if not a or not b:
@@ -122,6 +123,7 @@ class MemorySimilarityGate:
 
     @classmethod
     def _chunk_text_for_embedding(cls, text: str, max_chars: int) -> List[str]:
+        """Chunk the text into a list of strings"""
         t = (text or "").strip()
         if not t:
             return []
@@ -152,6 +154,7 @@ class MemorySimilarityGate:
 
     @staticmethod
     def _mean_embedding(vectors: List[List[float]]) -> List[float]:
+        """Calculate the mean of the embeddings"""
         if not vectors:
             return []
         dim = len(vectors[0])
@@ -169,6 +172,7 @@ class MemorySimilarityGate:
         model_name: str,
         chunks: List[str],
     ) -> List[List[float]]:
+        """Embed the chunks sequentially"""
         vecs: List[List[float]] = []
         for ch in chunks:
             batch = get_embeddings(base_url, model_name, [ch])
@@ -185,6 +189,7 @@ class MemorySimilarityGate:
         *,
         cfg: MemorySimilarityGateConfig,
     ) -> Optional[float]:
+        """Calculate the embedding similarity"""
         max_chars = max(64, min(int(cfg.embed_max_chars), 8000))
         max_chunks = max(1, min(int(cfg.embed_max_chunks), 64))
         agg = cfg.embed_chunk_agg if cfg.embed_chunk_agg in ("mean", "max") else "mean"
@@ -223,6 +228,7 @@ class MemorySimilarityGate:
 
     @classmethod
     def _parse_policy_list(cls, raw: str) -> Tuple[str, ...]:
+        """Parse the policy list"""
         s = (raw or "").strip().lower()
         if not s:
             return ("memory_nonempty",)
@@ -260,6 +266,8 @@ class MemorySimilarityGate:
 
     @classmethod
     def load_config(cls, params: Optional[Dict[str, Any]] = None) -> MemorySimilarityGateConfig:
+        """Load the configuration for the memory similarity gate"""
+        # Get the policy 
         p = params or {}
         policy_raw = str(p.get("policy", "memory_nonempty,keyword,embedding")).strip()
         policies = cls._parse_policy_list(policy_raw)
@@ -268,29 +276,45 @@ class MemorySimilarityGate:
             combine = "or"
         kw = cls._parse_config_bool(p.get("keyword_enabled"), True)
         emb = cls._parse_config_bool(p.get("embedding_enabled"), True)
+
+        # Get the minimum number of common tokens
         try:
             min_common = int(p.get("min_common_tokens", 2) or 2)
         except (TypeError, ValueError):
             min_common = 2
+
+        # Get the embedding threshold
         try:
             embed_th = float(p.get("embed_threshold", 0.65) or 0.65)
         except (TypeError, ValueError):
             embed_th = 0.65
+
+        # Get the historical summary
         inc_hist = cls._parse_config_bool(p.get("include_historical_summary"), True)
+
+        # Get the embedding config path
         cfg_path = str(p.get("embedding_config_path", "") or "").strip()
         if not cfg_path:
             cfg_path = default_embedding_config_path()
+
+        # Get the embedding max chars
         try:
             embed_max_chars = int(p.get("embed_max_chars", 400) or 400)
         except (TypeError, ValueError):
             embed_max_chars = 400
+
+        # Get the embedding max chunks
         try:
             embed_max_chunks = int(p.get("embed_max_chunks", 12) or 12)
         except (TypeError, ValueError):
             embed_max_chunks = 12
+
+        # Get the embedding chunk aggregation
         agg = str(p.get("embed_chunk_agg", "mean")).strip().lower()
         if agg not in ("mean", "max"):
             agg = "mean"
+
+        # Return the configuration for the memory similarity gate
         return MemorySimilarityGateConfig(
             policies=policies,
             policy_raw=policy_raw,
@@ -316,6 +340,7 @@ class MemorySimilarityGate:
         mem_side: str,
         topic_text: str,
     ) -> Dict[str, Any]:
+        """Inject for a single policy"""
         if pol == "memory_nonempty":
             return {"inject": bool(memory_nonempty)}
         if pol == "keyword":
@@ -338,33 +363,8 @@ class MemorySimilarityGate:
                 "similarity": float(sim),
                 "threshold": float(cfg.embed_threshold),
             }
-        kw_ok = bool(cfg.keyword_enabled and mem_side and cls.keyword_overlap(
-            topic_text, mem_side, min_common=cfg.min_common
-        ))
-        emb_ok = False
-        sim_val: Optional[float] = None
-        if cfg.embedding_enabled and mem_side:
-            sim = cls.embedding_similarity(topic_text, mem_side, cfg=cfg)
-            if sim is not None:
-                sim_val = float(sim)
-                emb_ok = sim_val >= cfg.embed_threshold
-        if not cfg.keyword_enabled and not cfg.embedding_enabled:
-            return {"inject": bool(memory_nonempty), "note": "hybrid_but_kw_emb_disabled_fallback_memory_nonempty"}
-        if pol == "hybrid_or":
-            if cfg.keyword_enabled and not cfg.embedding_enabled:
-                inj = kw_ok
-            elif not cfg.keyword_enabled and cfg.embedding_enabled:
-                inj = emb_ok
-            else:
-                inj = kw_ok or emb_ok
-        else:
-            if cfg.keyword_enabled and not cfg.embedding_enabled:
-                inj = kw_ok
-            elif not cfg.keyword_enabled and cfg.embedding_enabled:
-                inj = emb_ok
-            else:
-                inj = kw_ok and emb_ok
-        return {"inject": inj, "keyword_hit": kw_ok, "embedding_hit": emb_ok, "similarity": sim_val}
+        logger.warning(f"MemorySimilarityGate: unknown policy {pol!r}, valid={sorted(cls._VALID_POLICIES)}")
+        return {"inject": False}
 
     @classmethod
     def evaluate_sync(
@@ -513,6 +513,7 @@ class FreshnessGate:
 
     @staticmethod
     def _content_dicts(chunk: Union[Dict[str, Any], List[Any]]) -> List[Dict[str, Any]]:
+        """Format the chunk into a list of content dictionaries"""
         items: List[Dict[str, Any]] = []
         if isinstance(chunk, dict):
             for v in chunk.values():
@@ -536,9 +537,11 @@ class FreshnessGate:
         *,
         stale_days: float,
     ) -> Optional[str]:
+        """Evaluate the freshness of the chunk"""
+        # Get the earliest time in the chunk
         times_ms: List[float] = []
         for note in self._content_dicts(chunk):
-            t = to_sim_time_ms(note.get("time", note.get("create_time")))
+            t = time_to_ms(note.get("time", note.get("create_time")))
             if t is not None:
                 times_ms.append(t)
         if not times_ms:
@@ -546,7 +549,7 @@ class FreshnessGate:
 
         earliest_ms = min(times_ms)
         ref_ok = bool(ref_ms and ref_ms > 0)
-        ref_str = format_sim_ms_utc(float(ref_ms)) if ref_ok else "（未知）"
+        ref_str = time_to_format_utc(float(ref_ms)) if ref_ok else "(Unknown)"
 
         anchor = getattr(self._agent, "_recommendation_earliest_post_anchor_ms", None)
         if anchor is None:
@@ -555,9 +558,10 @@ class FreshnessGate:
         if not ref_ok:
             return None
 
+        # Calculate the time difference between the current reference time and the anchor time
         delta_ms = float(ref_ms) - float(anchor)
         days = delta_ms / self.MS_PER_DAY
-        anchor_str = format_sim_ms_utc(float(anchor))
+        anchor_str = time_to_format_utc(float(anchor))
         interval_txt = (
             f"已过约 {days:.2f} 天（当前仿真时刻 − 锚点时刻，1 天 = 86400 秒）"
             if days >= 0
@@ -581,6 +585,7 @@ class FreshnessGate:
         *,
         activity: float,
     ) -> str:
+        """Return the coaching for the time module"""
         if not time_text:
             return ""
         if context == "recommendation":
@@ -605,7 +610,7 @@ class FreshnessGate:
         *,
         activity: float,
     ) -> str:
-        ref_ms = int(to_sim_time_ms(current_timestamp, default=0) or 0)
+        ref_ms = int(time_to_ms(current_timestamp, default=0) or 0)
         stale_days = await user_stale_days(self._agent)
         time_text = self._evaluate_text(chunk, ref_ms, stale_days=stale_days)
         return await self._coaching(time_text, context, activity=activity)

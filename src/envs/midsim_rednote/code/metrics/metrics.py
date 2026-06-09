@@ -11,12 +11,12 @@ if _code_dir not in sys.path:
     sys.path.insert(0, _code_dir)
 try:
     from embedding_metrics import (
-        calculate_comment_max_reference_similarity,
-        calculate_comment_similarity,
+        calculate_text_max_reference_similarity,
+        calculate_text_similarity,
     )
 except ImportError:
-    calculate_comment_max_reference_similarity = None
-    calculate_comment_similarity = None
+    calculate_text_max_reference_similarity = None
+    calculate_text_similarity = None
 
 try:
     from text_diversity import calculate_text_diversity
@@ -24,9 +24,9 @@ except ImportError:
     calculate_text_diversity = None
 
 try:
-    from ..utils import to_sim_time_ms
+    from ..utils import time_to_ms
 except ImportError:
-    from utils import to_sim_time_ms
+    from utils import time_to_ms
 
 from collections import Counter, defaultdict
 from loguru import logger
@@ -36,16 +36,16 @@ from onesim.monitor.utils import (
 )
 
 
-def calculate_comment_generation(data: Dict[str, Any]) -> Any:
+def calculate_diffusion_generation(data: Dict[str, Any]) -> Any:
     """Calculate the number of comments generated over time"""
     try:
         if not data or not isinstance(data, dict):
-            log_metric_error("comment_generation", ValueError("Invalid data input"), {"data": data})
+            log_metric_error("diffusion_generation", ValueError("Invalid data input"), {"data": data})
             return 0
         
         content_pool = safe_get(data, "content_pool", {})
         if not isinstance(content_pool, dict):
-            log_metric_error("comment_generation", ValueError("content_pool is not a dict"), {"content_pool_type": type(content_pool)})
+            log_metric_error("diffusion_generation", ValueError("content_pool is not a dict"), {"content_pool_type": type(content_pool)})
             return 0
         
         total_comments = 0
@@ -62,17 +62,17 @@ def calculate_comment_generation(data: Dict[str, Any]) -> Any:
         return float(total_comments)
     
     except Exception as e:
-        log_metric_error("comment_generation", e, {"data_keys": list(data.keys()) if isinstance(data, dict) else None})
+        log_metric_error("diffusion_generation", e, {"data_keys": list(data.keys()) if isinstance(data, dict) else None})
         return 0
 
 
-def calculate_comment_top_vs_reply_over_time(data: Dict[str, Any]) -> Any:
+def calculate_diffusion_top_vs_reply_over_time(data: Dict[str, Any]) -> Any:
     """Calculate the number of comments over time, classified by whether they have a parent comment"""
     zero = {"top_level_comments": 0.0, "reply_comments": 0.0}
     try:
         if not data or not isinstance(data, dict):
             log_metric_error(
-                "comment_top_vs_reply_over_time",
+                "diffusion_top_vs_reply_over_time",
                 ValueError("Invalid data input"),
                 {"data": data},
             )
@@ -81,7 +81,7 @@ def calculate_comment_top_vs_reply_over_time(data: Dict[str, Any]) -> Any:
         content_pool = safe_get(data, "content_pool", {})
         if not isinstance(content_pool, dict):
             log_metric_error(
-                "comment_top_vs_reply_over_time",
+                "diffusion_top_vs_reply_over_time",
                 ValueError("content_pool is not a dict"),
                 {"content_pool_type": type(content_pool)},
             )
@@ -114,15 +114,13 @@ def calculate_comment_top_vs_reply_over_time(data: Dict[str, Any]) -> Any:
         }
     except Exception as e:
         log_metric_error(
-            "comment_top_vs_reply_over_time",
+            "diffusion_top_vs_reply_over_time",
             e,
             {"data_keys": list(data.keys()) if isinstance(data, dict) else None},
         )
         return zero
 
-
-
-def _histogram_comment_times_ms(times_ms: List[float]) -> Tuple[List[float], List[int], str]:
+def _histogram_diffusion_times_ms(times_ms: List[float]) -> Tuple[List[float], List[int], str]:
     """Calculate the number of comments generated over time"""
     if not times_ms:
         return [], [], ""
@@ -154,7 +152,7 @@ def _histogram_comment_times_ms(times_ms: List[float]) -> Tuple[List[float], Lis
     return edges, counts, desc
 
 
-def calculate_comment_volume_realtime(data: Dict[str, Any]) -> Any:
+def calculate_diffusion_volume_realtime(data: Dict[str, Any]) -> Any:
     """
     Calculate the number of comments generated over time
     """
@@ -169,8 +167,8 @@ def calculate_comment_volume_realtime(data: Dict[str, Any]) -> Any:
     try:
         if not data or not isinstance(data, dict):
             log_metric_error(
-                "comment_volume_realtime",
-                ValueError("无效的数据输入"),
+                "diffusion_volume_realtime",
+                ValueError("Invalid data input"),
                 {"data": data},
             )
             return empty
@@ -178,7 +176,7 @@ def calculate_comment_volume_realtime(data: Dict[str, Any]) -> Any:
         content_pool = safe_get(data, "content_pool", {})
         if not isinstance(content_pool, dict):
             log_metric_error(
-                "comment_volume_realtime",
+                "diffusion_volume_realtime",
                 ValueError("content_pool is not a dict"),
                 {"content_pool_type": type(content_pool)},
             )
@@ -198,12 +196,12 @@ def calculate_comment_volume_realtime(data: Dict[str, Any]) -> Any:
             for c in iterable:
                 if not isinstance(c, dict):
                     continue
-                ms = to_sim_time_ms(c.get("timestamp"))
+                ms = time_to_ms(c.get("timestamp"))
                 if ms is not None:
                     times_ms.append(ms)
 
         times_ms.sort()
-        edges, counts, desc = _histogram_comment_times_ms(times_ms)
+        edges, counts, desc = _histogram_diffusion_times_ms(times_ms)
         return {
             "_viz_kind": "comment_realtime",
             "timestamps_ms": times_ms,
@@ -214,7 +212,7 @@ def calculate_comment_volume_realtime(data: Dict[str, Any]) -> Any:
         }
     except Exception as e:
         log_metric_error(
-            "comment_volume_realtime",
+            "diffusion_volume_realtime",
             e,
             {"data_keys": list(data.keys()) if isinstance(data, dict) else None},
         )
@@ -281,7 +279,7 @@ def _count_frequency_histogram(
     return bins, pct, raw
 
 
-def calculate_user_comment_count_frequency(data: Dict[str, Any]) -> Any:
+def calculate_user_diffusion_count_frequency(data: Dict[str, Any]) -> Any:
     """Distribution of total comments per user (denominator: registered users or pool users)."""
     empty: Dict[str, Any] = {
         "_viz_kind": "user_comment_count_freq_bar",
@@ -291,7 +289,7 @@ def calculate_user_comment_count_frequency(data: Dict[str, Any]) -> Any:
         "n_users_in_pool": 0,
         "user_count_basis": "content_pool_presence",
     }
-    metric_id = "user_comment_count_frequency"
+    metric_id = "user_diffusion_count_frequency"
     try:
         if not data or not isinstance(data, dict):
             log_metric_error(metric_id, ValueError("Invalid data input"), {"data": data})
@@ -345,7 +343,7 @@ def calculate_user_comment_count_frequency(data: Dict[str, Any]) -> Any:
         return empty
 
 
-def calculate_note_comment_count_frequency(data: Dict[str, Any]) -> Any:
+def calculate_note_diffusion_count_frequency(data: Dict[str, Any]) -> Any:
     """Distribution of comment counts under each note (denominator: all notes in pool)."""
     empty: Dict[str, Any] = {
         "_viz_kind": "note_comment_count_freq_bar",
@@ -354,7 +352,7 @@ def calculate_note_comment_count_frequency(data: Dict[str, Any]) -> Any:
         "raw_counts": [],
         "n_notes": 0,
     }
-    metric_id = "note_comment_count_frequency"
+    metric_id = "note_diffusion_count_frequency"
     try:
         if not data or not isinstance(data, dict):
             log_metric_error(metric_id, ValueError("Invalid data input"), {"data": data})
@@ -393,7 +391,7 @@ def calculate_note_comment_count_frequency(data: Dict[str, Any]) -> Any:
         return empty
 
 
-def calculate_posting_user_comment_behavior(data: Dict[str, Any]) -> Any:
+def calculate_posting_user_diffusion_behavior(data: Dict[str, Any]) -> Any:
     """
     Summarize the comment behavior of each user who has posted notes in the current content_pool
 
@@ -407,7 +405,7 @@ def calculate_posting_user_comment_behavior(data: Dict[str, Any]) -> Any:
     try:
         if not data or not isinstance(data, dict):
             log_metric_error(
-                "posting_user_comment_behavior",
+                "posting_user_diffusion_behavior",
                 ValueError("Invalid data input"),
                 {"data": data},
             )
@@ -416,7 +414,7 @@ def calculate_posting_user_comment_behavior(data: Dict[str, Any]) -> Any:
         content_pool = safe_get(data, "content_pool", {})
         if not isinstance(content_pool, dict):
             log_metric_error(
-                "posting_user_comment_behavior",
+                "posting_user_diffusion_behavior",
                 ValueError("content_pool is not a dict"),
                 {"content_pool_type": type(content_pool)},
             )
@@ -503,28 +501,26 @@ def calculate_posting_user_comment_behavior(data: Dict[str, Any]) -> Any:
         return {"users": rows}
     except Exception as e:
         log_metric_error(
-            "posting_user_comment_behavior",
+            "posting_user_diffusion_behavior",
             e,
             {"data_keys": list(data.keys()) if isinstance(data, dict) else None},
         )
         return empty
 
-
-# 指标函数字典，用于查找
 METRIC_FUNCTIONS = {
-    'calculate_comment_generation': calculate_comment_generation,
-    'calculate_comment_top_vs_reply_over_time': calculate_comment_top_vs_reply_over_time,
-    'calculate_comment_volume_realtime': calculate_comment_volume_realtime,
-    'calculate_user_comment_count_frequency': calculate_user_comment_count_frequency,
-    'calculate_note_comment_count_frequency': calculate_note_comment_count_frequency,
-    'calculate_posting_user_comment_behavior': calculate_posting_user_comment_behavior,
+    'calculate_diffusion_generation': calculate_diffusion_generation,
+    'calculate_diffusion_top_vs_reply_over_time': calculate_diffusion_top_vs_reply_over_time,
+    'calculate_diffusion_volume_realtime': calculate_diffusion_volume_realtime,
+    'calculate_user_diffusion_count_frequency': calculate_user_diffusion_count_frequency,
+    'calculate_note_diffusion_count_frequency': calculate_note_diffusion_count_frequency,
+    'calculate_posting_user_diffusion_behavior': calculate_posting_user_diffusion_behavior,
 }
-if calculate_comment_similarity is not None:
-    METRIC_FUNCTIONS['calculate_comment_similarity'] = calculate_comment_similarity
-if calculate_comment_diversity is not None:
-    METRIC_FUNCTIONS['calculate_comment_diversity'] = calculate_comment_diversity
-if calculate_comment_max_reference_similarity is not None:
-    METRIC_FUNCTIONS['calculate_comment_max_reference_similarity'] = calculate_comment_max_reference_similarity
+if calculate_text_similarity is not None:
+    METRIC_FUNCTIONS['calculate_text_similarity'] = calculate_text_similarity
+if calculate_text_diversity is not None:
+    METRIC_FUNCTIONS['calculate_text_diversity'] = calculate_text_diversity
+if calculate_text_max_reference_similarity is not None:
+    METRIC_FUNCTIONS['calculate_text_max_reference_similarity'] = calculate_text_max_reference_similarity
 
 
 def get_metric_function(function_name: str) -> Optional[Callable]:
