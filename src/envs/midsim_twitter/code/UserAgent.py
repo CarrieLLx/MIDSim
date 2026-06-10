@@ -291,9 +291,9 @@ class UserAgent(GeneralAgent):
                     enriched_mentions[mention_key] = mm
                     continue
                 tw_copy = dict(tw)
-                tw_key = enrich_tweet_quote_reply_chain(tw_copy.get("tweet_id") or tw_copy.get("id"))
+                tw_key = tweet_ref_key(tw_copy.get("tweet_id") or tw_copy.get("id"))
                 if not tw_key:
-                    tw_key = enrich_tweet_quote_reply_chain(
+                    tw_key = tweet_ref_key(
                         str(mention_key).split("_")[0] if "_" in str(mention_key) else str(mention_key)
                     )
                 if tw_copy.get("retweeted_tweet_id"):
@@ -333,7 +333,7 @@ class UserAgent(GeneralAgent):
                     tweet = current_tweets.get(keep_tweet_id)
                     if not isinstance(tweet, dict):
                         continue
-                    tw_key = enrich_tweet_quote_reply_chain(keep_tweet_id)
+                    tw_key = tweet_ref_key(keep_tweet_id)
                     keep_following_tweets[keep_tweet_id] = enrich_tweet_quote_reply_chain(
                         dict(tweet), current_tweets, tweet_ref=tw_key
                     )
@@ -416,7 +416,7 @@ class UserAgent(GeneralAgent):
                             continue
                         recommendations[tweet_id] = dict(tweet)
                 else:
-                    tw_key = enrich_tweet_quote_reply_chain(tweet_id)
+                    tw_key = tweet_ref_key(tweet_id)
                     tid = str(tweet_id).strip() if tweet_id is not None else ""
                     twk = str(tw_key).strip() if tw_key else ""
                     if (tid and tid in recommended_seen) or (twk and twk in recommended_seen):
