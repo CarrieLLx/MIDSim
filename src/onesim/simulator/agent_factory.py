@@ -13,7 +13,7 @@ from onesim.events import get_event_bus
 from onesim.profile import AgentProfile, AgentSchema
 from onesim.relationship import RelationshipManager
 from onesim.memory import MemoryStrategy, AgentContext
-from onesim.planning import PlanningBase
+from onesim.planning import PlanningBase, load_planning_instance
 from tqdm import tqdm
 from onesim.distribution.node import get_node, NodeRole
 from onesim.distribution.agent_allocator import AgentAllocator
@@ -21,6 +21,7 @@ from onesim.distribution.master import MasterNode
 import asyncio
 from onesim.config import SimulatorConfig, AgentConfig, AgentMemoryConfig
 from onesim.agent.locale import get_general_agent_locale, resolve_general_agent_locale
+from onesim.agent.backbone import get_backbone_profile, resolve_backbone_profile
 
 class AgentFactory:
     def __init__(self, simulator_config: SimulatorConfig, model_config_name: str, env_path: str, agent_config: Optional[AgentConfig] = None) -> None:
@@ -104,6 +105,15 @@ class AgentFactory:
         )
         logger.info(f"GeneralAgent locale: {locale}")
         return locale
+
+    def _ensure_backbone_profile(self) -> str:
+        profile = resolve_backbone_profile(
+            agent_config=self.agent_config,
+            simulator_config=self.simulator_config,
+            env_path=self.env_path,
+        )
+        logger.info(f"Agent backbone profile: {profile}")
+        return profile
 
     def load_agent_module_from_file(self, agent_type: str):
         """Load agent class from file"""
@@ -265,6 +275,7 @@ class AgentFactory:
                     "planning_config": planning_config,
                     "relationships": agent_relationships,
                     "general_agent_locale": get_general_agent_locale(),
+                    "backbone_profile": get_backbone_profile(),
                 }
                 all_agent_configs.append(agent_config)
                 self.profile_id2agent[agent_id] = agent_config
@@ -392,7 +403,7 @@ class AgentFactory:
             return relationships_by_agent
 
         def _normalize_rel_row_keys(row: Dict) -> Dict:
-            """去掉键名里的 BOM/空白（Excel 导出的 UTF-8 CSV 常在首列表头带 \\ufeff）。"""
+            """Remove BOM/whitespace from key names."""
             out = {}
             for k, v in row.items():
                 key = (k or "").lstrip("\ufeff").strip()
@@ -400,7 +411,7 @@ class AgentFactory:
                     out[key] = v
             return out
 
-        # Load base relationships from CSV（utf-8-sig 去掉文件头 BOM）
+        # Load base relationships from CSV (utf-8-sig removes file header BOM)
         base_relationships = []
         with open(relationship_file, mode='r', encoding='utf-8-sig') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -488,6 +499,7 @@ class AgentFactory:
     async def create_agents(self) -> Dict[str, Dict[str, Any]]:
         """Main method to create all agents"""
         self._ensure_general_agent_locale()
+        self._ensure_backbone_profile()
 
         # Check if we're running in distributed mode
         node = get_node()
@@ -528,21 +540,12 @@ class AgentFactory:
 
     def load_planning(self, planning_config, model_config_name: str, sys_prompt: str) -> PlanningBase:
         """Create planning strategy instance"""
-        if not planning_config:
-            return None
         try:
-            # Load planning module and class
-            planning_module = importlib.import_module("onesim.planning")
-            PlanningClass = getattr(planning_module, planning_config)
-
-            # Initialize planning instance
-            planning_instance = PlanningClass(model_config_name, sys_prompt)
-            return planning_instance
+            return load_planning_instance(planning_config, model_config_name, sys_prompt)
         except ImportError as e:
             logger.error(f"Failed to import module: {e}")
         except AttributeError as e:
             logger.error(f"Planning class {planning_config} not found: {e}")
-
         return None
 
     def load_memory(self, memory_config: AgentMemoryConfig, model_config_name: str) -> MemoryStrategy:
@@ -624,7 +627,7 @@ class AgentFactory:
                     profile_json = json.dumps(existing_profile, ensure_ascii=False, sort_keys=True)
                     existing_profiles_set.add(profile_json)
 
-                # 如果已经存在足够数量的profiles并且没有要求生成更多，直接返回空列表
+                # If enough profiles already exist and no more are requested, return empty list
                 if num_profiles <= 0:
                     logger.info(f"No new profiles needed for {agent_type}, {len(all_profiles_data)} already exist.")
                     return []
@@ -730,12 +733,7 @@ class AgentFactory:
     @staticmethod
     def _normalize_profile_rows_from_json(raw: Any) -> List[Dict[str, Any]]:
         """
-        将 profile JSON 根结构统一为「字典列表」。
-
-        支持：
-        - [ {...}, {...} ]  列表
-        - { "id1": {...}, "id2": {...} }  以用户/智能体 id 为键的对象映射（如 Twitter UserAgent.json）
-        - { "profiles": [ ... ] }  或其它单键包一层列表的常见写法
+        Normalize the root structure of profile JSON to a list of dictionaries.
         """
         if raw is None:
             return []
@@ -745,27 +743,27 @@ class AgentFactory:
                 if isinstance(item, dict):
                     rows.append(item)
                 else:
-                    logger.warning(f"跳过非字典的 profile 项: {type(item).__name__}")
+                    logger.warning(f"Skipping non-dictionary profile item: {type(item).__name__}")
             return rows
         if isinstance(raw, dict):
-            # 单键包裹列表，如 {"profiles": [...], "data": [...]}
+            # Single key wrapped list, like {"profiles": [...], "data": [...]}
             if len(raw) == 1:
                 sole_key = next(iter(raw))
                 sole_val = raw[sole_key]
                 if isinstance(sole_val, list):
                     return AgentFactory._normalize_profile_rows_from_json(sole_val)
-            # id -> profile 对象
+            # id -> profile object
             rows = []
             for key, value in raw.items():
                 if not isinstance(value, dict):
-                    logger.warning(f"跳过键 {key!r}：值不是字典 ({type(value).__name__})")
+                    logger.warning(f"Skipping key {key!r}: value is not a dictionary ({type(value).__name__})")
                     continue
                 row = dict(value)
                 if "id" not in row and key is not None:
                     row["id"] = key
                 rows.append(row)
             return rows
-        logger.error(f"无法解析 profile 文件根类型: {type(raw).__name__}")
+        logger.error(f"Unable to parse profile file root type: {type(raw).__name__}")
         return []
 
     @staticmethod

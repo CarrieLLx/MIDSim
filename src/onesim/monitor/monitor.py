@@ -37,18 +37,11 @@ from .utils import (
 
 
 class DataCollector:
-    """数据收集器，负责从环境和Agent收集所需数据"""
+    """Data collector, responsible for collecting required data from environment and agents"""
     
     async def collect_env_data(self, env: Any, variables: List[VariableSpec]) -> Dict:
         """
-        从环境中收集指定变量 (using var.path and env.get_data)
-        
-        Args:
-            env: 环境对象 (assuming env has a get_data method)
-            variables: 变量规范列表
-            
-        Returns:
-            变量名到值的映射
+        Collect specified variables from environment (using var.path and env.get_data)
         """
         result = {}
         if not hasattr(env, 'get_data') or not callable(env.get_data):
@@ -71,15 +64,7 @@ class DataCollector:
         
     async def collect_agent_data(self, env: Any, agent_type: str, variables: List[VariableSpec]) -> Dict:
         """
-        从特定类型的所有Agent收集数据 (using env.get_agent_data_by_type)
-        
-        Args:
-            env: 环境对象 (must have get_agent_data_by_type method)
-            agent_type: Agent类型
-            variables: 变量规范列表
-            
-        Returns:
-            变量名到值的映射，对于Agent变量，值是列表
+        Collect data from all agents of a specific type (using env.get_agent_data_by_type)
         """
         result = defaultdict(list)
         
@@ -128,18 +113,11 @@ class DataCollector:
     
     async def collect_for_metric(self, env: Any, metric_def: MetricDefinition) -> Dict:
         """
-        收集特定指标所需的所有数据
-        
-        Args:
-            env: 环境对象
-            metric_def: 指标定义
-            
-        Returns:
-            变量名到值的映射
+        Collect all data required for a specific metric
         """
         result = {}
         
-        # 按变量来源分组
+        # Group variables by source type
         env_vars = []
         agent_vars_by_type = defaultdict(list)
         
@@ -149,12 +127,12 @@ class DataCollector:
             elif var.source_type == "agent" and var.agent_type:
                 agent_vars_by_type[var.agent_type].append(var)
         
-        # 收集环境变量
+        # Collect environment variables
         if env_vars:
             env_data = await self.collect_env_data(env, env_vars)
             result.update(env_data)
         
-        # 收集每种类型的Agent变量
+        # Collect variables for each agent type
         for agent_type, vars_list in agent_vars_by_type.items():
             agent_data = await self.collect_agent_data(env, agent_type, vars_list)
             result.update(agent_data)
@@ -163,21 +141,14 @@ class DataCollector:
 
 
 class MetricProcessor:
-    """指标处理器，执行计算并格式化结果"""
+    """Metric processor, responsible for calculating and formatting results"""
     
     def calculate(self, metric_def: MetricDefinition, data: Dict) -> Any:
         """
-        执行指标计算
-        
-        Args:
-            metric_def: 指标定义
-            data: 所需的数据
-            
-        Returns:
-            计算结果
+        Execute metric calculation
         """
         try:
-            # 检查是否所有必需的变量都有值
+            # Check if all required variables have values
             missing_vars = []
             for var in metric_def.variables:
                 # Also check for None if required, as None might break calculations
@@ -185,27 +156,19 @@ class MetricProcessor:
                     missing_vars.append(var.name)
                     
             if missing_vars:
-                logger.warning(f"指标 {metric_def.name} 缺少必要变量或其值为None: {', '.join(missing_vars)}. Returning None.")
+                logger.warning(f"Metric {metric_def.name} is missing required variables or their values are None: {', '.join(missing_vars)}. Returning None.")
                 return None # Calculation function should handle None input if possible
                 
-            # 执行计算函数
+            # Execute calculation function
             result = metric_def.calculation_function(data)
             return result
         except Exception as e:
-            logger.error(f"计算指标 {metric_def.name} 时发生错误: {str(e)}", exc_info=True)
+            logger.error(f"Error calculating metric {metric_def.name}: {str(e)}", exc_info=True)
             return None # Return None on calculation error
             
     def format_for_visualization(self, raw_result: Any, metric_def: MetricDefinition, ts_data: Optional[TimeSeriesMetricData] = None) -> Dict:
         """
-        将原始结果转换为可视化格式
-        
-        Args:
-            raw_result: 原始计算结果
-            metric_def: 指标定义
-            ts_data: 时间序列数据 (用于折线图)
-            
-        Returns:
-            适用于ECharts的数据结构
+        Convert raw result to visualization format
         """
         if raw_result is None:
              logger.debug(f"Raw result for {metric_def.name} is None, returning empty viz data.")
@@ -214,7 +177,7 @@ class MetricProcessor:
         viz_type = metric_def.visualization_type
         
         if viz_type == "line":
-            # 折线图使用时间序列数据 (ts_data handles formatting)
+            # Line chart uses time series data (ts_data handles formatting)
             if ts_data is None:
                 logger.warning(f"TimeSeries data not provided for line chart: {metric_def.name}")
                 return {"xAxis": [], "series": []} # Default empty structure
@@ -225,13 +188,13 @@ class MetricProcessor:
                 return {"xAxis": [], "series": []}
             
         elif viz_type == "bar":
-            # 柱状图处理 - Expects dict {category: value} or list [(cat, val), ...]
+            # Bar chart processing - Expects dict {category: value} or list [(cat, val), ...]
             try:
                 if isinstance(raw_result, dict):
                     categories = list(raw_result.keys())
                     values = list(raw_result.values())
                 elif isinstance(raw_result, (list, tuple)) and all(isinstance(x, (list, tuple)) and len(x) == 2 for x in raw_result):
-                    # 处理 [(key, value), ...] 结构
+                    # Process [(key, value), ...] structure
                     categories = [item[0] for item in raw_result]
                     values = [item[1] for item in raw_result]
                 elif isinstance(raw_result, (int, float)): # Handle single value case for bar? Maybe should be pie?
@@ -239,7 +202,7 @@ class MetricProcessor:
                      categories = [metric_def.name] # Use metric name as category
                      values = [raw_result]
                 else:
-                    logger.error(f"无法将结果格式化为柱状图 (不支持的类型 {type(raw_result)}): {metric_def.name}")
+                    logger.error(f"Cannot format result to bar chart (unsupported type {type(raw_result)}): {metric_def.name}")
                     return {"xAxis": [], "series": []}
                     
                 return {"xAxis": categories, "series": values}
@@ -248,8 +211,8 @@ class MetricProcessor:
                  return {"xAxis": [], "series": []}
             
         elif viz_type == "pie":
-            # 饼图处理 - Expects dict {category: value} or list [(cat, val), ...]
-            # 饼图：若结果为 {"total_comments", "counts", "ratios"}，用 counts 画扇区
+            # Pie chart processing - Expects dict {category: value} or list [(cat, val), ...]
+            # Pie chart: If result is {"total_comments", "counts", "ratios"}, use counts to draw sectors
             try:
                 series_data = []
                 if isinstance(raw_result, dict):
@@ -266,10 +229,10 @@ class MetricProcessor:
                         if isinstance(v, (int, float)) and v >= 0
                     ]
                 elif isinstance(raw_result, (list, tuple)) and all(isinstance(x, (list, tuple)) and len(x) == 2 for x in raw_result):
-                    # 处理 [(key, value), ...] 结构
+                    # Process [(key, value), ...] structure
                     series_data = [{"name": item[0], "value": item[1]} for item in raw_result if isinstance(item[1], (int, float)) and item[1] >= 0]
                 else:
-                    logger.error(f"无法将结果格式化为饼图 (不支持的类型 {type(raw_result)}): {metric_def.name}")
+                    logger.error(f"Cannot format result to pie chart (unsupported type {type(raw_result)}): {metric_def.name}")
                     return {"series": []}
                 
                 # Filter out zero/negative values as they don't make sense in pie charts
@@ -286,49 +249,46 @@ class MetricProcessor:
  
 
 class MonitorScheduler:
-    """指标更新调度器"""
+    """Metric update scheduler"""
     
     def __init__(self):
-        self.tasks = {}  # 存储每个指标的调度任务 {metric_name: task}
-        self.lock = asyncio.Lock()  # 使用asyncio.Lock而不是threading.Lock
+        self.tasks = {}  # Store tasks for each metric {metric_name: task}
+        self.lock = asyncio.Lock()  # Use asyncio.Lock instead of threading.Lock
         
     async def schedule_metric(self, metric_name: str, env: Any, monitor_manager: 'MonitorManager', frequency: int):
-        """异步调度指标定期更新"""
-        # 如果该指标已在调度中，先停止
+        """Asynchronous scheduling of metric periodic updates"""
+        # If the metric is already scheduled, stop it first
         if metric_name in self.tasks:
             await self.pause_metric(metric_name)
         
-        # 创建异步任务
+        # Create asynchronous task
         task = asyncio.create_task(
             self._update_loop(metric_name, env, monitor_manager, frequency)
         )
         
-        # 保存任务
+        # Save task
         async with self.lock:
             self.tasks[metric_name] = task
         
-        logger.debug(f"指标 {metric_name} 调度已启动，更新频率: {frequency}秒")
+        logger.debug(f"Metric {metric_name} scheduling started, update frequency: {frequency} seconds")
     
     async def _update_loop(self, metric_name: str, env: Any, monitor_manager: 'MonitorManager', frequency: int):
-        """异步指标更新循环"""
+        """Asynchronous metric update loop"""
         try:
             while True:
-                # 执行更新
+                # Execute update
                 await monitor_manager.update_metric(metric_name, env)
                 
-                # 异步等待
+                # Asynchronous wait
                 await asyncio.sleep(frequency)
         except asyncio.CancelledError:
-            logger.debug(f"指标 {metric_name} 更新任务已取消")
+            logger.debug(f"Metric {metric_name} update task cancelled")
         except Exception as e:
-            logger.error(f"指标 {metric_name} 更新循环出错: {e}")
+            logger.error(f"Metric {metric_name} update loop error: {e}")
     
     async def pause_metric(self, metric_name: str):
         """
-        暂停指标更新
-        
-        Args:
-            metric_name: 指标名称
+        Pause metric update
         """
         async with self.lock:
             if metric_name in self.tasks:
@@ -340,17 +300,11 @@ class MonitorScheduler:
                 except asyncio.CancelledError:
                     pass # Expected
                 self.tasks.pop(metric_name, None)
-                logger.debug(f"指标 {metric_name} 调度已暂停")
+                logger.debug(f"Metric {metric_name} scheduling paused")
     
     async def update_interval(self, metric_name: str, env: Any, monitor_manager: 'MonitorManager', new_frequency: int):
         """
-        更新指标的更新频率
-        
-        Args:
-            metric_name: 指标名称
-            env: 环境对象
-            monitor_manager: 监控管理器
-            frequency: 更新频率(秒)，如果不提供则使用指标定义中的频率或全局配置
+        Update metric update frequency
         """
         # Fetch the global update interval from MonitorConfig
         global_update_interval = get_config().monitor_config.update_interval
@@ -368,104 +322,89 @@ class MonitorScheduler:
             effective_frequency = new_frequency
 
         await self.schedule_metric(metric_name, env, monitor_manager, effective_frequency)
-        logger.debug(f"指标 {metric_name} 调度已恢复，更新频率: {effective_frequency}秒")
+        logger.debug(f"Metric {metric_name} scheduling resumed, update frequency: {effective_frequency} seconds")
     
     async def resume_metric(self, metric_name: str, env: Any, monitor_manager: 'MonitorManager', frequency: int = None):
         """
-        恢复指标更新
-        
-        Args:
-            metric_name: 指标名称
-            env: 环境对象
-            monitor_manager: 监控管理器
-            frequency: 更新频率(秒)，如果不提供则使用指标定义中的频率
+        Resume metric update
         """
         if frequency is None:
             frequency = monitor_manager.metrics[metric_name].update_interval
         await self.schedule_metric(metric_name, env, monitor_manager, frequency)
-        logger.debug(f"指标 {metric_name} 调度已恢复")
+        logger.debug(f"Metric {metric_name} scheduling resumed")
     
     async def stop_all(self):
-        """停止所有指标更新"""
+        """Stop all metric updates"""
         for metric_name in list(self.tasks.keys()):
             await self.pause_metric(metric_name)
 
 
 class MonitorManager:
-    """监控系统总控制器"""
+    """Monitor system total controller"""
     
     def __init__(self):
-        # 存储所有注册的指标定义
+        # Store all registered metric definitions
         self.metrics: Dict[str, MetricDefinition] = {}
         
-        # 存储指标计算结果
+        # Store metric calculation results
         self.results: Dict[str, MetricResult] = {}
         
-        # 存储时间序列数据(用于折线图)
+        # Store time series data(for line chart)
         self.time_series_data: Dict[str, TimeSeriesMetricData] = {}
         
-        # 存储类别数据(用于柱状图和饼图)
+        # Store category data(for bar chart and pie chart)
         self.category_data: Dict[str, CategoryMetricData] = {}
         
-        # 数据收集器和处理器
+        # Data collector and processor
         self.collector = DataCollector()
         self.processor = MetricProcessor()
         
-        # 调度器
+        # Scheduler
         self.scheduler = MonitorScheduler()
         
-        # 线程安全锁
-        self.lock = asyncio.Lock()  # 使用asyncio.Lock而不是threading.Lock
+        # Thread safe lock
+        self.lock = asyncio.Lock() 
         
-        # 环境对象引用
+        # Environment object reference
         self.env = None
         
-        # 监控状态
+        # Monitoring status
         self.is_monitoring = False
         self.metric_index = 0
         
     def setup(self, env: Any):
         """
-        设置监控系统，关联环境对象
-        
-        Args:
-            env: 环境对象
+        Setup monitor system, associate environment object
         """
         self.env = env
-        logger.info(f"监控系统已关联环境对象")
+        logger.info(f"Monitor system associated with environment object")
         return self
     
     @staticmethod
     async def setup_metrics(env: Any):
         """
-        在环境中设置和启动监控系统
-        
-        Args:
-            env: 环境对象
-
-        Returns:
-            MonitorManager实例
+        Setup and start monitor system in environment
         """
         from onesim.config import get_component_registry
         
-        # 尝试从注册表获取监控管理器
+        # Try to get monitor manager from registry
         registry = get_component_registry()
         monitor_manager = registry.get_instance("monitor")
         
-        # 如果监控管理器不存在，创建一个新的
+        # If monitor manager does not exist, create a new one
         if not monitor_manager:
-            logger.warning("监控组件未初始化，正在创建新的监控管理器")
+            logger.warning("Monitor component not initialized, creating new monitor manager")
             monitor_manager = MonitorManager()
             registry.register("monitor", monitor_manager)
         
-        # 设置环境
+        # Setup environment
         monitor_manager.setup(env)
 
       
             
         env_path = env.env_path
         try:
-            # 导入指标计算模块
+            # Import metrics calculation module
             metrics_path = os.path.join(env_path, "code", "metrics")
             metrics_module = None
             if os.path.exists(metrics_path):
@@ -479,9 +418,9 @@ class MonitorManager:
                     spec = importlib.util.spec_from_file_location("metrics_module", module_path)
                     metrics_module = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(metrics_module)
-                    logger.info(f"成功导入指标计算模块: {module_path}")
+                    logger.info(f"Successfully imported metrics calculation module: {module_path}")
             
-            # 加载scene_info.json中的指标定义
+            # Load metrics definitions from scene_info.json
             scene_info_path = os.path.join(env_path, "scene_info.json")
             if os.path.exists(scene_info_path):
                 import json
@@ -495,7 +434,7 @@ class MonitorManager:
                     metrics_loaded = 0
                     for metric_def in scene_info["metrics"]:
                         try:
-                            # 创建变量规格
+                            # Create variable specifications
                             variables = []
                             for var in metric_def.get("variables", []):
                                 variables.append(VariableSpec(
@@ -506,12 +445,12 @@ class MonitorManager:
                                     required=var.get("required", True)
                                 ))
                             
-                            # 获取函数名
+                            # Get function name
                             function_name = metric_def.get("function_name") or metric_def.get("id")
                             if not function_name:
                                 function_name = re.sub(r'[^\w\-_]', '_', metric_def["name"])
                             
-                            # 创建指标定义
+                            # Create metric definition
                             metric_definition = MetricDefinition(
                                 name=metric_def["name"],
                                 description=metric_def["description"],
@@ -521,143 +460,122 @@ class MonitorManager:
                                 calculation_function=function_name
                             )
                             
-                            # 尝试从metrics模块查找计算函数
+                            # Try to find calculation function in metrics module
                             calculation_function = None
                             if metrics_module:
-                                # 首先尝试通过get_metric_function获取
+                                # First try to get calculation function through get_metric_function
                                 if hasattr(metrics_module, 'get_metric_function'):
                                     calculation_function = metrics_module.get_metric_function(function_name)
                                 
-                                # 如果没有找到，直接尝试获取同名函数
+                                # If not found, try to get function with the same name
                                 if calculation_function is None and hasattr(metrics_module, function_name):
                                     calculation_function = getattr(metrics_module, function_name)
                             
                             if calculation_function:
-                                # 注册指标
+                                # Register metric
                                 monitor_manager.register_metric(
                                     metric_definition, 
                                     calculation_function=calculation_function
                                 )
                                 metrics_loaded += 1
                             else:
-                                logger.warning(f"未找到指标 '{metric_def['name']}' 的计算函数 '{function_name}'")
+                                logger.warning(f"Calculation function for metric '{metric_def['name']}' not found: '{function_name}'")
                         except Exception as e:
-                            logger.error(f"加载指标 '{metric_def.get('name', 'unknown')}' 失败: {e}")
+                            logger.error(f"Failed to load metric '{metric_def.get('name', 'unknown')}': {e}")
                     
-                    logger.info(f"从scene_info.json中加载了 {metrics_loaded} 个指标")
+                    logger.info(f"Loaded {metrics_loaded} metrics from scene_info.json")
             
         except Exception as e:
-            logger.error(f"加载指标失败: {e}")
+            logger.error(f"Failed to load metrics: {e}")
 
-        # 等环境 load_initial_data 完成后再启动指标轮询，避免首轮 content_pool 等为 None
+        # Wait for environment load_initial_data to complete before starting metric polling to avoid None values in the first round
         wait_fn = getattr(env, "wait_until_initialized", None)
         if callable(wait_fn):
             await wait_fn()
-            logger.info("环境异步初始化已完成，启动指标监控")
+            logger.info("Environment asynchronous initialization completed, starting metric monitoring")
         
-        # 启动监控
+        # Start monitoring
         await monitor_manager.start_all_metrics()
         
         return monitor_manager
         
     def register_metric(self, metric_def: MetricDefinition, calculation_function: Callable = None):
         """
-        注册新指标
-        
-        Args:
-            metric_def: 指标定义
-            calculation_function: 计算函数，如果提供则覆盖metric_def中的函数
+        Register new metric
         """
-        # 检查指标名是否已存在
+        # Check if metric name already exists
         if metric_def.name in self.metrics:
-            logger.warning(f"指标 {metric_def.name} 已存在，将被覆盖")
+            logger.warning(f"Metric {metric_def.name} already exists, will be overridden")
         
-        # 如果提供了计算函数，覆盖指标定义中的函数
+        # If calculation function is provided, override the function in metric_def
         if calculation_function:
             metric_def.calculation_function = calculation_function
             
-        # 存储指标定义
+        # Store metric definition
         self.metrics[metric_def.name] = metric_def
         
-        # 初始化数据存储
+        # Initialize data storage
         if metric_def.visualization_type == "line":
             self.time_series_data[metric_def.name] = TimeSeriesMetricData()
         else:  # "bar" or "pie"
             self.category_data[metric_def.name] = CategoryMetricData()
             
-        logger.info(f"指标 {metric_def.name} 已注册")
+        logger.info(f"Metric {metric_def.name} registered")
     
     async def set_update_interval(self, metric_name: str, update_interval: int):
         """
-        设置指标的更新频率
-        
-        Args:
-            metric_name: 指标名称
-            update_interval: 更新频率(秒)
+        Set metric update frequency
         """
         async with self.lock:
             if metric_name not in self.metrics:
-                logger.error(f"无法设置更新频率：指标 {metric_name} 未定义")
+                logger.error(f"Cannot set update frequency: metric {metric_name} not defined")
                 return False
             
-            # 更新指标定义中的更新频率
+            # Update update frequency in metric definition
             self.metrics[metric_name].update_interval = update_interval
             
-            # 如果指标正在监控中，更新调度频率
+            # If metric is being monitored, update scheduling frequency
             if self.is_monitoring and hasattr(self, 'env') and self.env:
                 await self.scheduler.update_interval(metric_name, self.env, self, update_interval)
-                logger.info(f"指标 {metric_name} 更新频率已设置为 {update_interval}秒")
+                logger.info(f"Metric {metric_name} update frequency set to {update_interval} seconds")
             return True
         
     async def unregister_metric(self, metric_name: str):
         """
-        注销指标
-        
-        Args:
-            metric_name: 指标名称
+        Unregister metric
         """
         async with self.lock:
-            # 先停止调度
+            # Stop scheduling
             await self.scheduler.pause_metric(metric_name)
             
-            # 移除指标定义和相关数据
+            # Remove metric definition and related data
             self.metrics.pop(metric_name, None)
             self.results.pop(metric_name, None)
             self.time_series_data.pop(metric_name, None)
             self.category_data.pop(metric_name, None)
             
-            logger.info(f"指标 {metric_name} 已注销")
+            logger.info(f"Metric {metric_name} unregistered")
             
     def get_metric_definition(self, metric_name: str) -> Optional[MetricDefinition]:
         """
-        获取指标定义
-        
-        Args:
-            metric_name: 指标名称
-            
-        Returns:
-            指标定义，如果不存在则返回None
+        Get metric definition
         """
         return self.metrics.get(metric_name)
             
     async def start_all_metrics(self, env: Any = None):
         """
-        启动所有指标的监控
-        
-        Args:
-            env: 环境对象，如果不提供则使用已设置的环境
+        Start monitoring all metrics
         """
         if env:
             self.env = env
-            
         if not self.env:
-            logger.error("无法启动监控：未设置环境对象")
+            logger.error("Cannot start monitoring: environment object not set")
             return
         
         # Fetch the global update interval from MonitorConfig
         global_update_interval = get_config().monitor_config.update_interval
         if global_update_interval is not None:
-            logger.info(f"使用全局监控更新间隔: {global_update_interval}秒")
+            logger.info(f"Using global monitor update interval: {global_update_interval} seconds")
         
         async with self.lock:
             for metric_name, metric_def in self.metrics.items():
@@ -671,44 +589,40 @@ class MonitorManager:
                     frequency # Use the determined frequency
                 )
             self.is_monitoring = True
-            logger.info(f"已启动 {len(self.metrics)} 个指标的监控")
+            logger.info(f"Started monitoring {len(self.metrics)} metrics")
                 
     async def stop_all_metrics(self):
-        """停止所有指标的监控"""
+        """Stop monitoring all metrics"""
         await self.scheduler.stop_all()
         self.is_monitoring = False
-        logger.info("已停止所有指标的监控")
+        logger.info("Stopped monitoring all metrics")
             
     async def update_metric(self, metric_name: str, env: Any = None):
         """
-        异步更新指定指标的值
-        
-        Args:
-            metric_name: 指标名称
-            env: 环境对象，如果不提供则使用已设置的环境
+        Asynchronous update the value of the specified metric
         """
         if not env and not self.env:
-            logger.error(f"无法更新指标 {metric_name}：未提供环境对象")
+            logger.error(f"Cannot update metric {metric_name}: environment object not provided")
             return
             
         env = env or self.env
-        logger.info(f"更新指标 {metric_name}")
+        logger.info(f"Updating metric {metric_name}")
         async with self.lock:
-            # 获取指标定义
+            # Get metric definition
             metric_def = self.metrics.get(metric_name)
             if not metric_def:
-                logger.error(f"无法更新指标 {metric_name}：指标未定义")
+                logger.error(f"Cannot update metric {metric_name}: metric not defined")
                 return
                 
-            # 收集数据
+            # Collect data
             data = await self.collector.collect_for_metric(env, metric_def)
-            # 计算指标值
+            # Calculate metric value
             raw_result = self.processor.calculate(metric_def, data)
             logger.info(summarize_metric_result_for_log(raw_result))
             if raw_result is None:
                 return
 
-            # 发帖用户行为 / 根帖作者自转发：每次指标更新追加一行 JSONL（含 env.current_step）
+            # Posting user behavior / Root author self-repost: append one JSONL line for each metric update (contains env.current_step)
             if metric_name in (
                 "Posting User Diffusion Behavior",
                 "Posting User Comment Behavior",
@@ -719,19 +633,19 @@ class MonitorManager:
             ):
                 self._append_root_author_self_repost_snapshot(env, raw_result)
             
-            # 根据可视化类型处理数据
+            # Process data based on visualization type
             if metric_def.visualization_type == "line":
-                # 规范化折线图数据
+                # Normalize line chart data
                 normalized_result = self._normalize_line_data(raw_result)
-                # 时间序列数据(折线图)
+                # Time series data (line chart)
                 ts_data = self.time_series_data[metric_name]
                 ts_data.add_point(normalized_result)
                 viz_data = ts_data.get_echarts_data()
             else:
-                # 类别数据(柱状图或饼图)
+                # Category data (bar chart or pie chart)
                 viz_data = self.processor.format_for_visualization(raw_result, metric_def)
                 
-                # 更新类别数据存储
+                # Update category data storage
                 cat_data = self.category_data[metric_name]
                 if metric_def.visualization_type == "bar":
                     cat_data.update_data(viz_data["xAxis"], viz_data["series"])
@@ -740,7 +654,7 @@ class MonitorManager:
                     values = [item["value"] for item in viz_data["series"]]
                     cat_data.update_data(categories, values)
             
-            # 保存结果
+            # Save result
             result = MetricResult(
                 metric_name=metric_name,
                 raw_data=raw_result,
@@ -748,13 +662,13 @@ class MonitorManager:
             )
             self.results[metric_name] = result
             
-            logger.debug(f"指标 {metric_name} 已更新")
+            logger.debug(f"Metric {metric_name} updated")
 
     async def refresh_all_metrics(self, env: Any = None) -> None:
-        """在导出前依次更新所有已注册指标，使 results 与当前 env.data 一致（如刚写入 user_recommended_note_ids_by_channel）。"""
+        """Update all registered metrics before exporting, ensuring results are consistent with current env.data (e.g. user_recommended_note_ids_by_channel)"""
         env = env or self.env
         if not env:
-            logger.warning("refresh_all_metrics: 未设置环境对象")
+            logger.warning("refresh_all_metrics: environment object not set")
             return
         if not self.metrics:
             return
@@ -789,13 +703,13 @@ class MonitorManager:
             logger.warning(f"Failed to write posting_user_diffusion_behavior snapshot: {e}")
 
     def _append_root_author_self_repost_snapshot(self, env: Any, raw_result: Dict[str, Any]) -> None:
-        """根作者在自己链路上的各跳自转发，追加到 root_author_self_repost_behavior/snapshots.jsonl。"""
+        """Append root author self-repost behavior on each hop to root_author_self_repost_behavior/snapshots.jsonl."""
         users = raw_result.get("users")
         if not isinstance(users, list):
             return
         mdir = getattr(env, "metrics_save_dir", None) if env is not None else None
         if not mdir:
-            logger.debug("metrics_save_dir 未设置，跳过 root_author_self_repost 快照")
+            logger.debug("metrics_save_dir not set, skipping root_author_self_repost snapshot")
             return
         sub = os.path.join(mdir, "root_author_self_repost_behavior")
         try:
@@ -810,11 +724,11 @@ class MonitorManager:
             with open(path, "a", encoding="utf-8") as af:
                 af.write(json.dumps(record, ensure_ascii=False) + "\n")
         except Exception as e:
-            logger.warning(f"写入 root_author_self_repost 快照失败: {e}")
+            logger.warning(f"Failed to write root_author_self_repost snapshot: {e}")
 
     @staticmethod
     def _write_root_author_self_repost_csv(path: str, raw: Dict[str, Any]) -> None:
-        """根作者自转发行为表：user_id, nickname, root_post_count, repost_on_others_count, self_repost_hop_1, ..."""
+        """Root author self-repost behavior table: user_id, nickname, root_post_count, repost_on_others_count, self_repost_hop_1, ..."""
         users = raw.get("users")
         if not isinstance(users, list):
             users = []
@@ -853,11 +767,11 @@ class MonitorManager:
         fieldnames = [
             "user_id",
             "nickname",
-            "发帖数",
-            "本帖一跳评论数",
-            "本帖回复评论数",
-            "他帖评论数",
-            "发表评论总数",
+            "Post count",
+            "One-hop comment count",
+            "Reply comment count",
+            "Other post comment count",
+            "Total comment count",
         ]
         with open(path, "w", encoding="utf-8-sig", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
@@ -869,34 +783,19 @@ class MonitorManager:
 
     def get_result(self, metric_name: str) -> Optional[MetricResult]:
         """
-        获取指标结果
-        
-        Args:
-            metric_name: 指标名称
-            
-        Returns:
-            指标结果，如果不存在则返回None
+        Get metric result
         """
         return self.results.get(metric_name)
         
     def get_all_results(self) -> Dict[str, MetricResult]:
         """
-        获取所有指标结果
-        
-        Returns:
-            指标名称到结果的映射
+        Get all metric results
         """
         return self.results.copy()
         
     def get_results_by_type(self, visualization_type: str) -> Dict[str, MetricResult]:
         """
-        获取特定可视化类型的所有指标结果
-        
-        Args:
-            visualization_type: 可视化类型 ("bar", "pie", "line")
-            
-        Returns:
-            指标名称到结果的映射
+        Get all metric results by visualization type
         """
         results = {}
         for name, metric_def in self.metrics.items():
@@ -908,14 +807,7 @@ class MonitorManager:
         
     def get_time_series_data(self, metric_name: str, last_n: Optional[int] = None) -> Dict:
         """
-        获取指标的时间序列数据
-        
-        Args:
-            metric_name: 指标名称
-            last_n: 如果指定，获取最近n个数据点
-            
-        Returns:
-            格式化的时间序列数据
+        Get time series data of the specified metric
         """
         ts_data = self.time_series_data.get(metric_name)
         if not ts_data:
@@ -927,14 +819,7 @@ class MonitorManager:
     
     def get_metric_data(self, metric_name: str, format: str = "echarts") -> Dict:
         """
-        获取指标数据，支持多种输出格式
-        
-        Args:
-            metric_name: 指标名称
-            format: 输出格式，可选 "echarts" 或 "matplotlib"
-        
-        Returns:
-            适合指定格式的数据结构
+        Get metric data, support multiple output formats
         """
         metric_def = self.metrics.get(metric_name)
         if not metric_def:
@@ -959,7 +844,7 @@ class MonitorManager:
             return cat_data.get_data(format=format, viz_type=viz_type)
     
     def get_metrics_for_api(self) -> Dict[str, Any]:
-        """返回适合API传输的所有指标数据, data字段为完整的ECharts Option"""
+        """Return all metric data suitable for API transmission, data field is the complete ECharts Option"""
         metrics_data = {}
         for metric_name, metric_def in self.metrics.items():
             result = self.get_result(metric_name)
@@ -1071,14 +956,7 @@ class MonitorManager:
         
     def _format_for_api_display(self, viz_data: Dict, viz_type: str) -> Dict:
         """
-        将可视化数据格式化为适合API传输的格式
-        
-        Args:
-            viz_data: 可视化数据
-            viz_type: 可视化类型
-            
-        Returns:
-            格式化后的数据
+        Format visualization data for API transmission
         """
         if not viz_data:
             if viz_type == "line":
@@ -1089,13 +967,13 @@ class MonitorManager:
                 return {"series": []}
             return {}
             
-        # 对于折线图，确保series是数组格式
+        # For line chart, ensure series is array format
         if viz_type == "line" and "series" in viz_data:
-            # 已经是数组格式，直接返回
+            # Already array format, return directly
             if isinstance(viz_data["series"], list):
                 return viz_data
                 
-            # 将字典格式转换为数组格式
+            # Convert dictionary format to array format
             if isinstance(viz_data["series"], dict):
                 series_array = []
                 for name, values in viz_data["series"].items():
@@ -1109,9 +987,9 @@ class MonitorManager:
                     "series": series_array
                 }
         
-        # 对于条形图，标准化格式
+        # For bar chart, standardize format
         elif viz_type == "bar" and "xAxis" in viz_data and "series" in viz_data:
-            # 如果series是字典格式，转换为适合前端的格式
+            # If series is dictionary format, convert to format suitable for frontend
             if isinstance(viz_data["series"], dict):
                 series_array = []
                 for name, values in viz_data["series"].items():
@@ -1124,7 +1002,7 @@ class MonitorManager:
                     "xAxis": viz_data["xAxis"],
                     "series": series_array
                 }
-            # 如果series是数组但不是对象数组，转换为对象数组
+            # If series is array but not object array, convert to object array
             elif isinstance(viz_data["series"], list) and (not viz_data["series"] or not isinstance(viz_data["series"][0], dict)):
                 return {
                     "xAxis": viz_data["xAxis"],
@@ -1135,23 +1013,18 @@ class MonitorManager:
                     }]
                 }
                 
-        # 对于饼图，标准化格式
+        # For pie chart, standardize format
         elif viz_type == "pie" and "series" in viz_data:
-            # 如果series已经是正确格式，直接返回
+            # If series is already correct format, return directly
             if isinstance(viz_data["series"], list) and (not viz_data["series"] or isinstance(viz_data["series"][0], dict)):
                 return viz_data
                 
-        # 默认返回原始数据
+        # Default return raw data
         return viz_data
 
     def plot_metrics(self, metrics_data: Dict[str, Any], save_dir: str, round_num: Optional[int] = None) -> None:
         """
         Plot metrics data and save as images.
-        
-        Args:
-            metrics_data (Dict[str, Any]): Dictionary containing metrics data
-            save_dir (str): Directory to save the plots
-            round_num (Optional[int]): Current step number if applicable
         """
         # Create save directory if it doesn't exist
         os.makedirs(save_dir, exist_ok=True)
@@ -1189,13 +1062,6 @@ class MonitorManager:
     def collect_metrics(self, env_data: Dict[str, Any], round_num: Optional[int] = None) -> Dict[str, Any]:
         """
         Collect metrics from environment data.
-        
-        Args:
-            env_data (Dict[str, Any]): Environment data dictionary
-            round_num (Optional[int]): Current step number if applicable
-            
-        Returns:
-            Dict[str, Any]: Dictionary containing collected metrics
         """
         metrics = {}
         
@@ -1249,8 +1115,8 @@ class MonitorManager:
         metric_def: Any,
     ):
         """
-        上图：按评论真实时间排序的累计评论量（折线 + 标记；点极多时稀疏采样标记）。
-        下图：各时间桶内评论条数柱状图；柱宽等于桶宽、align=edge，相邻柱左右相接无隙。
+        Top: cumulative comment count sorted by real-time comment timestamp (line chart + markers; sparse sampling of many points).
+        Bottom: bar chart of comment count per time bucket; bar width equals bucket width, align=edge, adjacent bars touch each other without gaps.
         """
         times_ms: List[float] = list(raw.get("timestamps_ms") or [])
         edges: List[float] = list(raw.get("hist_bin_edges_ms") or [])
@@ -1264,7 +1130,7 @@ class MonitorManager:
             return datetime.fromtimestamp(ms / 1000.0, tz=timezone.utc)
 
         def _date_fmt_for_span_ms(span_ms: float) -> str:
-            """横轴格式：时间跨度很小时用秒，否则只到分钟会像『全在同一分钟』。"""
+            """X-axis format: use seconds for very small time spans, otherwise only to minutes like 'all in the same minute'."""
             if span_ms <= 0:
                 return "%Y-%m-%d %H:%M:%S"
             if span_ms < 3_600_000:
@@ -1422,7 +1288,7 @@ class MonitorManager:
         round_info: str,
         timestamp: str,
     ) -> None:
-        """按用户评论条数、按帖子评论条数的频率（百分比）各导出一张点线图。"""
+        """Export one line chart for each of the frequency (percentage) of comment counts by user and note."""
         base = f"{metric_name}{round_info}_{timestamp}"
 
         def _save_one(
@@ -1714,7 +1580,7 @@ class MonitorManager:
         metric_name: str,
         metric_def: Any,
     ):
-        """1-hop vs 多条（有 parent）评论条数：按监控采样序双子图折线（与 Comment Generation 同为按步采样）。"""
+        """1-hop vs multiple (with parent) comment count: two line charts by monitoring sampling order (same as Comment Generation by step sampling)."""
         series = data.get("series") or {}
         timestamps = data.get("xAxis") or []
         top_vals = list(series.get("top_level_comments") or [])

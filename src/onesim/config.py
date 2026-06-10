@@ -202,6 +202,7 @@ class AgentConfig:
     planning: Optional[str] = None
     memory: AgentMemoryConfig = field(default_factory=AgentMemoryConfig)
     general_agent_locale: Optional[str] = None
+    backbone_profile: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert instance to a dictionary for JSON serialization"""
@@ -210,6 +211,7 @@ class AgentConfig:
             "planning": self.planning,
             "memory": self.memory.to_dict(),
             "general_agent_locale": self.general_agent_locale,
+            "backbone_profile": self.backbone_profile,
         }
 
 @dataclass_json
@@ -352,6 +354,8 @@ class OneSimConfig:
                 agent_config = loaded_config["agent"]
                 if "general_agent_locale" in agent_config:
                     self.agent_config.general_agent_locale = agent_config["general_agent_locale"]
+                if "backbone_profile" in agent_config:
+                    self.agent_config.backbone_profile = agent_config["backbone_profile"]
                 # Handle agent profile configuration
                 if "profile" in agent_config:
                     self.agent_config.profile = agent_config["profile"]

@@ -52,22 +52,6 @@ class AgentBase:
                 config_name=model_config_name,
             )
 
-        # ------------------------------------------------------------------
-        # [做法A · 决策模型 + 风格模型] 修改点 1/6 — AgentBase
-        #
-        # 1) 在 __init__ 参数中增加: style_model_config_name: Optional[str] = None
-        # 2) 在 model_config_name 分支之后补充:
-        #        self.style_model = None
-        #        if style_model_config_name is not None:
-        #            self.style_model = model_manager.get_model(
-        #                config_name=style_model_config_name)
-        #    （若 model_config_name 为 None，需先保证 model_manager 已初始化）
-        # 3) __str__ 里可视需要序列化 style_model 的 config_name
-        #
-        # 说明: config/model_config.json 的 "chat" 数组里加第二项即可，无需新顶层分类；
-        #       style_model_config_name 填该项的 config_name（如 vllm-style-lora-9891）。
-        # ------------------------------------------------------------------
-
     @classmethod
     def generate_agent_id(cls) -> str:
         """Generate the agent_id of this agent instance"""

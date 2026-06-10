@@ -36,7 +36,7 @@ class ShortLongStrategy(MemoryStrategy):
             })
 
         if self.long_term_storage_name not in self._storage_map:
-            # 长期存储必须使用 embedding 模型配置名，不能用 chat 的 model_config_name
+            # Long-term storage must use embedding model configuration name, not chat model_config_name
             long_term_cfg = (config.get('storages') or {}).get(self.long_term_storage_name)
             if isinstance(long_term_cfg, dict) and long_term_cfg.get('model_config_name'):
                 embedding_config_name = long_term_cfg['model_config_name']
@@ -68,11 +68,11 @@ class ShortLongStrategy(MemoryStrategy):
         
         await self.execute('add', storage_name=self.short_term_storage_name, memory_item=memory_item)
         
-        # 更新累积重要性
+        # Update accumulated importance
         if 'importance' in memory_item.attributes:
             importance = memory_item.attributes.get('importance', 0)
         else:
-            # 如果尚未计算重要性，计算它
+            # If importance not calculated, calculate it
             importance_metric = self._metrics.get('importance')
             if importance_metric:
                 try:
@@ -86,7 +86,7 @@ class ShortLongStrategy(MemoryStrategy):
             
         self.cumulated_importance += importance
         
-        # 检查是否触发反思
+        # Check if triggering reflection
         if self.cumulated_importance > self.reflec_threshold:
             logger.info(f"Triggering reflection: accumulated importance {self.cumulated_importance} exceeds threshold {self.reflec_threshold}")
             await self.reflect()
@@ -107,14 +107,14 @@ class ShortLongStrategy(MemoryStrategy):
         long_memories = await self.execute('retrieve', storage_name=self.long_term_storage_name, query=query, top_k=top_k)
         memories.extend(long_memories)
         
-        # 获取每个metric的权重
+        # Get weight for each metric
         metric_weights = {name: metric_config.get('weight', 1.0) 
                          for name, metric_config in self.config.get('metrics', {}).items()}
         
         qstr = "" if query is None else str(query)
         query_preview = (qstr[:200] + "…") if len(qstr) > 200 else qstr
         logger.info(
-            f"[ShortLongStrategy.retrieve] 开始 score: count={len(memories)} top_k={top_k} "
+            f"[ShortLongStrategy.retrieve] Start score: count={len(memories)} top_k={top_k} "
             f"weights={metric_weights} query_preview={query_preview!r}"
         )
         memories = await self.score(memories, query, metric_weights)
@@ -123,7 +123,7 @@ class ShortLongStrategy(MemoryStrategy):
             for m in memories[: min(5, len(memories))]
         ]
         logger.info(
-            f"[ShortLongStrategy.retrieve] score 完成: count={len(memories)} sample_id_score={sample}"
+            f"[ShortLongStrategy.retrieve] Score completed: count={len(memories)} sample_id_score={sample}"
         )
         # Sort memories based on score
         sorted_memories = sorted(memories, key=lambda m: m.attributes.get('score', 0), reverse=True)

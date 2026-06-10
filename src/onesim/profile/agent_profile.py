@@ -281,7 +281,7 @@ class AgentProfile(ProfileBase):
                 return [clean_data(item) for item in data]
             else:
                 try:
-                    # 测试值是否可以被json序列化
+                    # Test if the value can be serialized to JSON
                     json.dumps(data)
                     return data
                 except (TypeError, OverflowError):
@@ -356,11 +356,11 @@ class AgentProfile(ProfileBase):
         Returns:
             Any: The value of the field if found and not None, otherwise the default value.
         """
-        # 首先根据第一个键从公共或私有字段获取初始值
+        # First get the initial value from the public or private fields based on the first key
         parts = key.split('.')
         current_key = parts[0]
         
-        # 获取初始值
+        # Get the initial value
         if current_key in self._public_fields:
             value = self._public_fields[current_key]
         elif current_key in self._private_fields:
@@ -368,23 +368,23 @@ class AgentProfile(ProfileBase):
         else:
             return default
         
-        # 处理值为None的情况
+        # Handle the case where the value is None
         if value is None:
             return default
         
-        # 循环处理剩余的路径部分
+        # Loop through the remaining path parts
         for part in parts[1:]:
             if isinstance(value, dict):
-                # 字典访问
+                # Dictionary access
                 if part in value:
                     value = value[part]
                 else:
-                    return default  # 键不存在
+                    return default  # Key does not exist
             else:
-                # 无法继续遍历
+                # Cannot continue traversing
                 return default
             
-            # 在每一步检查值是否为None
+            # Check if the value is None at each step
             if value is None:
                 return default
         
@@ -415,11 +415,11 @@ class AgentProfile(ProfileBase):
 
 
     def update_if(self, key, condition_func, update_func):
-        """条件更新
+        """Update the field if the condition is met.
         Args:
-            key: 要更新的键
-            condition_func: 判断条件的函数,接收当前值返回bool
-            update_func: 更新函数,接收当前值返回新值
+            key: The key to update
+            condition_func: The function to check the condition, receives the current value and returns a bool
+            update_func: The function to update, receives the current value and returns the new value
         """
         with self.lock:
             current_value = self.get_data(key)
@@ -428,25 +428,6 @@ class AgentProfile(ProfileBase):
                 self.update_data(key, new_value)
                 return True, new_value
             return False, current_value
-
-    # def __getattr__(self, name: str) -> Any:
-    #     """
-    #     Provide dynamic property-like access to profile fields.
-    #     Falls back to get_data() with no default value for compatibility.
-        
-    #     Args:
-    #         name (str): Name of the field to access
-            
-    #     Returns:
-    #         Any: Value of the requested field
-            
-    #     Raises:
-    #         AttributeError: If the field doesn't exist or value is None
-    #     """
-    #     value = self.get_data(name)
-    #     # if value is None:
-    #     #     raise AttributeError(f"'{self.__class__.__name__}' has no attribute '{name}'")
-    #     return value
 
     def __setattr__(self, name: str, value: Any):
         """

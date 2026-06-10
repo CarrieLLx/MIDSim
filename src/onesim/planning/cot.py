@@ -1,5 +1,5 @@
 from onesim.planning.base import PlanningBase
-from onesim.agent.general_agent import Message
+from onesim.models.core.message import Message
 from loguru import logger
 
 

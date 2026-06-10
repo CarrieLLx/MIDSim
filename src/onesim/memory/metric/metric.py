@@ -33,7 +33,7 @@ class ImportanceMetric(MemoryMetric):
             tag_end="[/SCORE]",
             content_hint="the importance score (a number from 1 to 10)",
         )
-        # 添加缓存以减少LLM调用
+        # Add cache to reduce LLM calls
         self.cache = {}
         
   
@@ -53,7 +53,7 @@ class ImportanceMetric(MemoryMetric):
         try:
             model_name = getattr(self.llm_model, "config_name", type(self.llm_model).__name__)
             logger.debug(
-                f"[ImportanceMetric] 调用 LLM 评估重要性 memory_id={memory_item.id} "
+                f"[ImportanceMetric] Call LLM to evaluate importance memory_id={memory_item.id} "
                 f"model={model_name}"
             )
             response = await self.llm_model.acall(prompt)
@@ -69,13 +69,11 @@ class ImportanceMetric(MemoryMetric):
                 f"[ImportanceMetric] memory_id={memory_item.id} importance={importance} "
                 f"raw_parsed={raw!r}"
             )
-            # 存入缓存
+            # Save to cache
             self.cache[memory_item.id] = importance
             return importance
         except Exception as e:
-            # 更详细的错误处理
             error_msg = f"Error parsing importance score: {e}\nResponse: {response if 'response' in locals() else 'No response'}"
-            # 默认返回中等重要性而不是崩溃
             importance = 5.0
             return importance
 
@@ -88,7 +86,7 @@ class RecencyMetric(MemoryMetric):
                 dt = datetime.strptime(memory_item.timestamp, "%Y-%m-%d %H:%M:%S")
                 memory_timestamp = dt.timestamp()
             else:
-                # 如果 timestamp 已经是 float 或 int，直接使用
+                # If timestamp is already float or int, use directly
                 memory_timestamp = float(memory_item.timestamp)
 
             recency = 1 / (time.time() - memory_timestamp + 1)
@@ -98,7 +96,6 @@ class RecencyMetric(MemoryMetric):
             )
             return recency
         except Exception:
-            # 出错时返回低优先级
             return 0.1
 
 class RelevanceMetric(MemoryMetric):
@@ -108,14 +105,14 @@ class RelevanceMetric(MemoryMetric):
         self.embedding_model = model_manager.get_model(
             model_config_name,
         )
-        # 添加缓存
+        # Add cache to reduce repeated calculations
         self.embedding_cache = {}
            
     async def calculate(self, memory_item, query=None):
         if query is None or self.embedding_model is None:
             return 1.0
             
-        # 使用缓存减少重复计算
+        # Use cache to reduce repeated calculations
         cache_key = f"{memory_item.id}:{query}"
         if cache_key in self.embedding_cache:
             return self.embedding_cache[cache_key]
@@ -125,11 +122,11 @@ class RelevanceMetric(MemoryMetric):
                 self.embedding_model, "config_name", type(self.embedding_model).__name__
             )
             mid = getattr(memory_item, "id", None)
-            # 检查memory_item是否已有嵌入向量
+            # Check if memory_item already has embedding vector
             if hasattr(memory_item, 'embedding') and memory_item.embedding is not None:
                 memory_embedding = memory_item.embedding
             else:
-                # 计算并缓存
+                # Calculate and cache
                 logger.debug(
                     f"[RelevanceMetric] acall embed memory memory_id={mid} model={emb_model} "
                     f"content_len={len(str(memory_item.content or ''))}"
@@ -155,11 +152,10 @@ class RelevanceMetric(MemoryMetric):
             )
 
             similarity = self.cosine_similarity(memory_embedding, query_embedding)
-            # 保存到缓存
+            # Save to cache
             self.embedding_cache[cache_key] = similarity
             return similarity
         except Exception as e:
-            # 出错时返回默认相关性
             return 0.5
     
     def cosine_similarity(self, vec1, vec2):

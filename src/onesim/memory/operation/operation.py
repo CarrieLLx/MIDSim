@@ -9,8 +9,8 @@ from ..memory_item import MemoryItem
 
 def _parse_json_dict_from_llm_response(response: Any) -> Dict[str, Any]:
     """
-    先按 JsonBlockParser（```json ... ```）；若无代码块则尝试整段或首尾大括号切片 json.loads。
-    避免模型只输出裸 JSON 时误报 Start tag '```json' not found。
+    First try JsonBlockParser（```json ... ```）; if no code block, try whole segment or slice with first and last curly braces json.loads.
+    Avoid reporting Start tag '```json' not found when the model only outputs raw JSON.
     """
     text = getattr(response, "text", None) or ""
     if not text.strip():
@@ -52,7 +52,7 @@ class AddMemoryOperation(MemoryOperation):
         if not storage:
             raise ValueError(f"Storage not found: {storage_name}")
             
-        # 计算所有metrics并存入memory_item
+        # Calculate all metrics and save to memory_item
         for metric_name, metric in strategy._metrics.items():
             try:
                 memory_item.attributes[metric_name] = await metric.calculate(memory_item)
@@ -117,7 +117,7 @@ class ReflectMemoryOperation(MemoryOperation):
             agent_id = getattr(agent_context, "agent_id", None)
             model_name = getattr(strategy.model, "config_name", type(strategy.model).__name__)
             logger.info(
-                f"[ReflectMemoryOperation] 调用 LLM 生成反思问题 agent_id={agent_id} "
+                f"[ReflectMemoryOperation] Call LLM to generate reflection questions agent_id={agent_id} "
                 f"model={model_name} short_term_count={len(short_term_memories)}"
             )
             response = await strategy.model.acall(formatted_prompt)
@@ -180,7 +180,7 @@ class ReflectMemoryOperation(MemoryOperation):
             agent_id = getattr(agent_context, "agent_id", None)
             model_name = getattr(strategy.model, "config_name", type(strategy.model).__name__)
             logger.info(
-                f"[ReflectMemoryOperation] 调用 LLM 生成见解 agent_id={agent_id} "
+                f"[ReflectMemoryOperation] Call LLM to generate insights agent_id={agent_id} "
                 f"model={model_name} retrieved_count={len(retrieved_memories)} "
                 f"questions_count={len(questions)}"
             )
@@ -198,7 +198,7 @@ class ReflectMemoryOperation(MemoryOperation):
             logger.warning(f"[ReflectMemoryOperation] Error generating insights (using fallback): {e}")
             insights = ["No specific insights could be generated at this time."]
             
-        # 为见解创建记忆项并添加到长期存储中
+        # Create memory items for insights and add to long-term storage
         for insight in insights:
             try:
                 memory_item = MemoryItem(agent_context.agent_id, content=insight)
@@ -206,7 +206,7 @@ class ReflectMemoryOperation(MemoryOperation):
             except Exception as e:
                 logger.error(f"Error adding insight to long-term storage: {e}")
                 
-        # 将记忆从短期存储转移到长期存储
+        # Transfer memories from short-term storage to long-term storage
         for memory_item in short_term_memories:
             try:
                 await strategy.execute('remove', storage_name=short_term_storage_name, memory_item=memory_item)

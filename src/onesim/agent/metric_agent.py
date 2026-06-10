@@ -17,7 +17,7 @@ from onesim.monitor.utils import (
 from .base import AgentBase
 
 class MetricAgent(AgentBase):
-    """基于场景生成监控指标的Agent，优化版本具有更强的数据验证和错误处理能力"""
+    """Agent for generating monitoring metrics based on scenario, with enhanced data validation and error handling"""
     
     def __init__(
         self,
@@ -25,17 +25,14 @@ class MetricAgent(AgentBase):
         sys_prompt: str = '',
     ):
         """
-        初始化指标生成Agent
-        
-        Args:
-            model_config_name: 模型配置名称
-            sys_prompt: 系统提示，默认为空
+        Initialize metric generation agent
         """
         super().__init__(
             sys_prompt=sys_prompt or (
-                "你是一个专门负责分析多智能体系统性能指标的AI助手。"
-                "你的任务是基于系统描述和数据模型生成有意义的监控指标，并为每个指标生成计算函数。"
-                "生成的函数必须具有强大的错误处理能力，能够处理None值、空列表和类型错误等各种异常情况。"
+                "You are an AI assistant specialized in analyzing performance metrics for multi-agent systems. "
+                "Your task is to generate meaningful monitoring metrics from system descriptions and data models, "
+                "and to produce a calculation function for each metric. "
+                "Generated functions must include robust error handling for None values, empty lists, type errors, and other edge cases."
             ),
             model_config_name=model_config_name,
         )
@@ -46,28 +43,19 @@ class MetricAgent(AgentBase):
 
     def generate_metrics(self, scenario_description: str, agent_types: List[str], system_data_model: Dict = None, num_metrics: int = 3) -> List[Dict]:
         """
-        分析场景，生成适用的指标列表
-        
-        Args:
-            scenario_description: 场景描述
-            agent_types: Agent类型列表
-            system_data_model: 系统数据模型，包含环境变量和各类Agent变量
-            num_metrics: 生成指标的数量
-            
-        Returns:
-            指标定义列表
+        Analyze scenario, generate applicable metrics list
         """
         if not scenario_description:
-            logger.error("场景描述不能为空")
+            logger.error("Scenario description cannot be empty")
             return []
             
         if not agent_types:
-            logger.error("代理类型列表不能为空")
+            logger.error("Agent types list cannot be empty")
             return []
             
         prompt = self._create_generation_prompt(scenario_description, agent_types, system_data_model, num_metrics)
         
-        # 使用模型获取响应
+        # Use model to get response
         prompt_message = self.model.format(
             Message("system", self.sys_prompt, role="system"),
             Message("user", prompt + self.parser.format_instruction, role="user")
@@ -75,20 +63,20 @@ class MetricAgent(AgentBase):
         
         response = self.model(prompt_message)
         
-        # 解析响应，提取指标定义
+        # Parse response, extract metric definitions
         try:
             result = self.parser.parse(response)
             metrics = result.parsed.get("metrics", [])
-            logger.info(f"为场景生成了 {len(metrics)} 个指标")
+            logger.info(f"Generated {len(metrics)} metrics for the scenario")
             
-            # 验证指标
+            # Validate metrics
             if system_data_model:
                 metrics = self.validate_metrics(metrics, system_data_model)
                 
             return metrics
         except Exception as e:
-            logger.error(f"解析指标生成响应时出错: {str(e)}")
-            # 尝试使用正则表达式提取JSON块
+            logger.error(f"Error parsing metric generation response: {str(e)}")
+            # Try using regex to extract JSON block
             try:
                 import re
                 json_pattern = r'```json\s*([\s\S]*?)\s*```'
@@ -97,36 +85,29 @@ class MetricAgent(AgentBase):
                     import json
                     metrics_data = json.loads(matches[0])
                     metrics = metrics_data.get("metrics", [])
-                    logger.info(f"通过备用方法提取到 {len(metrics)} 个指标")
+                    logger.info(f"Extracted {len(metrics)} metrics using backup method")
                     
-                    # 验证指标
+                    # Validate metrics
                     if system_data_model:
                         metrics = self.validate_metrics(metrics, system_data_model)
                         
                     return metrics
             except Exception as backup_error:
-                logger.error(f"备用提取方法也失败: {str(backup_error)}")
+                logger.error(f"Backup extraction method also failed: {str(backup_error)}")
             
             return []
     
     def validate_metrics(self, metrics: List[Dict], system_data_model: Dict = None) -> List[Dict]:
         """
-        验证指标定义的有效性，确保所有引用的变量都存在
-        
-        Args:
-            metrics: 指标定义列表
-            system_data_model: 系统数据模型
-            
-        Returns:
-            验证后的指标列表，移除无效指标
+        Validate metric definitions, ensure all referenced variables exist
         """
         if system_data_model is None:
-            logger.warning("无法验证指标，system_data_model未提供")
+            logger.warning("Cannot validate metrics, system_data_model not provided")
             return metrics
         
         available_variables = set()
         
-        # 收集所有可用变量
+        # Collect all available variables
         if "environment" in system_data_model and "variables" in system_data_model["environment"]:
             for var in system_data_model["environment"]["variables"]:
                 available_variables.add(var["name"])
@@ -142,18 +123,18 @@ class MetricAgent(AgentBase):
             is_valid = True
             invalid_vars = []
             
-            # 检查可视化类型是否有效
+            # Validate visualization type
             if "visualization_type" not in metric or metric["visualization_type"] not in self.visualization_types:
-                logger.warning(f"指标 '{metric.get('name', 'unknown')}' 使用了无效的可视化类型: {metric.get('visualization_type', 'missing')}，已设为默认值'line'")
+                logger.warning(f"Metric '{metric.get('name', 'unknown')}' uses invalid visualization type: {metric.get('visualization_type', 'missing')}, set to default 'line'")
                 metric["visualization_type"] = "line"
             
-            # 检查指标中使用的变量是否存在
+            # Ensure variables referenced by the metric exist
             for var in metric.get("variables", []):
                 if var.get("name") not in available_variables:
                     is_valid = False
                     invalid_vars.append(var.get("name", "unknown"))
                 
-                # 检查source_type是否有效
+                # Validate source_type
                 if "source_type" not in var or var["source_type"] not in self.source_types:
                     logger.warning(f"指标 '{metric.get('name', 'unknown')}' 的变量 '{var.get('name', 'unknown')}' 使用了无效的source_type: {var.get('source_type', 'missing')}，已设为默认值'env'")
                     var["source_type"] = "env"
@@ -168,25 +149,25 @@ class MetricAgent(AgentBase):
     
     def _create_generation_prompt(self, scenario_description: str, agent_types: List[str], system_data_model: Dict = None, num_metrics: int = 3) -> str:
         """
-        创建用于生成指标的提示
+        Build the prompt used to generate metrics.
         
         Args:
-            scenario_description: 场景描述
-            agent_types: Agent类型列表
-            system_data_model: 系统数据模型，包含环境变量和各类Agent变量
-            num_metrics: 生成指标的数量
+            scenario_description: Scenario description
+            agent_types: List of agent types
+            system_data_model: System data model with environment and agent variables
+            num_metrics: Number of metrics to generate
             
         Returns:
-            提示字符串
+            Prompt string
         """
         system_data_model_str = ""
         available_variables = []
         
         if system_data_model:
-            # 格式化系统数据模型为字符串
+            # Format system data model as a string
             system_data_model_str = json.dumps(system_data_model, indent=2)
             
-            # 提取环境变量
+            # Extract environment variables
             if "environment" in system_data_model and "variables" in system_data_model["environment"]:
                 for var in system_data_model["environment"]["variables"]:
                     available_variables.append({
@@ -196,7 +177,7 @@ class MetricAgent(AgentBase):
                         "path": var["name"]  # Path can be simple or nested e.g., "stats.value"
                     })
             
-            # 提取智能体变量
+            # Extract agent variables
             if "agents" in system_data_model:
                 for agent_type, agent_data in system_data_model["agents"].items():
                     if "variables" in agent_data:
@@ -207,10 +188,10 @@ class MetricAgent(AgentBase):
                                 "source_type": "agent",
                                 "agent_type": agent_type,
                                 "path": var["name"],  # Path can be simple or nested e.g., "group.name"
-                                "is_list": True  # 标记为列表类型
+                                "is_list": True  # Mark as list type
                             })
         
-        # 格式化可用变量列表
+        # Format available variables list
         available_variables_str = json.dumps(available_variables, indent=4)
 
         return f"""
@@ -303,50 +284,43 @@ Generate {num_metrics} metrics that would be most valuable for monitoring this s
     
     def generate_calculation_function(self, metric_def: Dict, system_data_model: Dict = None) -> str:
         """
-        为指标生成计算函数代码
-        
-        Args:
-            metric_def: 指标定义字典
-            system_data_model: 系统数据模型，包含环境变量和各类Agent变量
-            
-        Returns:
-            函数代码字符串
+        Generate calculation function code for a metric.
         """
-        # 验证输入
+        # Validate input
         if not metric_def or "name" not in metric_def:
-            logger.error("指标定义无效，无法生成计算函数")
+            logger.error("Invalid metric definition, cannot generate calculation function")
             return "def invalid_metric(data: Dict[str, Any]) -> Any:\n    return 0"
         
         function_name = re.sub(r'[^\w\-_]', '_', metric_def["name"])
         prompt = self._create_function_prompt(metric_def, system_data_model, function_name)
         
-        # 使用模型获取响应
+        # Get response from the model
         prompt_message = self.model.format(
             Message("system", self.sys_prompt, role="system"),
             Message("user", prompt, role="user")
         )
         response = self.model(prompt_message)
         
-        # 提取响应中的Python代码
+        # Extract Python code from the response
         try:
-            # 先尝试使用code_parser解析
+            # Try code_parser first
             code_block = self.code_parser.parse(response)
             function_code = code_block.parsed
             
-            # 确保代码中包含正确的函数名
+            # Ensure the code uses the correct function name
             expected_def = f"def {function_name}"
             if expected_def not in function_code:
-                # 如果函数名不匹配，尝试替换
+                # If the name mismatches, try to replace it
                 function_code = re.sub(r'def\s+([a-zA-Z0-9_]+)', f'def {function_name}', function_code)
                 
-                # 如果还是没有正确的函数定义，使用我们自己的模板
+                # If still missing, fall back to our template
                 if expected_def not in function_code:
-                    logger.warning(f"无法找到正确的函数定义: {expected_def}，将创建一个基本函数")
+                    logger.warning(f"Cannot find correct function definition: {expected_def}, creating a basic function")
                     return self._create_default_function_code(function_name, metric_def)
             
-            # 确保函数有文档字符串
+            # Ensure the function has a docstring
             if '"""' not in function_code:
-                # 在函数定义后添加文档字符串
+                # Insert docstring after the function definition
                 docstring = self._generate_function_docstring(metric_def)
                 function_code = re.sub(
                     f'def {function_name}\\([^)]*\\)[^:]*:',
@@ -354,85 +328,72 @@ Generate {num_metrics} metrics that would be most valuable for monitoring this s
                     function_code
                 )
             
-            # 检查是否使用了安全工具函数
+            # Check whether safe utility functions are used
             safe_functions = ["safe_get", "safe_list", "safe_avg", "safe_sum", "safe_max", "safe_min", "safe_count"]
             has_safe_functions = any(func in function_code for func in safe_functions)
             
-            # 如果没有使用安全函数，可能需要添加额外的错误处理
+            # If not, additional error handling may be needed
             if not has_safe_functions and "try:" not in function_code:
-                logger.warning(f"生成的函数 {function_name} 缺少适当的错误处理")
-                # 考虑在这里增强错误处理，但这需要解析函数结构，较为复杂
+                logger.warning(f"Generated function {function_name} lacks adequate error handling")
+                # Could enhance error handling here, but parsing function structure is complex
             
             return function_code
                 
         except Exception as e:
-            logger.error(f"解析计算函数代码时出错: {str(e)}")
+            logger.error(f"Error parsing calculation function code: {str(e)}")
             return self._create_default_function_code(function_name, metric_def)
     
     def _generate_function_docstring(self, metric_def: Dict) -> str:
         """
-        为指标函数生成文档字符串
-        
-        Args:
-            metric_def: 指标定义字典
-            
-        Returns:
-            文档字符串
+        Generate a docstring for a metric function.
         """
         return f"""
-    计算指标: {metric_def.get('name', 'unknown')}
-    描述: {metric_def.get('description', '无描述')}
-    可视化类型: {metric_def.get('visualization_type', 'line')}
-    更新频率: {metric_def.get('update_interval', 5)} 秒
+    Metric: {metric_def.get('name', 'unknown')}
+    Description: {metric_def.get('description', 'No description')}
+    Visualization type: {metric_def.get('visualization_type', 'line')}
+    Update interval: {metric_def.get('update_interval', 5)} seconds
     
     Args:
-        data: 包含所有变量的数据字典，注意agent变量是列表形式
+        data: Dict of all variables; agent variables are list-valued
         
     Returns:
-        根据可视化类型返回不同格式的结果:
-        - line: 返回单个数值
-        - bar/pie: 返回字典，键为分类，值为对应数值
+        Result format depends on visualization type:
+        - line: single numeric value
+        - bar/pie: dict mapping categories to values
         
-    注意:
-        此函数处理各种异常情况，包括None值、空列表和类型错误等
+    Notes:
+        Handles edge cases such as None, empty lists, and type errors
     """
     
     def _create_default_function_code(self, function_name: str, metric_def: Dict) -> str:
         """
-        创建默认的函数代码
-        
-        Args:
-            function_name: 函数名
-            metric_def: 指标定义字典
-            
-        Returns:
-            函数代码字符串
+        Create default function code.
         """
         docstring = self._generate_function_docstring(metric_def)
         
-        # 检查必需变量
+        # Required variables
         required_vars = [v["name"] for v in metric_def.get("variables", []) if v.get("required", True)]
         required_vars_check = "\n        ".join([
-            f"# 检查必需变量 {var} 是否存在",
+            f"# Check required variable {var}",
             f"if '{var}' not in data:",
-            f"    log_metric_error('{metric_def.get('name', 'unknown')}', ValueError(f'缺少必需变量: {var}'))",
+            f"    log_metric_error('{metric_def.get('name', 'unknown')}', ValueError(f'Missing required variable: {var}'))",
             f"    return 0 if '{metric_def.get('visualization_type', 'line')}' == 'line' else {{}}"
         ] for var in required_vars)
         
-        # 变量分类
+        # Split variables by source
         env_vars = [v for v in metric_def.get("variables", []) if v.get("source_type") == "env"]
         agent_vars = [v for v in metric_def.get("variables", []) if v.get("source_type") == "agent"]
         
-        # 生成变量访问代码
+        # Variable access code
         env_vars_code = "\n        ".join([
-            f"# 访问环境变量 {v['name']}",
+            f"# Access environment variable {v['name']}",
             f"{v['name']}_value = safe_get(data, '{v['name']}')"
         ] for v in env_vars)
         
         agent_vars_code = "\n        ".join([
-            f"# 安全处理代理变量 {v['name']} (列表形式)",
+            f"# Safely handle agent variable {v['name']} (list form)",
             f"{v['name']}_data = safe_list(safe_get(data, '{v['name']}'))",
-            f"# 对列表数据进行安全聚合",
+            f"# Aggregate list data safely",
             f"{v['name']}_avg = safe_avg({v['name']}_data)",
             f"{v['name']}_sum = safe_sum({v['name']}_data)",
             f"{v['name']}_max = safe_max({v['name']}_data)",
@@ -440,54 +401,54 @@ Generate {num_metrics} metrics that would be most valuable for monitoring this s
             f"{v['name']}_count = safe_count({v['name']}_data)"
         ] for v in agent_vars)
         
-        # 根据可视化类型提供适当的返回值
+        # Default return value by visualization type
         vis_type = metric_def.get("visualization_type", "line")
         if vis_type == "line":
-            result_code = "result = 0  # 默认值，根据实际逻辑修改"
+            result_code = "result = 0  # Default value; adjust per actual logic"
         elif vis_type in ["bar", "pie"]:
-            result_code = "result = {'类别1': 0, '类别2': 0}  # 默认示例，根据实际逻辑修改"
+            result_code = "result = {'category1': 0, 'category2': 0}  # Example default; adjust per actual logic"
         else:
-            result_code = "result = 0  # 默认值，根据实际逻辑修改"
+            result_code = "result = 0  # Default value; adjust per actual logic"
         
         return f"""def {function_name}(data: Dict[str, Any]) -> Any:
     \"\"\"{docstring}\"\"\"
     try:
-        # 检查输入数据有效性
+        # Validate input data
         if not data or not isinstance(data, dict):
-            log_metric_error('{metric_def.get('name', 'unknown')}', ValueError('无效的数据输入'), {{'data': data}})
+            log_metric_error('{metric_def.get('name', 'unknown')}', ValueError('Invalid data input'), {{'data': data}})
             return 0 if '{vis_type}' == 'line' else {{}} 
         
         {required_vars_check}
         
-        # 处理环境变量 (单值)
+        # Environment variables (scalar)
         {env_vars_code}
         
-        # 处理代理变量 (列表形式)
+        # Agent variables (list form)
         {agent_vars_code}
         
-        # 计算指标结果
-        # TODO: 实现具体的计算逻辑，基于指标定义中的 calculation_logic
+        # Metric result
+        # TODO: Implement calculation_logic from the metric definition
         {result_code}
         
         return result
     except Exception as e:
-        # 使用日志工具记录错误，而不是简单地打印
+        # Log errors instead of printing
         log_metric_error('{metric_def.get('name', 'unknown')}', e, {{'data_keys': list(data.keys()) if isinstance(data, dict) else None}})
-        # 根据可视化类型返回适当的默认值
+        # Default by visualization type
         return 0 if '{vis_type}' == 'line' else {{}}
 """
     
     def _create_function_prompt(self, metric_def: Dict, system_data_model: Dict = None, function_name: str = None) -> str:
         """
-        创建用于生成计算函数的提示
+        Build the prompt used to generate a calculation function.
         
         Args:
-            metric_def: 指标定义字典
-            system_data_model: 系统数据模型，包含环境变量和各类Agent变量
-            function_name: 函数名称，默认根据指标名生成
+            metric_def: Metric definition dict
+            system_data_model: System data model with environment and agent variables
+            function_name: Function name; defaults from metric name
             
         Returns:
-            提示字符串
+            Prompt string
         """
         if function_name is None:
             function_name = re.sub(r'[^\w\-_]', '_', metric_def["name"])
@@ -509,7 +470,7 @@ Metric Calculation Function Generation Task
 
 Metric Definition:
 - Name: {metric_def.get('name', 'unknown')}
-- Description: {metric_def.get('description', '无描述')}
+- Description: {metric_def.get('description', 'No description')}
 - Visualization Type: {metric_def.get('visualization_type', 'line')}
 
 Available Variables:
@@ -521,7 +482,7 @@ System Data Model:
 ```
 
 Calculation Logic:
-{metric_def.get('calculation_logic', '未提供计算逻辑')}
+{metric_def.get('calculation_logic', 'No calculation logic provided')}
 
 Task: Write a Python function named "{function_name}" to calculate this metric.
 
@@ -592,21 +553,21 @@ from typing import Dict, Any
 
 def {function_name}(data: Dict[str, Any]) -> Any:
     \"\"\"
-    计算指标: {metric_def.get('name', 'unknown')}
-    描述: {metric_def.get('description', '无描述')}
-    可视化类型: {metric_def.get('visualization_type', 'line')}
-    更新频率: {metric_def.get('update_interval', 5)} 秒
+    Metric: {metric_def.get('name', 'unknown')}
+    Description: {metric_def.get('description', 'No description')}
+    Visualization type: {metric_def.get('visualization_type', 'line')}
+    Update interval: {metric_def.get('update_interval', 5)} seconds
     
     Args:
-        data: 包含所有变量的数据字典，注意agent变量是列表形式
+        data: Dict of all variables; agent variables are list-valued
         
     Returns:
-        根据可视化类型返回不同格式的结果:
-        - line: 返回字典，键为系列名称，值为对应数值
-        - bar/pie: 返回字典，键为分类，值为对应数值
+        Result format depends on visualization type:
+        - line: dict mapping series names to values
+        - bar/pie: dict mapping categories to values
         
-    注意:
-        此函数处理各种异常情况，包括None值、空列表和类型错误等
+    Notes:
+        Handles edge cases such as None, empty lists, and type errors
     \"\"\"
     try:
         # Check if required variables exist and validate input data
@@ -641,29 +602,23 @@ def {function_name}(data: Dict[str, Any]) -> Any:
 
     def format_metrics_for_export(self, metrics: List[Dict]) -> List[Dict]:
         """
-        将生成的指标格式化为导出格式，使其更适合存储在scene_info.json中
-        
-        Args:
-            metrics: 原始指标定义列表
-            
-        Returns:
-            格式化后的指标列表
+        Format generated metrics for export (e.g. scene_info.json).
         """
         formatted_metrics = []
         
         for metric in metrics:
-            # 创建安全的函数名
+            # Safe function name
             function_name = re.sub(r'[^\w\-_]', '_', metric.get("name", "unknown_metric"))
             
-            # 格式化指标
+            # Normalize metric fields
             formatted_metric = {
                 "id": function_name,
-                "name": metric.get("name", "未命名指标"),
-                "description": metric.get("description", "无描述"),
+                "name": metric.get("name", "Unnamed metric"),
+                "description": metric.get("description", "No description"),
                 "visualization_type": metric.get("visualization_type", "line"),
                 "update_interval": metric.get("update_interval", 60),
                 "variables": metric.get("variables", []),
-                "calculation_logic": metric.get("calculation_logic", "无计算逻辑"),
+                "calculation_logic": metric.get("calculation_logic", "No calculation logic"),
                 "function_name": function_name
             }
             
@@ -673,14 +628,7 @@ def {function_name}(data: Dict[str, Any]) -> Any:
 
     def generate_metrics_code_file(self, metrics: List[Dict], output_dir: str) -> Dict[str, str]:
         """
-        为指标生成计算函数代码文件
-        
-        Args:
-            metrics: 指标定义列表
-            output_dir: 输出目录
-            
-        Returns:
-            指标名称到文件路径的映射
+        Generate a calculation code file for each metric.
         """
         os.makedirs(output_dir, exist_ok=True)
         file_paths = {}
@@ -689,17 +637,17 @@ def {function_name}(data: Dict[str, Any]) -> Any:
             metric_name = metric.get('name', 'unknown_metric')
             function_code = self.generate_calculation_function(metric)
             
-            # 清理文件名，替换非法字符
+            # Sanitize filename
             safe_name = re.sub(r'[^\w\-_]', '_', metric_name)
             file_path = os.path.join(output_dir, f"metric_{safe_name}.py")
             
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(f"""# -*- coding: utf-8 -*-
 \"\"\"
-指标: {metric.get('name', 'unknown_metric')}
-描述: {metric.get('description', '无描述')}
-可视化类型: {metric.get('visualization_type', 'line')}
-更新频率: {metric.get('update_interval', 60)} 秒
+Metric: {metric.get('name', 'unknown_metric')}
+Description: {metric.get('description', 'No description')}
+Visualization type: {metric.get('visualization_type', 'line')}
+Update interval: {metric.get('update_interval', 60)} seconds
 \"\"\"
 
 from typing import Dict, Any, List, Optional, Union
@@ -712,32 +660,24 @@ from onesim.monitor.utils import (
 {function_code}
 """)
             file_paths[metric_name] = file_path
-            logger.info(f"已生成指标计算代码: {file_path}")
+            logger.info(f"Generated metric calculation code: {file_path}")
             
         return file_paths
 
     def generate_metrics_module(self, metrics: List[Dict], output_dir: str, system_data_model: Dict = None) -> str:
         """
-        为所有指标生成单个计算模块文件
-        
-        Args:
-            metrics: 指标定义列表
-            output_dir: 输出目录
-            system_data_model: 系统数据模型，包含环境变量和各类Agent变量
-            
-        Returns:
-            模块文件路径
+        Generate a single metrics module file for all metrics.
         """
-        # 确保输出目录存在
+        # Ensure output directory exists
         os.makedirs(output_dir, exist_ok=True)
         
-        # 创建metrics.py文件
+        # Create metrics.py
         module_path = os.path.join(output_dir, "metrics.py")
         with open(module_path, 'w', encoding='utf-8') as f:
-            # 添加文件头和工具函数导入
+            # File header and utility imports
             f.write("""# -*- coding: utf-8 -*-
 \"\"\"
-自动生成的监控指标计算模块
+Auto-generated monitoring metric calculation module
 \"\"\"
 
 from typing import Dict, Any, List, Optional, Union, Callable
@@ -750,22 +690,22 @@ from onesim.monitor.utils import (
 
 """)
             
-            # 为每个指标生成计算函数
+            # One calculation function per metric
             for metric in metrics:
                 metric_name = metric.get('name', 'unknown_metric')
-                # 生成安全的函数名
+                # Safe function name
                 function_name = re.sub(r'[^\w\-_]', '_', metric_name)
-                # 生成函数代码
+                # Function body
                 function_code = self.generate_calculation_function(metric, system_data_model)
                 
-                # 添加函数注释
+                # Append function
                 f.write(f"""
 {function_code}
 """)
             
-            # 写入辅助函数
+            # Metric function registry
             f.write("""
-# 指标函数字典，用于查找
+# Metric function lookup table
 METRIC_FUNCTIONS = {
 """)
             for metric in metrics:
@@ -773,20 +713,14 @@ METRIC_FUNCTIONS = {
                 f.write(f"    '{function_name}': {function_name},\n")
             f.write("}\n\n")
             
-            # 添加获取函数的工具方法
+            # Helper to resolve functions by name
             f.write('''
 def get_metric_function(function_name: str) -> Optional[Callable]:
     """
-    根据函数名获取对应的指标计算函数
-    
-    Args:
-        function_name: 函数名
-        
-    Returns:
-        指标计算函数或None
+    Return the metric calculation function for the given name.
     """
     return METRIC_FUNCTIONS.get(function_name)
 ''')
         
-        logger.info(f"已生成指标计算模块: {module_path}")
+        logger.info(f"Generated metrics module: {module_path}")
         return module_path

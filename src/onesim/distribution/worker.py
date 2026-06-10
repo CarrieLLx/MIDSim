@@ -381,27 +381,25 @@ class WorkerNode(Node):
 
     def load_planning(self, planning_config, model_config_name: str,sys_prompt: str) -> PlanningBase:
         """Create planning strategy instance"""
-        if not planning_config:
-            return None
+        from onesim.planning import load_planning_instance
 
         try:
-            # Load memory module and class
-            planning_module = importlib.import_module("onesim.planning")
-            PlanningClass = getattr(planning_module, planning_config)
-
-            # Initialize memory instance
-            planning_instance = PlanningClass(model_config_name,sys_prompt)
-            return planning_instance
+            return load_planning_instance(planning_config, model_config_name, sys_prompt)
         except ImportError as e:
             logger.error(f"Failed to import module: {e}")
+        return None
 
     def create_local_agents(self, agent_configs: List[Dict]) -> None:
         """Create local agent instances with pre-configured relationships"""
         from onesim.agent.locale import set_general_agent_locale
+        from onesim.agent.backbone import set_backbone_profile
 
         locale = (agent_configs[0].get("general_agent_locale") if agent_configs else None)
         if locale:
             set_general_agent_locale(locale)
+        backbone = (agent_configs[0].get("backbone_profile") if agent_configs else None)
+        if backbone:
+            set_backbone_profile(backbone)
 
         env_name= agent_configs[0]["env"].split(os.sep)[-1]
         self.env_path=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'..', "envs", env_name)

@@ -46,7 +46,7 @@ class TokenUsageTracker:
         self.total_tokens += total_tokens
         self.request_count += 1
         
-        # 按模型统计
+        # By model statistics
         if model_name not in self.model_usage:
             self.model_usage[model_name] = {
                 "prompt_tokens": 0,
@@ -93,7 +93,7 @@ class TokenUsageTracker:
         Returns:
             Dictionary containing cost estimates
         """
-        # 默认价格配置（每1000个token的美元价格）
+        # Default price configuration (price per 1000 tokens in USD)
         default_price = {
             "gpt-4": {"prompt": 0.005, "completion": 0.015},
             # "gpt-3.5-turbo": {"prompt": 0.0015, "completion": 0.002}
@@ -107,7 +107,7 @@ class TokenUsageTracker:
         for model, usage in self.model_usage.items():
             model_price = None
             
-            # 寻找匹配的价格配置
+            # Find matching price configuration
             for price_model, price in price_config.items():
                 if price_model in model:
                     model_price = price

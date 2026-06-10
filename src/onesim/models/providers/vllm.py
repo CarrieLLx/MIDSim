@@ -3,6 +3,7 @@ Implementation of vLLM chat model adapter with both sync and async support.
 """
 
 import json
+import os
 from typing import Any, Dict, Generator, List, Optional, Sequence, Union
 import asyncio
 
@@ -122,6 +123,8 @@ class VLLMChatAdapter(ModelAdapterBase):
         if stream_mode:
             call_kwargs["stream_options"] = {"include_usage": True}
 
+        self._apply_backbone_call_guards(call_kwargs)
+
         try:
             # Call the API
             response = self.client.chat.completions.create(**call_kwargs)
@@ -228,6 +231,8 @@ class VLLMChatAdapter(ModelAdapterBase):
         if use_stream:
             call_kwargs["stream_options"] = {"include_usage": True}
 
+        self._apply_backbone_call_guards(call_kwargs)
+
         try:
             # Use async client if available, otherwise run sync client in thread
             # if self.async_client:
@@ -326,6 +331,55 @@ class VLLMChatAdapter(ModelAdapterBase):
         Async version: same fallback to single model name.
         """
         return [self.model_name]
+
+    def _apply_backbone_call_guards(self, call_kwargs: Dict[str, Any]) -> None:
+        """Llama backbone: default max_tokens + prompt truncation before vLLM request."""
+        from onesim.agent.backbone import is_llama_backbone
+
+        if is_llama_backbone():
+            self._ensure_max_tokens_and_truncate_messages(call_kwargs)
+
+    def _ensure_max_tokens_and_truncate_messages(self, call_kwargs: Dict[str, Any]) -> None:
+        """
+        When max_tokens is missing or 0, vLLM may treat output budget oddly; long prompts can 400.
+        Truncate total message chars from the end (user/assistant content) to stay within context.
+        Tune via VLLM_DEFAULT_MAX_TOKENS (default 1024) and VLLM_MAX_PROMPT_CHARS (default 120000).
+        """
+        mt = call_kwargs.get("max_tokens")
+        if mt is None or mt == 0:
+            call_kwargs["max_tokens"] = int(os.environ.get("VLLM_DEFAULT_MAX_TOKENS", "1024"))
+
+        messages = call_kwargs.get("messages")
+        if not isinstance(messages, list) or not messages:
+            return
+
+        max_chars = int(os.environ.get("VLLM_MAX_PROMPT_CHARS", "120000"))
+        total = sum(len(str(m.get("content", ""))) for m in messages)
+        if total <= max_chars:
+            return
+
+        need_drop = total - max_chars + 500
+        new_messages: List[Dict[str, Any]] = [dict(m) for m in messages]
+        for i in range(len(new_messages) - 1, -1, -1):
+            c = new_messages[i].get("content", "")
+            if not isinstance(c, str) or not c:
+                continue
+            if len(c) <= need_drop:
+                need_drop -= len(c)
+                new_messages[i]["content"] = ""
+                continue
+            new_messages[i]["content"] = (
+                c[: len(c) - need_drop]
+                + "\n\n[… truncated: prompt exceeded VLLM_MAX_PROMPT_CHARS for context safety]"
+            )
+            break
+
+        call_kwargs["messages"] = new_messages
+        new_total = sum(len(str(m.get("content", ""))) for m in new_messages)
+        logger.warning(
+            f"[vLLM] Prompt truncated for context limit: ~{total} -> ~{new_total} chars "
+            f"(config_name={self.config_name})"
+        )
 
     def _validate_messages(self, messages: List[Dict]) -> None:
         """Validate that the messages have the required format."""

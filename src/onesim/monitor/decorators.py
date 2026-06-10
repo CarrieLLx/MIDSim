@@ -11,28 +11,10 @@ def metric(
     visualization_config: Optional[Dict] = None
 ) -> Callable:
     """
-    指标定义装饰器，简化用户创建指标的过程
-    
-    Args:
-        name: 指标名称
-        description: 指标描述
-        variables: 简化的变量声明列表，每项格式为:
-                  {
-                    "name": "变量名",
-                    "source_type": "env|agent",
-                    "path": "数据路径",
-                    "agent_type": "AgentType" (仅当source_type为agent时必需),
-                    "required": True|False (可选，默认True)
-                  }
-        visualization_type: 可视化类型 ("bar", "pie", "line")
-        update_interval: 更新频率(秒)
-        visualization_config: 可视化配置 (可选)
-
-    Returns:
-        装饰后的函数
+    Metric definition decorator, simplifying the process of creating metrics for users
     """
     def decorator(func: Callable) -> Callable:
-        # 转换变量规范
+        # Convert variable specifications
         variable_specs = []
         for var in variables:
             variable_specs.append(VariableSpec(
@@ -43,7 +25,7 @@ def metric(
                 required=var.get("required", True)
             ))
             
-        # 创建指标定义
+        # Create metric definition
         metric_def = MetricDefinition(
             name=name,
             description=description,
@@ -54,7 +36,7 @@ def metric(
             visualization_config=visualization_config or {}
         )
         
-        # 将指标定义附加到函数
+        # Attach the metric definition to the function
         func.metric_definition = metric_def
         
         @wraps(func)
@@ -77,19 +59,7 @@ def register_custom_metric(
     visualization_config: Optional[Dict] = None
 ) -> MetricDefinition:
     """
-    注册自定义指标
-    
-    Args:
-        name: 指标名称
-        description: 指标描述
-        variables: 变量规范列表
-        calculation_function: 计算函数
-        visualization_type: 可视化类型 ("bar", "pie", "line")
-        update_interval: 更新频率(秒)
-        visualization_config: 可视化配置 (可选)
-        
-    Returns:
-        创建的指标定义
+    Register custom metric
     """
     return MetricDefinition(
         name=name,

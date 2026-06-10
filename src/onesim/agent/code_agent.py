@@ -85,18 +85,18 @@ class StartEvent(Event):
         return action_graph
 
     def get_start_actions(self, action_graph: Dict[Tuple[str, str], List[Tuple[str, str]]], actions: Dict[str, List[Dict]]) -> List[Tuple[str, str]]:
-        # 找出所有动作节点
+        # Collect all action nodes
         all_actions = set()
         for agent_type, action_list in actions.items():
             for action in action_list:
                 all_actions.add((agent_type, action['name']))
-        # 计算入度
+        # Compute in-degrees
         in_degree = {action: 0 for action in all_actions}
         for targets in action_graph.values():
             for target in targets:
                 if target in in_degree:
                     in_degree[target] += 1
-        # 入度为零的动作
+        # Actions with in-degree zero (entry points)
         start_actions = [action for action, degree in in_degree.items() if degree == 0]
         return start_actions
 
@@ -305,16 +305,16 @@ class StartEvent(Event):
         return agent_code_dict, event_code
 
     def check_code(self, agent_code_dict: Dict[str, str], event_code: str, description: str, actions: Dict[str, List[Dict]], events: Dict[int, Dict]) -> Dict[str, List[Dict[str, Any]]]:
-        """验证生成的代码并返回问题"""
-        # 合并代理代码
+        """Validate generated code and return issues"""
+        # Merge agent code
         all_code = ""
         for agent_type, code in agent_code_dict.items():
             all_code += agent_type + ":\n\n" + code + "\n\n"
         
-        # 添加事件代码
+        # Add event code
         all_code += "Events:\n\n" + event_code
         
-        # 执行验证
+        # Execute verification
         verification_results = self.verify_code(all_code, description, actions, events)
         
         return verification_results
@@ -359,9 +359,9 @@ class StartEvent(Event):
 
     def generate_code(self, description: str, actions: Dict[str, List[Dict]], events: Dict[int, Dict], env_path: str, max_iterations: int = 3) -> Dict[str, Any]:
         """
-        原始的generate_code方法，现在实现为基于新的分阶段生成机制，保持兼容性
+        Original generate_code method, now implemented as a new phased generation mechanism, maintaining compatibility
         """
-        # 创建状态跟踪字典
+        # Create status tracking dictionary
         status_dict = {
             "phase": 1,
             "content": "",
@@ -373,15 +373,15 @@ class StartEvent(Event):
             "description": description
         }
         
-        # 调用分阶段生成方法
+        # Call phased generation method
         self.generate_code_phased(description, actions, events, env_path, status_dict, max_iterations)
         
-        # 重构代码结果
+        # Restructure code result
         result = self.restructure_code(
             status_dict["generated_code"], status_dict["event_code"], actions, events
         )
         
-        # 使用已经生成的SimEnv代码
+        # Use already generated SimEnv code
         simenv_code = status_dict.get("simenv_code")
         if simenv_code is None:
             # Fallback in case it wasn't generated earlier
@@ -394,10 +394,10 @@ class StartEvent(Event):
 
     def generate_simenv_subclass_code(self, description: str, start_event_code: str) -> str:
         """
-        调用LLM生成SimEnv(BasicSimEnv)子类的代码示例，包括_create_start_event方法。
-        要求LLM根据上下文信息来实现_create_start_event从self.data中获取需要的信息（如有需求）。
+        Call LLM to generate example code for SimEnv (BasicSimEnv) subclass, including _create_start_event method.
+        Require LLM to implement _create_start_event to get necessary information from self.data based on the context information.
 
-        传入的description中包含对环境的描述以及StartEvent的上下文。
+        The description contains the description of the environment and the context of StartEvent.
         """
         prompt = f"""
 You are an AI programming assistant working on a multi-agent simulation system with a BasicSimEnv class and a predefined StartEvent event class.
@@ -450,7 +450,7 @@ Strict Generation Requirements:
 
 
     def initialize_agent_class(self, agent_type: str, action_list: List[dict], events: Dict[int, Dict]) -> str:
-        # 初始化代理类代码
+        # Initialize agent class code
         agent_code = f'''
 from typing import Any, List,Optional
 import json
@@ -768,7 +768,7 @@ Provide the complete handler method in a Python code block.
 '''        
         handler_response = self.call_llm(handler_prompt).text
 
-        # 从响应中提取代码
+        # Extract code from response
         code_start = handler_response.find("```python")
         code_end = handler_response.find("```", code_start + 1)
         if code_start != -1 and code_end != -1:
@@ -777,7 +777,7 @@ Provide the complete handler method in a Python code block.
             if not lines[0].startswith("    "):
                 lines[0] = "    " + lines[0]
 
-            # 为剩下的每一行增加4格缩进
+            # Add 4 spaces indentation for the remaining lines
             lines = [lines[0]] + ["    " + line for line in lines[1:]]
             handler_code = "\n".join(lines)
             print(f"\n\nGenerated handler code for action '{action_info['name']}':")

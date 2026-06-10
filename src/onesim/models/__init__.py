@@ -18,7 +18,16 @@ from .core.load_balancer import LoadBalancer, LoadBalancerStrategy, RoundRobinSt
 from .providers.openai import OpenAIChatAdapter, OpenAIEmbeddingAdapter
 
 # Parser implementations
-from .parsers.json_parsers import ParserBase, JsonBlockParser, JsonDictParser
+from .parsers.json_parsers import (
+    ParserBase,
+    JsonBlockParser,
+    JsonDictParser,
+    FieldMatchParser,
+    parse_llm_json_response,
+    parse_memory_response,
+    DEFAULT_RECOMMENDATION_MATCH_FIELDS,
+    DEFAULT_REACTION_MATCH_FIELDS,
+)
 
 # Token usage utilities
 from .utils.token_usage import (
@@ -120,7 +129,9 @@ __all__ = [
     'OpenAIEmbeddingAdapter',
     
     # Parser implementations
-    'ParserBase', 'JsonBlockParser', 'JsonDictParser',
+    'ParserBase', 'JsonBlockParser', 'JsonDictParser', 'FieldMatchParser',
+    'parse_llm_json_response', 'parse_memory_response',
+    'DEFAULT_RECOMMENDATION_MATCH_FIELDS', 'DEFAULT_REACTION_MATCH_FIELDS',
     
     # Token usage utilities
     'get_token_usage_stats',

@@ -8,7 +8,13 @@ import time
 from asyncio import Future
 from loguru import logger
 from onesim.models.core.message import Message
-from onesim.models import JsonBlockParser
+from onesim.models import (
+    JsonBlockParser,
+    parse_llm_json_response,
+    parse_memory_response,
+    DEFAULT_RECOMMENDATION_MATCH_FIELDS,
+    DEFAULT_REACTION_MATCH_FIELDS,
+)
 from onesim.profile import AgentProfile
 from onesim.memory import *
 from onesim.events import *
@@ -23,6 +29,7 @@ from onesim.utils.work_graph import WorkGraph
 from datetime import datetime
 
 from onesim.agent.locale import get_general_agent_locale
+from onesim.agent.backbone import is_llama_backbone
 from onesim.agent.general_agent_prompts import (
     build_profile_tags_prompt_text,
     memory_fallback_sentence,
@@ -165,39 +172,9 @@ class GeneralAgent(AgentBase):
 
     @staticmethod
     def _parse_llm_json_block_response(response: Any) -> Any:
-        text = getattr(response, "text", None) or ""
-        if not text.strip():
-            raise ValueError("empty model response")
-        parser = JsonBlockParser()
-        try:
-            res = parser.parse(response)
-            return res.parsed
-        except Exception:
-            pass
-        tag_start, tag_end = "```json", "```"
-        start_idx = text.find(tag_start)
-        if start_idx != -1:
-            content_start = start_idx + len(tag_start)
-            end_idx = text.find(tag_end, content_start)
-            if end_idx != -1:
-                chunk = text[content_start:end_idx].strip()
-                try:
-                    return json.loads(chunk)
-                except json.JSONDecodeError:
-                    pass
-        s = text.strip()
-        if s.startswith("{") and s.endswith("}"):
-            try:
-                return json.loads(s)
-            except json.JSONDecodeError:
-                pass
-        i, j = s.find("{"), s.rfind("}")
-        if i != -1 and j > i:
-            try:
-                return json.loads(s[i : j + 1])
-            except json.JSONDecodeError:
-                pass
-        raise ValueError("Could not parse JSON from model response")
+        from onesim.models.parsers.json_parsers import parse_json_block_loose
+
+        return parse_json_block_loose(response)
         
     async def run_task(self, method: Callable, event: Event):
         # Record the incoming event
@@ -293,32 +270,18 @@ class GeneralAgent(AgentBase):
             Message("user", prompt_text, role="user")
         )
 
-        # Parse LLM JSON response
+        # Parse LLM JSON response (JsonBlock -> FieldMatch -> field extract)
         try:
             logger.info(f"{self.profile.agent_type}(ID:{self.profile_id}) generate memory")
             response = await self.model.acall(prompt)
             logger.info(f"{self.profile.agent_type}(ID:{self.profile_id}) generate memory response")
-            parser = JsonBlockParser()
-            res = parser.parse(response)
-            parsed = res.parsed
-            if not isinstance(parsed, dict):
-                raise ValueError(f"memory JSON root must be object, got {type(parsed).__name__}")
-            memory = parsed.get("memory")
-            if memory is None:
-                memory = parsed.get("Memory")
-            if (memory is None or (isinstance(memory, str) and not memory.strip())) and len(parsed) == 1:
-                only_v = next(iter(parsed.values()))
-                if isinstance(only_v, str) and only_v.strip():
-                    memory = only_v.strip()
-            if not memory or (isinstance(memory, str) and not memory.strip()):
+            memory, parse_method, parse_note = parse_memory_response(response)
+            if not memory or not memory.strip():
                 logger.warning(
                     f"{self.profile.agent_type}(ID:{self.profile_id}) generate_memory: "
-                    f"missing/empty 'memory' in parsed keys={list(parsed.keys())}; using fallback sentence."
+                    f"parse_method={parse_method} note={parse_note}; using fallback sentence."
                 )
                 memory = memory_fallback_sentence(self._prompt_locale)
-            if not isinstance(memory, str):
-                memory = str(memory)
-            # memory_msg=Message(self.name, memory, role="assistant")
             if self.memory:
                 await self.memory.add(MemoryItem(self.agent_id, memory))
             return memory
@@ -329,7 +292,8 @@ class GeneralAgent(AgentBase):
     async def generate_reaction(self, instruction: str, observation: str = None) -> json:
         async with self._reaction_semaphore:
             logger.info(f"{self.profile.agent_type}(ID:{self.profile_id}) generate_reaction entry")
-            # 获取Agent的Profile和Memory信息
+            
+            # Get the Profile and Memory information of the Agent
             profile_str = self.profile.get_profile_str(include_private=False) if self.profile else "No profile information provided."
             if self.memory:     
                 memory_msgs = (await self.memory.retrieve(observation))
@@ -341,7 +305,8 @@ class GeneralAgent(AgentBase):
             logger.info(f"{self.profile.agent_type}(ID:{self.profile_id}) after memory.retrieve")
 
             caller_frame = inspect.currentframe().f_back
-            # 获取调用者的函数名
+            
+            # Get the name of the calling function
             action_name=caller_frame.f_code.co_name
             work_graph=WorkGraph()
             successor_types=work_graph.get_successor_agent_types(f"{self.profile.agent_type}.{action_name}")
@@ -354,7 +319,10 @@ class GeneralAgent(AgentBase):
             logger.info(f"{self.profile.agent_type}(ID:{self.profile_id}) after planning.plan")
 
             if memory.strip():
-                _mem_planning_gate = mem_planning_gate(self._prompt_locale)
+                _mem_planning_gate = mem_planning_gate(
+                    self._prompt_locale,
+                    llama_backbone=is_llama_backbone(),
+                )
             else:
                 _mem_planning_gate = ""
 
@@ -393,16 +361,19 @@ class GeneralAgent(AgentBase):
             processing_time = time.time() - start_time
 
             parse_note: Optional[str] = None
-            try:
-                raw = GeneralAgent._parse_llm_json_block_response(response)
-                reaction = GeneralAgent._normalize_llm_reaction(raw)
-            except (ValueError, json.JSONDecodeError, TypeError) as e:
-                parse_note = str(e)
+            raw, parse_method, parse_note = parse_llm_json_response(
+                response,
+                field_match_fields=DEFAULT_REACTION_MATCH_FIELDS,
+                recover_decisions=True,
+                empty_fallback={"decisions": []},
+            )
+            if parse_method != "json_block":
                 logger.warning(
-                    f"{self.profile.agent_type}(ID:{self.profile_id}) generate_reaction JSON parse failed: {e}; "
-                    f"using empty decisions. raw_prefix={(response.text or '')[:400]!r}"
+                    f"{self.profile.agent_type}(ID:{self.profile_id}) generate_reaction "
+                    f"JSON parse fallback: method={parse_method} note={parse_note!r} "
+                    f"raw_prefix={(response.text or '')[:400]!r}"
                 )
-                reaction = {"decisions": []}
+            reaction = GeneralAgent._normalize_llm_reaction(raw)
 
             # Record decision for data storage - supports both local and distributed modes
             decision_data = {
@@ -442,10 +413,10 @@ class GeneralAgent(AgentBase):
             logger.info(f"{self.profile.agent_type}(ID:{self.profile_id}) generate_recommendation entry")
     
             caller_frame = inspect.currentframe().f_back
-            # 获取调用者的函数名（用于导出决策记录）
+            
+            # Get the name of the calling function (for decision record export)
             action_name = caller_frame.f_code.co_name
 
-            # 仅 Observation + Instruction，不使用 memory / planning
             prompt_text = f"""
             ### Observation:
             {observation if observation else "No specific observation provided."}
@@ -471,16 +442,17 @@ class GeneralAgent(AgentBase):
             processing_time = time.time() - start_time
 
             parse_note: Optional[str] = None
-            try:
-                raw = GeneralAgent._parse_llm_json_block_response(response)
-                reaction = GeneralAgent._normalize_llm_reaction(raw)
-            except (ValueError, json.JSONDecodeError, TypeError) as e:
-                parse_note = str(e)
+            raw, parse_method, parse_note = parse_llm_json_response(
+                response,
+                field_match_fields=DEFAULT_RECOMMENDATION_MATCH_FIELDS,
+                empty_fallback={},
+            )
+            if parse_method != "json_block":
                 logger.warning(
-                    f"{self.profile.agent_type}(ID:{self.profile_id}) generate_recommendation JSON parse failed: {e}; "
-                    f"using empty dict fallback."
+                    f"{self.profile.agent_type}(ID:{self.profile_id}) generate_recommendation "
+                    f"JSON parse fallback: method={parse_method} note={parse_note!r}"
                 )
-                reaction = {}
+            reaction = GeneralAgent._normalize_llm_reaction(raw)
 
             # Record decision for data storage - supports both local and distributed modes
             decision_data = {

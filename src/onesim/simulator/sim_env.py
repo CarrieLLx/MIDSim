@@ -134,7 +134,7 @@ class BasicSimEnv:
         self._last_event_time = time.time()
         self._bus_idle_start = None
 
-        # 用于“空闲超时”判定：有 agent 正在调 LLM 时不计入空闲
+        # For "idle timeout" determination: do not count agents calling LLM as idle
         self._busy_agents_count = 0
         self._busy_agents_lock = asyncio.Lock()
 
@@ -190,11 +190,11 @@ class BasicSimEnv:
         # Create metrics directory path (directory creation moved to async methods)
         self.metrics_save_dir = self.get_metrics_directory()
 
-        # Run async initialization steps（保留 task 引用，供 wait_until_initialized 消除与监控/事件的竞态）
+        # Run async initialization steps
         self._initialization_task: Optional[asyncio.Task] = asyncio.create_task(self.initialize())
 
     async def wait_until_initialized(self) -> None:
-        """等待 initialize() 完成（含 load_initial_data）。可多次 await，已完成则立即返回。"""
+        """Wait for initialize() to complete (including load_initial_data). Can be awaited multiple times, returns immediately if completed."""
         t = getattr(self, "_initialization_task", None)
         if t is not None:
             await t
@@ -237,7 +237,7 @@ class BasicSimEnv:
             List[asyncio.Task]: List of tasks that need to be executed
         """
         try:
-            # 与 __init__ 中 create_task(initialize) 对齐：先完成 load_initial_data 再跑事件/保存状态
+            # Align with create_task(initialize) in __init__: first complete load_initial_data then run events/save state
             await self.wait_until_initialized()
 
             # Save initial state (step 0) before starting
@@ -724,18 +724,18 @@ class BasicSimEnv:
                 await asyncio.sleep(self.config.collection_interval)  # Wait before trying again
 
     async def notify_agent_busy(self):
-        """Agent 开始耗时操作（如调 LLM）时调用，避免被判定为空闲超时。"""
+        """Call when an agent starts a time-consuming operation (e.g. calling LLM) to avoid being considered idle timeout."""
         async with self._busy_agents_lock:
             self._busy_agents_count += 1
 
     async def notify_agent_idle(self):
-        """Agent 结束耗时操作时调用，与 notify_agent_busy 成对使用。"""
+        """Call when an agent finishes a time-consuming operation, used in conjunction with notify_agent_busy."""
         async with self._busy_agents_lock:
             self._busy_agents_count = max(0, self._busy_agents_count - 1)
 
     def _get_agent_pending_work_stats(self) -> tuple[int, int]:
         """
-        统计所有本地 Agent 尚未完成的后台工作与排队事件。
+        Get the number of pending background tasks and queued events for all local agents.
 
         Returns:
             (pending_run_tasks, queued_agent_events)
@@ -791,8 +791,6 @@ class BasicSimEnv:
         # Round can complete if either:
         # 1. All agents have terminated
         # 2. No events for dynamic time
-        # 1. 所有代理都已终止
-        # 2. 长时间无事件（动态时间），且没有 agent 正在执行耗时操作（如调 LLM）
         all_terminated = all(count >= self.current_step for count in self.ended_agents.values())
         async with self._busy_agents_lock:
             busy_count = self._busy_agents_count
@@ -1173,7 +1171,6 @@ class BasicSimEnv:
                     refresh_fn = getattr(monitor_manager, "refresh_all_metrics", None)
                     if callable(refresh_fn):
                         await refresh_fn(self)
-                    # 使用新的统一导出接口
                     monitor_manager.export_metrics_as_images(
                         step_dir, self.current_step
                     )
@@ -1513,7 +1510,6 @@ class BasicSimEnv:
 
         # Create a global termination event using EndEvent class
         from onesim.events import EndEvent
-        # 保持一致逻辑：先向所有Agent广播EndEvent（包括分布式场景）
         termination_event = EndEvent(
             from_agent_id="ENV", to_agent_id="all", reason="simulation_completed"
         )

@@ -7,6 +7,12 @@ from .locale import (
     resolve_general_agent_locale,
     set_general_agent_locale,
 )
+from .backbone import (
+    get_backbone_profile,
+    is_llama_backbone,
+    resolve_backbone_profile,
+    set_backbone_profile,
+)
 from .odd_agent import ODDAgent
 from .profile_agent import ProfileAgent
 from .workflow_agent import WorkflowAgent
@@ -21,6 +27,10 @@ __all__ = [
     "is_general_agent_instance",
     "resolve_general_agent_locale",
     "set_general_agent_locale",
+    "get_backbone_profile",
+    "is_llama_backbone",
+    "resolve_backbone_profile",
+    "set_backbone_profile",
     "ODDAgent",
     "ProfileAgent",
     "WorkflowAgent",
