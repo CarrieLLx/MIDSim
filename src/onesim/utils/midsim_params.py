@@ -241,6 +241,30 @@ async def step15_params(agent) -> dict:
     return await memory_similarity_gate_params(agent)
 
 
+async def midsim_agent_config(agent) -> dict:
+    """Agent section from loaded params JSON (backbone_profile, general_agent_locale, …)."""
+    root = await _midsim_root(agent)
+    section = root.get("agent")
+    return section if isinstance(section, dict) else {}
+
+
+async def is_llama_agent_profile(agent, locale: str) -> bool:
+    """True when params (or runtime) specify backbone llama + the given locale (zh/en)."""
+    from onesim.agent.backbone import is_llama_backbone, normalize_backbone_profile
+    from onesim.agent.locale import get_general_agent_locale, normalize_prompt_locale
+
+    expected = normalize_prompt_locale(locale)
+    cfg = await midsim_agent_config(agent)
+    if cfg:
+        backbone = normalize_backbone_profile(cfg.get("backbone_profile"))
+        actual = normalize_prompt_locale(cfg.get("general_agent_locale"))
+        if backbone == "llama" and actual == expected:
+            return True
+        if cfg.get("backbone_profile") or cfg.get("general_agent_locale"):
+            return False
+    return is_llama_backbone() and get_general_agent_locale() == expected
+
+
 def draw_discrete(
     rng: random.Random,
     block: Any,

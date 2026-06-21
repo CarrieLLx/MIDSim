@@ -3,6 +3,7 @@ from .base import AgentBase
 from onesim.events import Event, DataEvent, DataResponseEvent, DataUpdateEvent, DataUpdateResponseEvent
 from typing import Dict, List, Callable, Optional, Any
 import json
+import os
 import uuid
 import time
 from asyncio import Future
@@ -40,7 +41,7 @@ from onesim.agent.general_agent_prompts import (
 
 
 class GeneralAgent(AgentBase):
-    _reaction_semaphore = asyncio.Semaphore(4)
+    _reaction_semaphore = asyncio.Semaphore(14)
 
     def __init__(self,
                  sys_prompt: Optional[str] = None,
@@ -345,7 +346,9 @@ class GeneralAgent(AgentBase):
             
             {_mem_planning_gate}
 
-            Structure the response in JSON format, specifying a detailed action or reaction based on the instruction. You should respond a json object in a json fenced code block as follows:
+            Structure the response in JSON format, specifying a detailed action or reaction based on the instruction.
+            Keep the JSON compact: only decision rows for items in this batch; short strings; no extra example rows.
+            You should respond a json object in a json fenced code block as follows:
             ```json
             Your JSON response here
             ```
@@ -357,7 +360,8 @@ class GeneralAgent(AgentBase):
             )
             logger.info(f"Agent(ID:{self.profile_id}) generate_reaction 即将调用 model.acall, model={type(self.model).__name__}({getattr(self.model,'config_name','')})")
 
-            response = await self.model.acall(prompt)
+            reaction_max_tokens = int(os.environ.get("ONESIM_REACTION_MAX_TOKENS", "4096"))
+            response = await self.model.acall(prompt, max_tokens=reaction_max_tokens)
             processing_time = time.time() - start_time
 
             parse_note: Optional[str] = None
@@ -437,8 +441,8 @@ class GeneralAgent(AgentBase):
                 Message("user", prompt_text, role="user")
             )
             logger.info(f"Agent(ID:{self.profile_id}) generate_recommendation 即将调用 model.acall, model={type(self.model).__name__}({getattr(self.model,'config_name','')})")
-        
-            response = await self.model.acall(prompt)
+            rec_max_tokens = int(os.environ.get("ONESIM_RECOMMENDATION_MAX_TOKENS", "4096"))
+            response = await self.model.acall(prompt, max_tokens=rec_max_tokens)
             processing_time = time.time() - start_time
 
             parse_note: Optional[str] = None

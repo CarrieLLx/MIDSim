@@ -1,16 +1,16 @@
 {
     "exposure": {
         "social": {
-            "probability": 0.053,
+            "probability": 0.055,
             "social_feed_budget": 3
         },
         "recommendation": {
-            "probability": 0.85,
+            "probability": 1,
             "types": ["Interest Recommendation"],
-            "alpha": 0.2,
+            "alpha": 0.8,
             "interest_recommendation": {
                 "interest_k": 20,
-                "target_k": 1
+                "target_k": 5
             }
         },
         "search": {

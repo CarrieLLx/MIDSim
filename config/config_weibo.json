@@ -12,7 +12,7 @@
             "additional_config": {
                 "export_event_flow": true,
                 "event_flow_output_file": "event_flow.json",
-                "params_path": "config/params_weibo_qwen25_14B.json"
+                "params_path": "config/params_weibo_llama31_8B.json"
             }
         }
     },

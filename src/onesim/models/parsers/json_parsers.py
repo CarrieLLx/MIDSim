@@ -13,13 +13,28 @@ from ..core.model_response import ModelResponse
 
 from .base import ParserBase
 
-# Rednote-style note_id (24 hex); also used as fallback id scan in truncated JSON
-_NOTE_ID_PATTERN = re.compile(r'"([0-9a-fA-F]{24})"')
+# Rednote 24-hex note_id; Twitter/X 1–20 digit snowflake; Weibo/blog ids often numeric too.
+_CONTENT_ID_PATTERN = re.compile(r'"([0-9a-fA-F]{24}|[0-9]{1,20})"')
+# Backward-compatible alias
+_NOTE_ID_PATTERN = _CONTENT_ID_PATTERN
 _QUOTED_STRING_PATTERN = re.compile(r'"((?:[^"\\]|\\.)*)"')
 
+_RANKED_ID_FIELDS: Tuple[str, ...] = (
+    "ranked_note_ids",
+    "selected_note_ids",
+    "ranked_tweet_ids",
+    "selected_tweet_ids",
+    "ranked_blog_ids",
+    "selected_blog_ids",
+)
+
 DEFAULT_RECOMMENDATION_MATCH_FIELDS: Dict[str, str] = {
-    "ranked_note_ids": "note_id_list",
-    "selected_note_ids": "note_id_list",
+    "ranked_note_ids": "content_id_list",
+    "selected_note_ids": "content_id_list",
+    "ranked_tweet_ids": "content_id_list",
+    "selected_tweet_ids": "content_id_list",
+    "ranked_blog_ids": "content_id_list",
+    "selected_blog_ids": "content_id_list",
 }
 
 DEFAULT_REACTION_MATCH_FIELDS: Dict[str, str] = {
@@ -119,37 +134,8 @@ class JsonBlockParser(ParserBase):
             response.parsed = parsed_json
             return response
         except json.JSONDecodeError as e:
-            recovered = self._recover_parsed_json(json_content)
-            if recovered is not None:
-                n_ids = len(recovered.get("ranked_note_ids") or [])
-                logger.warning(
-                    f"JSON parse failed ({e}); recovered loose structure "
-                    f"({n_ids} ranked_note_ids) from truncated output"
-                )
-                response.parsed = recovered
-                return response
             raise ValueError(f"Failed to parse JSON: {e}") from e
 
-    @staticmethod
-    def _recover_parsed_json(json_content: str) -> Optional[Any]:
-        if not json_content:
-            return None
-        marker = re.search(r'"ranked_note_ids"\s*:\s*\[', json_content)
-        if not marker:
-            return None
-        chunk = json_content[marker.start():]
-        ids: List[str] = []
-        seen: set = set()
-        for match in _NOTE_ID_PATTERN.finditer(chunk):
-            nid = match.group(1)
-            if nid in seen:
-                continue
-            seen.add(nid)
-            ids.append(nid)
-        if ids:
-            return {"ranked_note_ids": ids}
-        return None
-    
     @property
     def format_instruction(self) -> str:
         """
@@ -197,16 +183,21 @@ def _slice_json_array_after_key(body: str, field_name: str) -> Optional[str]:
     return body[start:]
 
 
-def _extract_note_ids_from_text(text: str) -> List[str]:
+def _extract_content_ids_from_text(text: str) -> List[str]:
     ids: List[str] = []
     seen: set = set()
-    for match in _NOTE_ID_PATTERN.finditer(text):
+    for match in _CONTENT_ID_PATTERN.finditer(text):
         nid = match.group(1)
         if nid in seen:
             continue
         seen.add(nid)
         ids.append(nid)
     return ids
+
+
+def _extract_note_ids_from_text(text: str) -> List[str]:
+    """Alias for _extract_content_ids_from_text (legacy name)."""
+    return _extract_content_ids_from_text(text)
 
 
 def _extract_quoted_strings_from_text(text: str) -> List[str]:
@@ -271,6 +262,40 @@ def _extract_loose_json_body(text: str) -> str:
     return text
 
 
+def _salvage_decision_fragments(chunk: str) -> List[Dict[str, Any]]:
+    """Extract decision dicts from truncated JSON where objects may be incomplete."""
+    objs: List[Dict[str, Any]] = []
+    id_pattern = re.compile(
+        r'\{\s*"(?P<id_key>note_id|blog_id|tweet_id)"\s*:\s*"(?P<id>[^"]+)"',
+    )
+    starts = list(id_pattern.finditer(chunk))
+    if not starts:
+        return objs
+    for i, match in enumerate(starts):
+        end = starts[i + 1].start() if i + 1 < len(starts) else len(chunk)
+        body = chunk[match.start() : end]
+        id_key = match.group("id_key")
+        obj: Dict[str, Any] = {id_key: match.group("id")}
+
+        prop_m = re.search(r'"propagation"\s*:\s*(true|false)', body, re.I)
+        obj["propagation"] = prop_m.group(1).lower() == "true" if prop_m else False
+
+        ptype_m = re.search(r'"propagation_type"\s*:\s*"([^"]*)"', body)
+        obj["propagation_type"] = ptype_m.group(1) if ptype_m else ""
+
+        pcontent_m = re.search(r'"propagation_content"\s*:\s*"(.*?)(?:"|$)', body, re.DOTALL)
+        obj["propagation_content"] = (
+            pcontent_m.group(1).replace('\\"', '"') if pcontent_m else ""
+        )
+
+        dr_m = re.search(r'"decision_reason"\s*:\s*"([^"]*)"', body)
+        if dr_m:
+            obj["decision_reason"] = dr_m.group(1)
+
+        objs.append(obj)
+    return objs
+
+
 def recover_decisions_from_text(text: str) -> Optional[List[Any]]:
     """Try to salvage a decisions array from truncated or malformed JSON."""
     body = _extract_loose_json_body(text)
@@ -294,7 +319,10 @@ def recover_decisions_from_text(text: str) -> Optional[List[Any]]:
             objs.append(json.loads(mobj.group(0)))
         except json.JSONDecodeError:
             continue
-    return objs or None
+    if objs:
+        return objs
+    salvaged = _salvage_decision_fragments(chunk)
+    return salvaged or None
 
 
 def parse_json_block_loose(response: ModelResponse) -> Any:
@@ -433,10 +461,18 @@ def parse_memory_response(
 class FieldMatchParser(ParserBase):
     """
     Match and extract named fields from model output without requiring valid JSON.
-    Useful for truncated recommendation responses (ranked_note_ids, etc.).
+    Useful for truncated recommendation responses (ranked_note_ids, ranked_tweet_ids, etc.).
     """
 
-    SUPPORTED_TYPES = frozenset({"note_id_list", "string_list", "bool", "string"})
+    SUPPORTED_TYPES = frozenset({
+        "content_id_list",
+        "note_id_list",
+        "tweet_id_list",
+        "string_list",
+        "bool",
+        "string",
+    })
+    _ID_LIST_TYPES = frozenset({"content_id_list", "note_id_list", "tweet_id_list"})
 
     def __init__(
         self,
@@ -467,14 +503,20 @@ class FieldMatchParser(ParserBase):
 
         if not parsed:
             primary_field, primary_type = next(iter(self.fields.items()))
-            if primary_type == "note_id_list":
-                fallback_ids = _extract_note_ids_from_text(body)
+            if primary_type in self._ID_LIST_TYPES:
+                fallback_ids = _extract_content_ids_from_text(body)
                 if fallback_ids:
+                    inferred_field = primary_field
+                    for field_name in _RANKED_ID_FIELDS:
+                        if re.search(rf'"{re.escape(field_name)}"\s*:\s*\[', body):
+                            inferred_field = field_name
+                            break
                     logger.warning(
                         f"FieldMatchParser: no key matched for {primary_field!r}; "
-                        f"fallback scan found {len(fallback_ids)} note ids"
+                        f"fallback scan found {len(fallback_ids)} content ids "
+                        f"(assigned to {inferred_field!r})"
                     )
-                    parsed[primary_field] = fallback_ids
+                    parsed[inferred_field] = fallback_ids
 
         if not parsed:
             raise ValueError(
@@ -490,10 +532,16 @@ class FieldMatchParser(ParserBase):
     def _extract_field(
         self, body: str, field_name: str, field_type: str
     ) -> Optional[Any]:
-        if field_type == "note_id_list":
+        if field_type in self._ID_LIST_TYPES:
             chunk = _slice_json_array_after_key(body, field_name)
             if chunk:
-                return _extract_note_ids_from_text(chunk)
+                ids = _extract_content_ids_from_text(chunk)
+                if ids and not chunk.rstrip().endswith("]"):
+                    logger.warning(
+                        f"FieldMatchParser: truncated JSON for {field_name!r}; "
+                        f"recovered {len(ids)} content ids via field match"
+                    )
+                return ids
             return None
         if field_type == "string_list":
             chunk = _slice_json_array_after_key(body, field_name)
