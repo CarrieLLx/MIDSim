@@ -959,10 +959,14 @@ class UserAgent(GeneralAgent):
             - 仅当对方在可@列表且与内容强相关 + 不是笔记作者/父评论作者时，才在正文中额外 @user_id；否则 mention_reasoning 为 []。
 
             步骤7：keep_following_note_ids
-            - 仅当：高度感兴趣 + 当前内容有持续关注价值→ keep_following_note_ids=true；否则为空列表 []
+            - 默认 []。keep 是**小概率事件**，绝大多数批次必须输出空列表。
+            - 仅当：本批 decisions 中**至少一条 comment=true**，且你明确要「下一轮再看同一帖」时，才可填入至多 1 个 note_id；否则必须 []。
+            - **禁止**：因不能评论、无聊、想多看内容、或步骤1.5 要求沉默而 keep。
 
             步骤8：search
-            - 仅当：高度感兴趣 + 当前信息明显不足 + memory 无相关内容 → search=true；否则 false。
+            - 默认 false。search 是**小概率事件**，绝大多数批次必须 false。
+            - 仅当：本批存在具体信息缺口，且 memory 完全无相关内容时，才可 search=true。
+            - **禁止**：用 search 代替评论；步骤1.5 已要求沉默或本批全 comment=false 时，search 也必须 false。
 
             【平台表情】
             [doge][害羞R][飞吻R][哭惹R][汗颜R][捂脸R][笑哭R][偷笑R][生气R][赞R][棒R][嘻嘻R][石化R][暗中观察R][微笑R][大笑R][合十R][害羞R][呃R][失望R]
@@ -1461,10 +1465,14 @@ class UserAgent(GeneralAgent):
         - 仅当对方在可@列表且与内容强相关 + 不是笔记作者/父评论作者时，才在正文中额外 @user_id；否则 mention_reasoning 为 []。
 
         步骤6：keep_following_note_ids
-        - 仅当：高度感兴趣 + 当前内容有持续关注价值→ keep_following_note_ids=true；否则为空列表 []
+        - 默认 []。keep 是**小概率事件**，绝大多数批次必须输出空列表。
+        - 仅当：本批 decisions 中**至少一条 comment=true**，且你明确要「下一轮再看同一帖」时，才可填入至多 1 个 note_id；否则必须 []。
+        - **禁止**：因不能评论、无聊、想多看内容、或步骤1.5 要求沉默而 keep。
 
         步骤7：search
-        - 仅当：高度感兴趣 + 当前信息明显不足 + memory 无相关内容 → search=true；否则 false。
+        - 默认 false。search 是**小概率事件**，绝大多数批次必须 false。
+        - 仅当：本批存在具体信息缺口，且 memory 完全无相关内容时，才可 search=true。
+        - **禁止**：用 search 代替评论；步骤1.5 已要求沉默或本批全 comment=false 时，search 也必须 false。
 
         【平台表情】
        [doge][害羞R][飞吻R][哭惹R][汗颜R][捂脸R][笑哭R][偷笑R][生气R][赞R][棒R][嘻嘻R][石化R][暗中观察R][微笑R][大笑R][合十R][害羞R][呃R][失望R]
@@ -1510,8 +1518,8 @@ class UserAgent(GeneralAgent):
             "mention_reasoning": []
             }}
         ],
-            "keep_following_note_ids": [],
-            "keep_following_reason": "为何保持关注（1句，<20字）",
+        "keep_following_note_ids": [],
+        "keep_following_reason": "为何保持关注（1句，<20字）",
         "search": false,
         "search_keyword": "搜索关键词（1句，≤20字）",
         "search_reason": "是否搜索及原因（1句，≤20字）"

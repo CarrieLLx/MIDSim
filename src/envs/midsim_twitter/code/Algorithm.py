@@ -18,7 +18,12 @@ from .embedding_client import (
     get_embeddings,
     load_embedding_config,
 )
-from onesim.utils.midsim_params import recommender_sampling_params, interest_recommendation_candidate_limits, step15_params
+from onesim.utils.midsim_params import (
+    recommender_sampling_params,
+    interest_recommendation_candidate_limits,
+    interest_recommendation_rank_top_k,
+    step15_params,
+)
 from .user_agent_gates import MemorySimilarityGate
 from .utils import (
     enrich_tweet_quote_reply_chain,
@@ -308,6 +313,10 @@ class Algorithm(GeneralAgent):
         # Get candidate tweet ids
         candidate_tweet_ids = list(candidate_tweet_ids) if candidate_tweet_ids else []
         interest_k, target_k = await interest_recommendation_candidate_limits(self)
+        rank_top_k = await interest_recommendation_rank_top_k(self)
+        env_top_k = os.environ.get("ONESIM_REC_RANK_TOP_K", "").strip()
+        if env_top_k:
+            rank_top_k = max(1, int(env_top_k))
 
         ids_for_user: List[str] = []
         if candidate_tweet_ids:
@@ -327,6 +336,17 @@ class Algorithm(GeneralAgent):
         feed_eligible = [tweet_id for tweet_id in feed_tweet_ids if tweet_id not in pool_set]
         random.shuffle(feed_eligible)
         feed_sample: List[str] = feed_eligible[:target_k]
+
+        debug_preview_len = int(
+            os.environ.get("ONESIM_REC_DEBUG_CONTENT_CHARS", "300")
+        )
+        feed_preview = []
+        for tid in feed_sample:
+            tweet = _resolve_tweet(tid)
+            content = ""
+            if isinstance(tweet, dict):
+                content = str(tweet.get("content", "") or "")[:debug_preview_len]
+            feed_preview.append({"tweet_id": tid, "content": content})
 
         # Mix candidate pool and current feed
         pool_ids: List[str] = list(pool_sample) + feed_sample
@@ -363,30 +383,30 @@ class Algorithm(GeneralAgent):
             )
         else:
             user_profile_prefix = ""
-            
+
+        output_k = min(int(rank_top_k), len(pool_ids))
         instruction = f"""
-        You are a recommendation-system assistant. Given the full candidate tweet_id set below, output one **complete ranked list** (highest to lowest interest) and return strict JSON only.
+        You are a recommendation-system assistant. Given the candidate tweet_id set below, output the **top {output_k}** tweets by estimated user interest (highest to lowest). Return strict JSON only.
 
         [Goal — align with user interests]
         1) **Primary ranking signal (highest weight)**: Using **interest_tags, description, historical_summary** from the user profile, estimate how well each tweet matches the user on **topic domain, role/identity, long-term concerns, and expression style**; rank higher content the user is more likely to open, dwell on, reply to, or retweet.
         2) **Semantic and tag matching**: Among title, truncated description (desc), and tags_list, prefer tweets that **directly match or strongly relate** to explicit interest tags or recurring concerns in the profile summary over weakly associated content.
         3) **Secondary signal (tie-break when primary scores are close)**: Whether information is complete and readable (title + desc convey the topic; not empty clickbait), and whether tags align with the body; when relevance is similar, prefer tweets that are **more specific and informative** over vague or repetitive ones.
-        4) **Light diversity constraint**: After primary ranking, if adjacent tweets are nearly identical in topic, you may slightly separate them so the top of the list covers a broader interest surface (still obey the hard constraints below: full coverage, no dropped ids).
+        4) **Light diversity constraint**: In the top-{output_k} list, if several picks are nearly identical in topic, prefer a slightly broader mix when scores are close.
 
         Return strict JSON:
         {{
-        "ranked_tweet_ids": ["id1", "id2", ...],
-        "per_tweet_category": ["category1", "category2", ...]
+        "ranked_tweet_ids": ["id1", "id2", ...]
         }}
 
-        Field notes:
-        - per_tweet_category: **same length** as ranked_tweet_ids; item i is a **short category label** for the i-th ranked tweet (about 2–12 words), e.g. "Academia/Submission", "Life/Food", "Emotion/Growth", reflecting topic or intent; when a user profile is present, you may hint which profile interest it aligns with—do not write long rationales.
         Constraints:
-        1) Every id must come from the candidate tweet_id list below and **cover the full set**;
-        2) No duplicates;
-        3) per_tweet_category must match ranked_tweet_ids in count and one-to-one order;
+        1) **Full coverage**: `ranked_tweet_ids` must contain **every** id from the candidate list below — **no omissions**.
+        2) **No duplicates**: each candidate id appears **exactly once**.
+        3) Every id must come from the candidate tweet_id list below;
+        4) **stop after {output_k} ids** — do not repeat ids or extend the list;
+        5) Output only the JSON object above.
         """
-        desc_max = 800
+        desc_max = 400
         candidate_payload: List[Dict[str, Any]] = []
         observation = ""
         total_len = 0
@@ -395,7 +415,7 @@ class Algorithm(GeneralAgent):
             pool_ids_json = json.dumps(pool_ids, ensure_ascii=False)
             observation = (
                 f"{user_profile_prefix}"
-                f"Full candidate tweet_id set (rank only within this set): {pool_ids_json}\n\n"
+                f"Full candidate tweet_id set: {pool_ids_json}\n\n"
                 f"Candidate tweet details:\n{json.dumps(candidate_payload, ensure_ascii=False)}"
             )
             total_len = len(instruction) + len(observation)
@@ -446,6 +466,10 @@ class Algorithm(GeneralAgent):
             logger.warning(f"LLM interest recommendation failed: {e}")
             return {}
 
+        # Keep at most top-K from LLM ranking
+        if output_k > 0:
+            ordered_ids = ordered_ids[:output_k]
+
         # Get top tweet ids
         if not ordered_ids:
             return {}
@@ -467,6 +491,37 @@ class Algorithm(GeneralAgent):
             n = _tweet_from_contents_only(sid)
             if n is not None:
                 out[sid] = n
+
+        debug_preview_len = int(
+            os.environ.get("ONESIM_REC_DEBUG_CONTENT_CHARS", "300")
+        )
+        kept_preview = [
+            {
+                "tweet_id": sid,
+                "content": (
+                    str(tweet.get("content", "") or "")[:debug_preview_len]
+                ),
+            }
+            for sid, tweet in out.items()
+        ]
+        logger.debug(
+            "interest_recommendation feed_sample: agent={} target_k={} eligible={} sampled={}",
+            self.profile_id, target_k, len(feed_eligible), len(feed_sample),
+        )
+        logger.debug("interest_recommendation feed_sample tweets: {}", json.dumps(feed_preview, ensure_ascii=False))
+        logger.debug(
+            "interest_recommendation final: agent={} output_k={} limit={} "
+            "ranked_top_ids={} kept={}",
+            self.profile_id,
+            output_k,
+            limit,
+            len(top_ids),
+            len(out)
+        )
+        logger.debug(
+            "interest_recommendation kept tweets: {}",
+            json.dumps(kept_preview, ensure_ascii=False),
+        )
         return out
 
     async def send_recommendation_results(self, event: Event) -> List[Event]:

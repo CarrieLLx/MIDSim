@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Literal, Optional, Set, Tuple, Union
 
 from loguru import logger
 from onesim.utils.midsim_params import (
+    is_llama_agent_profile,
     memory_similarity_gate_params,
     user_low_activity_memory_gate_threshold,
     user_stale_days,
@@ -72,7 +73,7 @@ class MemorySimilarityGate:
         "**strong bias toward propagation=false** (treat as same thread / easy duplicate topic; strictly re-check step 1.5 "
         "before repost=true);"
     )
-    STRICT_STEP15_COACHING = """
+    STRICT_SIM_COACHING = """
                 Step 1.5: Check for "duplicate topic" against memory (complete before step 2)
                 - If the current content refers to the same incident / dispute / issue as memory, and your stance, tone, or conclusion in memory would closely match what you would say in this reply → treat this as "almost certainly keep the default of propagation=false", unless you can state clearly that, relative to what is already in memory, you will add **a new fact readers can perceive** (you must be able to name it: a specific person, event, time, rule, or number; rephrasing alone or vague "new angle" / "new reasoning" does not count).
                 - If memory already has multiple entries on the same kind of topic, or you have recently engaged on similar content → lean toward propagation=false this round unless there is **materially new development** (new information, or the other party raises an argument not covered in memory).
@@ -80,7 +81,21 @@ class MemorySimilarityGate:
                 - **memory_reflection must not contradict itself**: if you first say it overlaps with memory / same topic / already discussed / related to a prior event, then use "but" / "although" / "things may have updated" / "might still weigh in" / "still worth a brief comment" or similar turns **without a concrete new fact** to hint that you should comment — treat that as invalid; if you judge overlap or near–no engagement, memory_reflection must **throughout** conclude toward silence or clearly no new information, and must not use vague wording to let yourself off the hook.
                 - **The more you have in memory, the more you should hold back**: even if (1) and (2) can be met on paper, still treat **propagation=true for this item as a low-probability event**—default stays propagation=false; break the rule only when new information **clearly escalates** the situation (e.g. changes the phase of the event, overturns or corrects a judgment already in your memory, or introduces a key new actor or rule). Do not repost just because you "barely" satisfy the bar with a throwaway line.
                 - **Also disallowed**: admitting the same thread as memory, then using vague lines like "but this gives a new instance of the problem" / "new situation" / "another case" / "worth noting" / "worth further attention" / "new informational anchor" to imply you should comment — unless the same sentence states **one namable difference** beyond memory (e.g. a phenomenon, time, link, or rule name **unique** to this post).
+                - **If memory already shows you responded on this kind of content, treat this as "almost certainly keep the default propagation=false"**.
                 Summarize the above briefly in memory_reflection; if you do not comment, decision_reason must state overlap with memory / already stated / no new information, etc.
+                """
+    # twitter_rec llama31: stricter batch-wide silence when low activity + memory / kw / emb overlap
+    LLAMA_STRICT_SIM_COACHING = """
+                Step 1.5: When this batch overlaps memory, keep all decisions propagation=false; do not propagate any tweet in this batch.
+                - If the current content refers to the same incident / dispute / issue as memory, and your stance, tone, or conclusion in memory would closely match what you would say in this reply → treat this as "almost certainly keep the default of propagation=false", unless you can state clearly that, relative to what is already in memory, you will add **a new fact readers can perceive** (you must be able to name it: a specific person, event, time, rule, or number; rephrasing alone or vague "new angle" / "new reasoning" does not count).
+                - If memory already has multiple entries on the same kind of topic, or you have recently engaged on similar content → lean toward propagation=false this round unless there is **materially new development** (new information, or the other party raises an argument not covered in memory).
+                - On the recommendation feed with weak ties, or when your relationship with the author is weak, be more conservative about making an exception.
+                - **memory_reflection must not contradict itself**: if you first say it overlaps with memory / same topic / already discussed / related to a prior event, then use "but" / "although" / "things may have updated" / "might still weigh in" / "still worth a brief comment" or similar turns **without a concrete new fact** to hint that you should comment — treat that as invalid; if you judge overlap or near–no engagement, memory_reflection must **throughout** conclude toward silence or clearly no new information, and must not use vague wording to let yourself off the hook.
+                - **The more you have in memory, the more you should hold back**: even if (1) and (2) can be met on paper, still treat **propagation=true for this item as a low-probability event**—default stays propagation=false; break the rule only when new information **clearly escalates** the situation (e.g. changes the phase of the event, overturns or corrects a judgment already in your memory, or introduces a key new actor or rule). Do not repost just because you "barely" satisfy the bar with a throwaway line.
+                - **Also disallowed**: admitting the same thread as memory, then using vague lines like "but this gives a new instance of the problem" / "new situation" / "another case" / "worth noting" / "worth further attention" / "new informational anchor" to imply you should comment — unless the same sentence states **one namable difference** beyond memory (e.g. a phenomenon, time, link, or rule name **unique** to this post).
+                - **If memory already shows you responded on this kind of content, treat this as "almost certainly keep the default propagation=false"**.
+                Summarize the above briefly in memory_reflection; if you do not comment, decision_reason must state overlap with memory / already stated / no new information, etc.
+                If this batch shares the same event/topic as memory (including keyword or semantic overlap judged by the system), all tweets in this batch must stay propagation=false; no item may propagate.
                 """
     _STOPWORDS: Set[str] = {
         "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
@@ -540,15 +555,25 @@ class MemorySimilarityGate:
     async def memory_prompt_coaching(
         self,
         *,
+        memory_nonempty_hit: bool,
+        keyword_hit: bool,
         embedding_hit: bool,
         activity: float,
     ) -> Tuple[str, str, str]:
+        """Return (memory_coaching, memory_rec, memory_ref); strict step 1.5 when (low activity + memory) or kw or emb."""
         threshold = await user_low_activity_memory_gate_threshold(self._agent)
-        if activity < threshold and embedding_hit:
+        strict = activity < threshold and embedding_hit
+        if strict:
+            coaching = self.STRICT_SIM_COACHING
+            if await is_llama_agent_profile(self._agent, "en"):
+                coaching = self.LLAMA_STRICT_SIM_COACHING
             return (
-                self.STRICT_STEP15_COACHING,
+                coaching,
                 '0. Not trapped by step 1.5 "almost no engagement", or you have a verifiable new point;',
-                "2-3 sentences: same event as memory? already stated? should stay silent? if exception, name the new info",
+                "Exactly ONE sentence, choose ONE branch only: "
+                "(SILENCE) No namable new fact beyond Memory for this batch → state overlap and default silence. "
+                "(EXCEPTION) One concrete new fact not in Memory → name person/event/time/number in the same sentence; "
+                "do NOT first admit full overlap then hedge.",
             )
         return (
             "",
@@ -970,7 +995,11 @@ class UserAgentGates:
 
         sim = await self.memory_similarity.evaluate(topic_text)
         kw_coaching, emb_coaching, emb_hit = self.memory_similarity.coaching(sim)
+        mem_nonempty_hit = bool((sim.get("memory_nonempty") or {}).get("inject"))
+        kw_hit = bool((sim.get("keyword") or {}).get("inject"))
         memory_coaching, memory_rec, memory_ref = await self.memory_similarity.memory_prompt_coaching(
+            memory_nonempty_hit=mem_nonempty_hit,
+            keyword_hit=kw_hit,
             embedding_hit=emb_hit,
             activity=act,
         )

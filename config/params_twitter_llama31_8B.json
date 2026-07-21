@@ -7,10 +7,11 @@
         "recommendation": {
             "probability": 1,
             "types": ["Interest Recommendation"],
-            "alpha": 0.8,
+            "alpha": 0.75,
             "interest_recommendation": {
-                "interest_k": 20,
-                "target_k": 5
+                "interest_k": 10,
+                "target_k": 10,
+                "rank_top_k": 20
             }
         },
         "search": {
@@ -29,7 +30,7 @@
             "keyword_enabled": true,
             "embedding_enabled": true,
             "min_common_tokens": 2,
-            "embed_threshold": 0.6,
+            "embed_threshold": 0.59,
             "include_historical_summary": true,
             "embedding_config_path": "",
             "embed_max_chars": 400,

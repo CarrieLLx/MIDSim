@@ -235,17 +235,6 @@ def _monitor_utils():
     return safe_get, log_metric_error
 
 
-def default_reference_csv_path() -> str:
-    root = find_project_root()
-    candidates = [
-        os.path.join(root, "datasets", "rednote", "comments.csv"),
-    ]
-    for p in candidates:
-        if os.path.isfile(p):
-            return p
-    return candidates[0]
-
-
 def load_reference_comments_by_note(csv_path: str) -> Dict[str, List[str]]:
     by_note: Dict[str, List[str]] = defaultdict(list)
     if not csv_path or not os.path.isfile(csv_path):
@@ -330,11 +319,8 @@ def calculate_text_max_reference_similarity(data: Dict[str, Any]) -> Any:
             log_metric_error(metric_id, ValueError("content_pool is not a dict"), {})
             return None
 
-        csv_path = (
-            safe_get(data, "reference_csv_path", None)
-            or default_reference_csv_path()
-        )
-        reference_by_note = load_reference_comments_by_note(str(csv_path))
+        csv_path = safe_get(data, "reference_csv_path", None)
+        reference_by_note = load_reference_comments_by_note(str(csv_path) if csv_path else "")
         if not reference_by_note:
             log_metric_error(
                 metric_id,

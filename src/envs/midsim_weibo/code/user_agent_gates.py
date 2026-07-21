@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Literal, Optional, Set, Tuple, Union
 
 from loguru import logger
 from onesim.utils.midsim_params import (
+    is_llama_agent_profile,
     memory_similarity_gate_params,
     user_low_activity_memory_gate_threshold,
     user_low_activity_time_module_threshold,
@@ -65,7 +66,7 @@ class MemorySimilarityGate:
         "- 向量相似度达到设定阈值，本批话题与记忆中内容相近 → **强烈倾向 repost=false**"
         "（视同同脉络/易重复话题，须严格按步骤1.5 评估是否仍 repost=true）；"
     )
-    STRICT_STEP15_COACHING = """
+    STRICT_SIM_COACHING = """
                 步骤1.5：对照 memory 做「重复话题」检查（在步骤2之前完成）
                 - 默认 repost=false。若当前内容与 memory 指向**同一事件/同一问题/同一争议脉络**，或与 memory 中重叠的词超过1个，无论你是否**已在同类内容上转发、表态过**，则**几乎必须保持repost=false**。
                 - **若要破例，须同时满足以下三项，缺一不可：**
@@ -76,6 +77,20 @@ class MemorySimilarityGate:
                 - **memory 越多、越要克制**：即便（1）（2）（3）在字面上都能凑上，仍应把「本条 repost=true」当成**小概率事件**——默认继续 repost=false；仅当新信息**明显升级**（例如改变事件阶段、推翻或修正你 memory 中的既有判断、或出现关键新主体/新规则）时才可破例，禁止「勉强达标就评一句」。
                 - **memory_reflection 禁止自相矛盾**：先写「与 memory 重叠/同一话题/已讨论过」等，又用无（1）+（2）支撑的转折暗示可以评论——一律视为无效；若判定重叠或几乎 repost=false，memory_reflection 须**通篇**结论为倾向沉默或明确无新信息，不得以模糊语气自我放行。
                 将上述结论简要写入 memory_reflection；不转发时 decision_reason 须点明「与 memory 重叠/已表态/无新信息/缺新信息或缺强动机」等。
+                """
+    # weibo_rec llama31: stricter batch-wide silence when low activity + memory_nonempty
+    LLAMA_STRICT_SIM_COACHING = """
+                步骤1.5：本批与 memory 重叠时，decisions 中全部 repost=false，不得对任一条 blog 转发。
+                - 默认 repost=false。若当前内容与 memory 指向**同一事件/同一问题/同一争议脉络**，或与 memory 中重叠的词超过1个，无论你是否**已在同类内容上转发、表态过**，则**几乎必须保持repost=false**。
+                - **若要破例，须同时满足以下三项，缺一不可：**
+                · **（1）可核对的新信息点**：`decision_reason` 须在**单句**内写清相对 memory、帖中**独有**且可指认的一条新增事实（须出现具体人/机构/日期/数字/规则名或链接类标识之一）；不得单独用「新细节」「新进展」「新讨论点」「又一例」「再关注」「同类再发酵」「略多一句」等空话充数。
+                · **（2）强动机**：**强烈情绪动机**（同句或紧邻句须点明具体情绪落点，禁止空泛「有感触」「想说两句」）。
+                · **（3）明确扩散动机**：**明确扩散动机**（须点明为维护/帮扩/站队**具体的**互关、关注或好友，写清对象，禁止笼统「支持一下」）。
+                - **同时**具备可核对新信息 **与**强烈情绪 **与** 明确扩散动机，仅有情绪/扩散而无新信息、或仅有新信息而无强情绪/扩散动机，均 repost=false，避免同题刷屏。
+                - **memory 越多、越要克制**：即便（1）（2）（3）在字面上都能凑上，仍应把「本条 repost=true」当成**小概率事件**——默认继续 repost=false；仅当新信息**明显升级**（例如改变事件阶段、推翻或修正你 memory 中的既有判断、或出现关键新主体/新规则）时才可破例，禁止「勉强达标就评一句」。
+                - **memory_reflection 禁止自相矛盾**：先写「与 memory 重叠/同一话题/已讨论过」等，又用无（1）+（2）支撑的转折暗示可以评论——一律视为无效；若判定重叠或几乎 repost=false，memory_reflection 须**通篇**结论为倾向沉默或明确无新信息，不得以模糊语气自我放行。
+                将上述结论简要写入 memory_reflection；不转发时 decision_reason 须点明「与 memory 重叠/已表态/无新信息/缺新信息或缺强动机」等。
+                若本批内容与 memory 属同一事件/话题（含系统判定的关键词或语义重叠），则本批所有 blog 一律 repost=false，禁止任何一条转发。
                 """
     _STOPWORDS: Set[str] = {
         "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
@@ -486,8 +501,11 @@ class MemorySimilarityGate:
         """Return (memory_coaching, memory_rec, memory_ref); strict step 1.5 needs low activity + memory_nonempty."""
         threshold = await user_low_activity_memory_gate_threshold(self._agent)
         if activity < threshold and memory_nonempty_hit:
+            coaching = self.STRICT_SIM_COACHING
+            if await is_llama_agent_profile(self._agent, "zh"):
+                coaching = self.LLAMA_STRICT_SIM_COACHING
             return (
-                self.STRICT_STEP15_COACHING,
+                coaching,
                 "0. 破例须**同时**具备（1）可核对新信息点 **与**（2）强烈情绪动机 **与** （3）明确扩散动机，缺一仍 repost=false；若不触发步骤1.5 的重叠情形，本条可视为已满足；",
                 "2-3句。无相关记忆可写「无相关记忆/首次接触」；有同题时说明是否重叠；若重叠倾向不转发，可说明是否仍有一句评论欲（仅评论不转发）",
             )

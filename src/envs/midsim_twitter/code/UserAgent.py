@@ -67,6 +67,7 @@ class UserAgent(GeneralAgent):
         self.register_event("StartEvent", "generate_memory_from_own_tweets")
         self.register_event("SocialRecommendationEvent", "receive_recommendation")
         self.register_event("AlgorithmRecommendationEvent", "receive_recommendation")
+        self.register_event("SearchResultEvent", "receive_recommendation")
         self.register_event("KeepFollowingEvent", "receive_recommendation")
         self.register_event("MentionEvent", "handle_mention")
 

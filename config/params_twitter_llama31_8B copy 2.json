@@ -1,21 +1,22 @@
 {
     "exposure": {
         "social": {
-            "probability": 1,
-            "social_feed_budget": 0
+            "probability": 0.22,
+            "social_feed_budget": 3
         },
         "recommendation": {
             "probability": 1,
             "types": ["Interest Recommendation"],
-            "alpha": 0.2,
+            "alpha": 0.75,
             "interest_recommendation": {
-                "interest_k": 20,
-                "target_k": 1
+                "interest_k": 10,
+                "target_k": 10,
+                "rank_top_k": 20
             }
         },
         "search": {
             "types": ["Relevant Search"],
-            "alpha": 0.2
+            "alpha": 0.5
         },
         "notification": {
             "attention_budget": 10
@@ -29,7 +30,7 @@
             "keyword_enabled": true,
             "embedding_enabled": true,
             "min_common_tokens": 2,
-            "embed_threshold": 0.55,
+            "embed_threshold": 0.6,
             "include_historical_summary": true,
             "embedding_config_path": "",
             "embed_max_chars": 400,
@@ -48,9 +49,11 @@
             "low_activity_memory_gate_threshold": 0.8
         },
         "interaction_threshold": {
-            "same_targets": { "support": [1, 2, 3, 4], "probs": [0.8, 0.1, 0.07, 0.03] },
-            "diff_targets": { "support": [1, 2, 3, 4, 5], "probs": [0.7, 0.2, 0.08, 0.02, 0.01] },
-            "keep_following": { "support": [0, 1], "probs": [0.9784, 0.0252] }
+            "same_targets": { "support": [1, 2, 3], "probs": [0.6, 0.3, 0.1] },
+            "diff_targets": { "support": [1, 2, 3, 4, 5], "probs": [0.4, 0.3, 0.2, 0.05, 0.05] },
+            "keep_following": { "support": [0, 1], "probs": [0.9961, 0.0039] },
+            "propagation_type": { "support": ["retweet", "reply", "quote"], "probs": [0.7, 0.03, 0.27] },
+            "mention_type": { "support": ["retweet", "reply", "quote"], "probs": [0.0, 0.9, 0.1] }
         }
     },
     "simulator": {
@@ -63,6 +66,6 @@
     },
     "agent": {
         "backbone_profile": "llama",
-        "general_agent_locale": "zh"
+        "general_agent_locale": "en"
     }
 }

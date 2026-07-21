@@ -10,7 +10,8 @@
             "alpha": 0.5,
             "interest_recommendation": {
                 "interest_k": 20,
-                "target_k": 3
+                "target_k": 3,
+                "rank_top_k": 20
             }
         },
         "search": {
@@ -28,8 +29,8 @@
             "multi_combine": "or",
             "keyword_enabled": true,
             "embedding_enabled": true,
-            "min_common_tokens": 8,
-            "embed_threshold": 0.65,
+            "min_common_tokens": 4,
+            "embed_threshold": 0.63,
             "include_historical_summary": true,
             "embedding_config_path": "",
             "embed_max_chars": 400,
