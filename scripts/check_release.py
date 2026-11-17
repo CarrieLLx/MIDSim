@@ -157,7 +157,9 @@ def check(root, publication=False):
 
     if publication:
         require({p.name for p in config.iterdir()} == CONFIGS, "Publication must contain exactly seven config files")
-        require({p.name for p in (root / "datasets").iterdir()} == set(DATASETS), "Unexpected dataset directory")
+        require({p.name for p in (root / "datasets").iterdir()} == set(DATASETS) | {"README.md"},
+                "Unexpected dataset entry")
+        available(root / "datasets/README.md")
         require({p.name for p in (root / "src/envs").iterdir()} == set(PLATFORMS) | {".gitignore"},
                 "Unexpected environment directory")
         allowed = {".git", ".gitignore", ".gitattributes", "README.md", "LICENSE", "setup.py",

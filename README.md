@@ -82,6 +82,8 @@ The authoritative simulation inputs are `src/envs/<platform>/topics/<slug>/`: us
 
 The root `datasets/` directories contain source records and reference vectors. These source tables can describe an earlier selection than an independently adjusted topic bundle, particularly the Instagram housing topic; use the topic bundle for the actual run population and counts. Collection and rebuilding procedures are not included in this runtime release.
 
+See the [dataset README](datasets/README.md) for file formats, record counts, key fields, reference vectors and Git LFS download instructions.
+
 The four reference-vector files required by the current topics are:
 
 - `datasets/facebook/embeddings/bge-base-en-v1.5_embeddings.json`

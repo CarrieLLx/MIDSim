@@ -179,6 +179,7 @@ config/model_config_tokenkey.json
 !/docs/model_request_retries.md
 
 /datasets/*
+!/datasets/README.md
 !/datasets/facebook/
 !/datasets/ins/
 !/datasets/x/
