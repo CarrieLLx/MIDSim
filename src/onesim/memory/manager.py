@@ -61,7 +61,7 @@ class MemoryManager:
             class_name = metric_info['class']
             init_args = metric_info.get('init_args', {})
 
-            # 动态导入模块和类
+            # Import the module and class dynamically.
             try:
                 module = importlib.import_module('onesim.memory.metric')
                 metric_class = getattr(module, class_name)

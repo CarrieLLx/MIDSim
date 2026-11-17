@@ -1,0 +1,4 @@
+source_agent,target_agent,direction,relationship_type
+sonjapalmore,sonja.brown.5205,unidirectional,follower
+sonja.brown.5205,sonjapalmore,unidirectional,follower
+sonja.brown.5205,ad.droughn,unidirectional,follower

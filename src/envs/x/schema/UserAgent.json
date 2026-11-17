@@ -1,0 +1,185 @@
+{
+  "id": {
+    "type": "str",
+    "default": "ffffffffffffffffffffffff",
+    "private": false,
+    "sampling": "default",
+    "description": "Original platform account username; stable user ID"
+  },
+  "username": {
+    "type": "str",
+    "default": "",
+    "private": true,
+    "sampling": "default",
+    "description": "X account display name"
+  },
+  "description": {
+    "type": "str",
+    "default": "No description yet",
+    "private": false,
+    "sampling": "default",
+    "description": "User's personal description"
+  },
+  "location": {
+    "type": "str",
+    "default": "",
+    "private": false,
+    "sampling": "default",
+    "description": "User's geographic location"
+  },
+  "follow_count": {
+    "type": "int",
+    "default": 0,
+    "private": true,
+    "sampling": "default",
+    "description": "Number of follow"
+  },
+  "fan_count": {
+    "type": "int",
+    "default": 0,
+    "private": true,
+    "sampling": "default",
+    "description": "Number of fan"
+  },
+  "is_official": {
+    "type": "bool",
+    "default": false,
+    "private": false,
+    "sampling": "default",
+    "description": "Whether the user is an official account"
+  },
+  "own_post_comment_tier": {
+    "type": "str",
+    "default": "low",
+    "private": true,
+    "sampling": "none",
+    "description": "low/mid/high: how often the author adds a root comment on their own post"
+  },
+  "comment_reply_tier": {
+    "type": "str",
+    "default": "low",
+    "private": true,
+    "sampling": "none",
+    "description": "low/mid/high: how often the author replies under comments on their own post"
+  },
+  "interest_tags": {
+    "type": "list",
+    "default": [],
+    "private": false,
+    "sampling": "llm",
+    "description": "User's interest tag list",
+    "sample_size": 5
+  },
+  "activity_level": {
+    "type": "float",
+    "default": 0.5,
+    "private": false,
+    "sampling": "default",
+    "description": "User's activity level"
+  },
+  "follow_ids": {
+    "type": "list",
+    "default": [],
+    "private": true,
+    "sampling": "default",
+    "description": "List of follow user IDs"
+  },
+  "fan_ids": {
+    "type": "list",
+    "default": [],
+    "private": true,
+    "sampling": "default",
+    "description": "List of fan user IDs"
+  },
+  "recommended_post_ids": {
+    "type": "list",
+    "default": [],
+    "private": true,
+    "sampling": "default",
+    "description": "List of content IDs received"
+  },
+  "recommendations": {
+    "type": "dict",
+    "default": {},
+    "private": true,
+    "sampling": "none",
+    "description": "Dictionary of post content pushed by social network. The key is the post ID, the value is a dictionary containing post ID, title, content, publisher ID, publisher nickname, publication time, and other fields."
+  },
+  "mentions": {
+    "type": "dict",
+    "default": {},
+    "private": true,
+    "sampling": "none",
+    "description": "Dictionary of mentions."
+  },
+  "last_login_timestamp": {
+    "type": "int",
+    "default": 0,
+    "private": true,
+    "sampling": "default",
+    "description": "The timestamp of the last mention check."
+  },
+  "supplement_review_state": {
+    "type": "dict",
+    "default": {},
+    "private": true,
+    "sampling": "none",
+    "description": "Per-post own-comment review state: last_review_ms and last_comment_count. Re-review only if never reviewed or comment count changed."
+  },
+  "historical_posts": {
+    "type": "dict",
+    "default": {},
+    "private": true,
+    "sampling": "default",
+    "description": "Historical posts keyed by post ID; id, content, time, url, user_id and username use the shared social input format."
+  },
+  "historical_summary": {
+    "type": "str",
+    "default": "",
+    "private": false,
+    "sampling": "default",
+    "description": "The summary of the historical posts"
+  },
+  "historical_comments": {
+    "type": "dict",
+    "default": {},
+    "private": true,
+    "sampling": "default",
+    "description": "Authored historical replies; root post and ancestor_comments provide exact conversation context."
+  },
+  "profile_visit_audit": {
+    "type": "list",
+    "default": [],
+    "private": true,
+    "sampling": "default",
+    "description": "Per-step discovery decisions, following shortlist and opened reply paths."
+  },
+  "protected": {
+    "type": "bool",
+    "default": false,
+    "private": true,
+    "sampling": "default",
+    "description": "Only followers can inspect this account history."
+  },
+  "bookmark_post_ids": {
+    "type": "list",
+    "default": [],
+    "private": true,
+    "sampling": "default",
+    "description": "Posts selected for next-round re-exposure."
+  },
+  "author_prior_evidence": {
+    "type": "dict",
+    "default": {},
+    "private": true,
+    "sampling": "none",
+    "description": "Historical author-prior sample counts, coverage and fallback provenance."
+  },
+  "statuses_count": {
+    "type": "int",
+    "default": 0,
+    "private": true,
+    "sampling": "default",
+    "description": "Total number of posts reported by the source account profile."
+  }
+}

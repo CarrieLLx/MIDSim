@@ -1,0 +1,627 @@
+{
+  "validation": "PASS",
+  "window_days": 24,
+  "window_scope": "post_publication_only",
+  "comment_time_filter": false,
+  "topic_count": 7,
+  "totals_across_topics": {
+    "post_count": 98,
+    "comment_count": 359,
+    "user_count": 425,
+    "relationship_count": 1263
+  },
+  "unique_user_count": 421,
+  "unique_observed_comment_count": 359,
+  "counting_rule": "Filter post publication time to [start, end) using the original filtered X account cohort. Cascade the original filtered annotated comments from those posts without checking comment times. Include all authors of selected posts and retained comments.",
+  "relationship_rule": "Retain collected relationships between cascaded users in the same topic. Do not filter relationship establishment or collection time.",
+  "history_rule": "Retain historical background owned by selected users, including full collected discussion context; do not restrict background history to the 24-day experiment window.",
+  "note": "Initial simulation comments are empty. Filtered comments are retained regardless of their timestamp. Users and relationships cascade from the selected posts/comments.",
+  "checks": {
+    "posts": "all_retained_posts_in_window",
+    "comments": "all_filtered_messages_on_selected_posts; no_time_filter",
+    "users": "exact_union_of_selected_post_and_filtered_comment_authors",
+    "relationships": "same_topic_cascaded_user_endpoints; no_time_filter"
+  },
+  "dataset_counts": {
+    "posts": 98,
+    "comments": 359,
+    "users": 421,
+    "relationship_records": 2522,
+    "unique_follow_edges": 1261,
+    "excluded_comments": 0,
+    "activity_cutoffs": 421
+  },
+  "background_history": {
+    "historical_posts.jsonl": {
+      "original_rows": 28668,
+      "retained_rows": 25394,
+      "scope": "selected_owner_background; not restricted to experiment window"
+    },
+    "historical_comments.jsonl": {
+      "original_rows": 177859,
+      "retained_rows": 134977,
+      "scope": "selected_owner_background; not restricted to experiment window"
+    }
+  },
+  "official_account_review": {
+    "source": "config/datasets/x/account_identity_review.json",
+    "reviewed_active_users": 421,
+    "unique_official_users": 46,
+    "official_profiles_across_topics": 47
+  },
+  "source_sha256": {
+    "config/datasets/x/selection_24day.json": "e95a597a333d5518abb5e3ff17fa4eb3aa07fcd71807fc43fd21ffd0f1738a7d",
+    "config/datasets/x/account_identity_review.json": "e5a259fadc690c4c90465ab0828015c292e66be8875610e353039e829b2a0052",
+    "datasets/pre_data/x_window24_sources/posts.jsonl": "cca7f318ea2553c504058d6b3be4dbd761b2c16fbb40e90e3b83feaa9e76b816",
+    "datasets/pre_data/x_window24_sources/comments.jsonl": "c174b1fbbcc404d10eee414c198f2c3adbae1862a2daf59b5699ce2bbe9d4e08",
+    "datasets/pre_data/x_annotation_view/x_pre_annotator_view.csv": "ca68253febb9920daa67ffef2d45baf07276f2701e7a5c144f096954f82898f5",
+    "datasets/pre_data/x_annotation_view/x_observed_annotator_view.csv": "7192716a57e622d52bbfe5044133784ad77408c024b3e07ea74feb946331fc6f",
+    "config/datasets/x/filtered_accounts.txt": "cea1bfa7222763a087bea6cf64b665eb95ac562cbed838252254b1f5c551284a",
+    "datasets/pre_data/x_window24_sources/user_profiles.jsonl": "de78000bc2c0415e9d6211526bffbb68ed4211e267dbc4403ee2699e8b80371a",
+    "datasets/pre_data/x_window24_sources/relationships.csv": "3a5ecb68d70fa40dff042cf6915db7fa18e83ada8cee80d07e58a51a597974f0",
+    "datasets/pre_data/x_window24_sources/historical_posts.jsonl": "d6e8cbdaa2afbdceb3da21291a0b3559630d5c228c8acaaa1226ee2bd012af28",
+    "datasets/pre_data/x_window24_sources/historical_comments.jsonl": "45189771844b09f59ba0312f8bbcef09152a78dbda15d9f56ede1809d95762b5"
+  },
+  "topics": [
+    {
+      "slug": "fmla_c334ab",
+      "topic": "Should paid family and parental leave be provided?",
+      "keyword": "paid parental leave",
+      "post_count": 11,
+      "comment_count": 29,
+      "user_count": 38,
+      "relationship_count": 99,
+      "window": {
+        "days": 24,
+        "start": "2021-10-16",
+        "end": "2021-11-09",
+        "timezone": "UTC",
+        "end_inclusive": false
+      },
+      "excluded_comment_count": 0,
+      "relationship_time_status": "not_used_for_selection",
+      "window_scope": "post_publication_only",
+      "comment_time_filter": false,
+      "observed_thread_count": 29,
+      "excluded_comment_reasons": {},
+      "posts": [
+        {
+          "post_id": "1449431188666470406",
+          "comment_count": 1
+        },
+        {
+          "post_id": "1450904800799961088",
+          "comment_count": 2
+        },
+        {
+          "post_id": "1450924029754306563",
+          "comment_count": 5
+        },
+        {
+          "post_id": "1450992849546211329",
+          "comment_count": 0
+        },
+        {
+          "post_id": "1452768745454190606",
+          "comment_count": 8
+        },
+        {
+          "post_id": "1453546801483730949",
+          "comment_count": 2
+        },
+        {
+          "post_id": "1453606187186880514",
+          "comment_count": 4
+        },
+        {
+          "post_id": "1454804230968074243",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1455930222193217541",
+          "comment_count": 1
+        },
+        {
+          "post_id": "1456773378040217610",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1456995677729431554",
+          "comment_count": 0
+        }
+      ]
+    },
+    {
+      "slug": "food_stamps_ecd548",
+      "topic": "Should college students have easier access to SNAP food assistance?",
+      "keyword": "food stamps",
+      "post_count": 20,
+      "comment_count": 84,
+      "user_count": 101,
+      "relationship_count": 353,
+      "window": {
+        "days": 24,
+        "start": "2025-10-25",
+        "end": "2025-11-18",
+        "timezone": "UTC",
+        "end_inclusive": false
+      },
+      "excluded_comment_count": 0,
+      "relationship_time_status": "not_used_for_selection",
+      "window_scope": "post_publication_only",
+      "comment_time_filter": false,
+      "observed_thread_count": 82,
+      "excluded_comment_reasons": {},
+      "posts": [
+        {
+          "post_id": "1982104914546557333",
+          "comment_count": 6
+        },
+        {
+          "post_id": "1982804412914364910",
+          "comment_count": 0
+        },
+        {
+          "post_id": "1982843989658337450",
+          "comment_count": 2
+        },
+        {
+          "post_id": "1982870057576477156",
+          "comment_count": 7
+        },
+        {
+          "post_id": "1982933681036746950",
+          "comment_count": 1
+        },
+        {
+          "post_id": "1982968044369375266",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1983039779320279427",
+          "comment_count": 13
+        },
+        {
+          "post_id": "1983169577199788062",
+          "comment_count": 4
+        },
+        {
+          "post_id": "1983284941103476856",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1983557869959279086",
+          "comment_count": 9
+        },
+        {
+          "post_id": "1983859697653366903",
+          "comment_count": 9
+        },
+        {
+          "post_id": "1984605948619731063",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1985673068929327336",
+          "comment_count": 2
+        },
+        {
+          "post_id": "1985741460910805182",
+          "comment_count": 5
+        },
+        {
+          "post_id": "1987237232152044006",
+          "comment_count": 4
+        },
+        {
+          "post_id": "1987465867576132035",
+          "comment_count": 1
+        },
+        {
+          "post_id": "1987536906629058941",
+          "comment_count": 2
+        },
+        {
+          "post_id": "1989164405721026824",
+          "comment_count": 2
+        },
+        {
+          "post_id": "1989410596119613885",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1989431001161093345",
+          "comment_count": 5
+        }
+      ]
+    },
+    {
+      "slug": "hidden_fees_21044d",
+      "topic": "Should concert and sports tickets be required to show the full price?",
+      "keyword": "hidden fees",
+      "post_count": 4,
+      "comment_count": 1,
+      "user_count": 5,
+      "relationship_count": 10,
+      "window": {
+        "days": 24,
+        "start": "2023-10-11",
+        "end": "2023-11-04",
+        "timezone": "UTC",
+        "end_inclusive": false
+      },
+      "excluded_comment_count": 0,
+      "relationship_time_status": "not_used_for_selection",
+      "window_scope": "post_publication_only",
+      "comment_time_filter": false,
+      "observed_thread_count": 1,
+      "excluded_comment_reasons": {},
+      "posts": [
+        {
+          "post_id": "1712100001608819016",
+          "comment_count": 0
+        },
+        {
+          "post_id": "1712128583697641650",
+          "comment_count": 0
+        },
+        {
+          "post_id": "1712159582670217284",
+          "comment_count": 1
+        },
+        {
+          "post_id": "1712529818355388621",
+          "comment_count": 0
+        }
+      ]
+    },
+    {
+      "slug": "living_wage_bcd48e",
+      "topic": "Should the federal minimum wage be raised?",
+      "keyword": "federal minimum wage",
+      "post_count": 11,
+      "comment_count": 105,
+      "user_count": 112,
+      "relationship_count": 305,
+      "window": {
+        "days": 24,
+        "start": "2019-07-18",
+        "end": "2019-08-11",
+        "timezone": "UTC",
+        "end_inclusive": false
+      },
+      "excluded_comment_count": 0,
+      "relationship_time_status": "not_used_for_selection",
+      "window_scope": "post_publication_only",
+      "comment_time_filter": false,
+      "observed_thread_count": 105,
+      "excluded_comment_reasons": {},
+      "posts": [
+        {
+          "post_id": "1151868495824642049",
+          "comment_count": 2
+        },
+        {
+          "post_id": "1151878079184277504",
+          "comment_count": 10
+        },
+        {
+          "post_id": "1151889873458081793",
+          "comment_count": 20
+        },
+        {
+          "post_id": "1152187589606199296",
+          "comment_count": 4
+        },
+        {
+          "post_id": "1152252198564220928",
+          "comment_count": 9
+        },
+        {
+          "post_id": "1152518513166344193",
+          "comment_count": 2
+        },
+        {
+          "post_id": "1152931252598706179",
+          "comment_count": 5
+        },
+        {
+          "post_id": "1153404280771997697",
+          "comment_count": 4
+        },
+        {
+          "post_id": "1153536683918295040",
+          "comment_count": 8
+        },
+        {
+          "post_id": "1154201098275762177",
+          "comment_count": 33
+        },
+        {
+          "post_id": "1157350727846703106",
+          "comment_count": 8
+        }
+      ]
+    },
+    {
+      "slug": "no_tax_on_tips_f18fbe",
+      "topic": "Should tip income be tax-exempt?",
+      "keyword": "tipped workers",
+      "post_count": 25,
+      "comment_count": 67,
+      "user_count": 73,
+      "relationship_count": 359,
+      "window": {
+        "days": 24,
+        "start": "2025-04-30",
+        "end": "2025-05-24",
+        "timezone": "UTC",
+        "end_inclusive": false
+      },
+      "excluded_comment_count": 0,
+      "relationship_time_status": "not_used_for_selection",
+      "window_scope": "post_publication_only",
+      "comment_time_filter": false,
+      "observed_thread_count": 62,
+      "excluded_comment_reasons": {},
+      "posts": [
+        {
+          "post_id": "1917387431516479735",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1918473961064808558",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1920235075251417165",
+          "comment_count": 1
+        },
+        {
+          "post_id": "1922009928258011488",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1922183941282320636",
+          "comment_count": 4
+        },
+        {
+          "post_id": "1922487981799002225",
+          "comment_count": 1
+        },
+        {
+          "post_id": "1922541802005172487",
+          "comment_count": 0
+        },
+        {
+          "post_id": "1922714770697761099",
+          "comment_count": 1
+        },
+        {
+          "post_id": "1922733162590769558",
+          "comment_count": 1
+        },
+        {
+          "post_id": "1923083607209353320",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1923192236797301176",
+          "comment_count": 8
+        },
+        {
+          "post_id": "1923403043099353577",
+          "comment_count": 7
+        },
+        {
+          "post_id": "1923451432436424852",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1924317923688251707",
+          "comment_count": 4
+        },
+        {
+          "post_id": "1924457094352122317",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1924925957770551647",
+          "comment_count": 0
+        },
+        {
+          "post_id": "1924927238635479184",
+          "comment_count": 2
+        },
+        {
+          "post_id": "1924987614521704883",
+          "comment_count": 1
+        },
+        {
+          "post_id": "1925009871260283224",
+          "comment_count": 4
+        },
+        {
+          "post_id": "1925176314094293173",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1925506606889869592",
+          "comment_count": 1
+        },
+        {
+          "post_id": "1925510589322829953",
+          "comment_count": 2
+        },
+        {
+          "post_id": "1925529830893744155",
+          "comment_count": 4
+        },
+        {
+          "post_id": "1925550710558425338",
+          "comment_count": 0
+        },
+        {
+          "post_id": "1925566572015559162",
+          "comment_count": 5
+        }
+      ]
+    },
+    {
+      "slug": "rent_too_high_aebcfb",
+      "topic": "Should the United States expand affordable housing supply?",
+      "keyword": "housing crisis",
+      "post_count": 18,
+      "comment_count": 35,
+      "user_count": 51,
+      "relationship_count": 58,
+      "window": {
+        "days": 24,
+        "start": "2026-06-04",
+        "end": "2026-06-28",
+        "timezone": "UTC",
+        "end_inclusive": false
+      },
+      "excluded_comment_count": 0,
+      "relationship_time_status": "not_used_for_selection",
+      "window_scope": "post_publication_only",
+      "comment_time_filter": false,
+      "observed_thread_count": 35,
+      "excluded_comment_reasons": {},
+      "posts": [
+        {
+          "post_id": "2062639985275076865",
+          "comment_count": 8
+        },
+        {
+          "post_id": "2062747631571415145",
+          "comment_count": 2
+        },
+        {
+          "post_id": "2062813872612884792",
+          "comment_count": 1
+        },
+        {
+          "post_id": "2063848495287562453",
+          "comment_count": 4
+        },
+        {
+          "post_id": "2064748221323268369",
+          "comment_count": 1
+        },
+        {
+          "post_id": "2066074194216198262",
+          "comment_count": 2
+        },
+        {
+          "post_id": "2066404101513224228",
+          "comment_count": 2
+        },
+        {
+          "post_id": "2066524705486524717",
+          "comment_count": 0
+        },
+        {
+          "post_id": "2067104470107070942",
+          "comment_count": 2
+        },
+        {
+          "post_id": "2067464628951453984",
+          "comment_count": 1
+        },
+        {
+          "post_id": "2067593264119570709",
+          "comment_count": 1
+        },
+        {
+          "post_id": "2067601569579757881",
+          "comment_count": 4
+        },
+        {
+          "post_id": "2067618766771372349",
+          "comment_count": 1
+        },
+        {
+          "post_id": "2067624982318923932",
+          "comment_count": 1
+        },
+        {
+          "post_id": "2067639872764911815",
+          "comment_count": 1
+        },
+        {
+          "post_id": "2067649810954436763",
+          "comment_count": 1
+        },
+        {
+          "post_id": "2067655719180960102",
+          "comment_count": 1
+        },
+        {
+          "post_id": "2067667408312295427",
+          "comment_count": 2
+        }
+      ]
+    },
+    {
+      "slug": "universal_school_meals_6d389a",
+      "topic": "Should free school meals be expanded?",
+      "keyword": "free school meals",
+      "post_count": 9,
+      "comment_count": 38,
+      "user_count": 45,
+      "relationship_count": 79,
+      "window": {
+        "days": 24,
+        "start": "2020-10-20",
+        "end": "2020-11-13",
+        "timezone": "UTC",
+        "end_inclusive": false
+      },
+      "excluded_comment_count": 0,
+      "relationship_time_status": "not_used_for_selection",
+      "window_scope": "post_publication_only",
+      "comment_time_filter": false,
+      "observed_thread_count": 38,
+      "excluded_comment_reasons": {},
+      "posts": [
+        {
+          "post_id": "1318492074837237760",
+          "comment_count": 6
+        },
+        {
+          "post_id": "1318932788914102273",
+          "comment_count": 2
+        },
+        {
+          "post_id": "1319005533626650624",
+          "comment_count": 9
+        },
+        {
+          "post_id": "1319006051073740807",
+          "comment_count": 2
+        },
+        {
+          "post_id": "1319013516242767874",
+          "comment_count": 4
+        },
+        {
+          "post_id": "1319698900069076994",
+          "comment_count": 3
+        },
+        {
+          "post_id": "1320293036413288450",
+          "comment_count": 11
+        },
+        {
+          "post_id": "1322962721881661458",
+          "comment_count": 0
+        },
+        {
+          "post_id": "1325354330636029952",
+          "comment_count": 1
+        }
+      ]
+    }
+  ]
+}

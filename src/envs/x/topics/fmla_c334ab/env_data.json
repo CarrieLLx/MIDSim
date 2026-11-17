@@ -1,0 +1,118 @@
+{
+  "current_timestamp": 1634342400000,
+  "timestamp_duration": 0,
+  "reference_embedding_path": "datasets/x/embeddings/bge-base-en-v1.5_embeddings.json",
+  "scenario_topic": "Should paid family and parental leave be provided?",
+  "content_pool": {
+    "1449431188666470406": {
+      "id": "1449431188666470406",
+      "content": "All the people who spent last month demanding state-forced births are spending this month mocking paid parental leave, I see.",
+      "time": 1634406299000,
+      "url": "https://x.com/JuliusGoat/status/1449431188666470406",
+      "user_id": "juliusgoat",
+      "username": "A.R. Moxon 🦋",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1450904800799961088": {
+      "id": "1450904800799961088",
+      "content": "Even if paid family leave may get passed as just 4 weeks, do y'all know how game changing that will be? Do you all know that minorities, the poor, the less educated don't take leave or take less leave under the FMLA right now because they can't afford unpaid leave?",
+      "time": 1634757635000,
+      "url": "https://x.com/lynnv378/status/1450904800799961088",
+      "user_id": "lynnv378",
+      "username": "Lynn V",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1450924029754306563": {
+      "id": "1450924029754306563",
+      "content": "America is one of two countries without paid parental leave. The government spends $500/per kid on child care vs $14,400 worldwide. And we wonder why 10 million jobs are open. Can't go to work when you have to stay home with the kids because day care is another rent check.",
+      "time": 1634762220000,
+      "url": "https://x.com/DanPriceSeattle/status/1450924029754306563",
+      "user_id": "danpriceseattle",
+      "username": "Dan Price",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1450992849546211329": {
+      "id": "1450992849546211329",
+      "content": "BREAKING: Meghan Markle pens an open letter to Congress demanding that it make paid parental leave a \"national right\" because no American worker \"should have to choose between earning a living and caring for their child.\" RT IF YOU THINK CONGRESS SHOULD PASS PAID PARENTAL LEAVE!",
+      "time": 1634778628000,
+      "url": "https://x.com/OccupyDemocrats/status/1450992849546211329",
+      "user_id": "occupydemocrats",
+      "username": "Occupy Democrats",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1452768745454190606": {
+      "id": "1452768745454190606",
+      "content": "When you take a step back and think about it for more than 30 seconds it really is truly nuts we can't get overwhelming bipartisan majorities for mandatory 12 weeks paid parental leave.",
+      "time": 1635202034000,
+      "url": "https://x.com/chrislhayes/status/1452768745454190606",
+      "user_id": "chrislhayes",
+      "username": "Chris Hayes",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1453546801483730949": {
+      "id": "1453546801483730949",
+      "content": "I'm a father of a newborn. I say this with 100% certainty. Paid parental leave is nonnegotiable.",
+      "time": 1635387537000,
+      "url": "https://x.com/Booker4KY/status/1453546801483730949",
+      "user_id": "booker4ky",
+      "username": "Charles Booker",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1453606187186880514": {
+      "id": "1453606187186880514",
+      "content": "\"One man (@Sen_JoeManchin) just told 167 million women that he doesn't think they should have paid family leave.\" --@markmobility",
+      "time": 1635401696000,
+      "url": "https://x.com/donwinslow/status/1453606187186880514",
+      "user_id": "donwinslow",
+      "username": "Don Winslow",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1454804230968074243": {
+      "id": "1454804230968074243",
+      "content": "If after celebrating a new child, men suffered from weeks of hemorrhoids, hand/foot/face swelling, and genital bleeding, Paid Family Leave wouldn't be up for debate. It would be in the Bill of Rights. #PaidLeaveForAll",
+      "time": 1635687332000,
+      "url": "https://x.com/RepSwalwell/status/1454804230968074243",
+      "user_id": "repswalwell",
+      "username": "Rep. Eric Swalwell",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1455930222193217541": {
+      "id": "1455930222193217541",
+      "content": "BREAKING NEWS: Nancy Pelosi announces that she will add paid family leave back into the Build Back Better Act in a renewed push to convince Senator Manchin to stop doing the bidding of his corporate donors and do right by the American people. RT IF YOU SUPPORT PAID FAMILY LEAVE!",
+      "time": 1635955789000,
+      "url": "https://x.com/OccupyDemocrats/status/1455930222193217541",
+      "user_id": "occupydemocrats",
+      "username": "Occupy Democrats",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1456773378040217610": {
+      "id": "1456773378040217610",
+      "content": "If the @GOP is the \"party of parents,\" why are they so dead-set against extending the child tax credit, ensuring paid family leave, cutting child care costs, providing universal preschool, expanding health insurance, and enforcing health & safety in schools? 🤔",
+      "time": 1636156813000,
+      "url": "https://x.com/ericswalwell/status/1456773378040217610",
+      "user_id": "ericswalwell",
+      "username": "Eric Swalwell",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1456995677729431554": {
+      "id": "1456995677729431554",
+      "content": "It has to be said. All that we are fighting over—paid parental leave, Medicare expansion, child tax credits, addressing climate change, elder care subsidies—doesn't even add up to the tax break of $1.9 trillion that Trump and the GOP gave the wealthy when they held power.",
+      "time": 1636209813000,
+      "url": "https://x.com/GeorgeTakei/status/1456995677729431554",
+      "user_id": "georgetakei",
+      "username": "George Takei",
+      "comment_count": 0,
+      "comments": {}
+    }
+  }
+}

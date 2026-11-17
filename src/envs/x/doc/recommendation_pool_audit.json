@@ -1,0 +1,38 @@
+{
+  "platform": "X",
+  "coarse_posts": 374,
+  "fine_posts_total": 140,
+  "fine_posts_by_topic": {
+    "fmla_c334ab": 20,
+    "food_stamps_ecd548": 20,
+    "hidden_fees_21044d": 20,
+    "living_wage_bcd48e": 20,
+    "no_tax_on_tips_f18fbe": 20,
+    "rent_too_high_aebcfb": 20,
+    "universal_school_meals_6d389a": 20
+  },
+  "merged_background_candidates_per_topic": 394,
+  "pool_scope": "synthetic_background_ranking_candidates; not experiment content_pool",
+  "source_sha256": {
+    "datasets/additional/x_interest_posts.csv": "d9b2ceb041bdaa41c807ec160f54f7ef1349fe38ea7eeff92f10a0399336cbeb",
+    "datasets/additional/x_similar_topic_posts_140.csv": "9b760a58b396a37fbebaa01fb72c3207f047f3359c5c2c9dbaaff2f07d4444ab"
+  },
+  "output_sha256": {
+    "src/envs/x/recommendation.json": "1f38b9e521ed5d734030e6829f558d12d65dc185cc9b27b122ce099d3d1bb645",
+    "src/envs/x/topics/fmla_c334ab/recommendation.json": "cfeadd2fa5b202d0693a7de097bbdcbb6e3b9ca51389c414c48047445986a46d",
+    "src/envs/x/topics/food_stamps_ecd548/recommendation.json": "5d9887646452b71a7261f1fb8251f79d32a446f3cc705f462b4f3dadf327205d",
+    "src/envs/x/topics/hidden_fees_21044d/recommendation.json": "6468014a664f04ecb2f4420b37290a33c30868f7f33bf517e2b3a7bd3d9aac2c",
+    "src/envs/x/topics/living_wage_bcd48e/recommendation.json": "f1d7eeae392614a5a61724b941cfad47adf65461d054756caa892b591498866e",
+    "src/envs/x/topics/no_tax_on_tips_f18fbe/recommendation.json": "1831f3f735104b7972fdcb5a944221abbf276b9a866b8dbc1b969cdf5a9b4474",
+    "src/envs/x/topics/rent_too_high_aebcfb/recommendation.json": "764df0d66c6b0570be1636a8ad77c5fe9bb6b5b32f38a92a1ef4be07b6b74885",
+    "src/envs/x/topics/universal_school_meals_6d389a/recommendation.json": "7fcc1d1ed370f7e061e3279e42311409020cbb336c602c21239fb472daa93048"
+  },
+  "checks": [
+    "source text preserved",
+    "unique X IDs",
+    "exact topic mapping",
+    "20 fine posts per topic",
+    "no overlap with experiment post IDs",
+    "same overlay schema as Facebook"
+  ]
+}

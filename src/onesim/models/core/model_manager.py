@@ -34,8 +34,8 @@ class ModelManager:
         """Initialize the model manager if not already initialized."""
         if not getattr(self, '_initialized', False):
             self.model_configs = {}
-            self.load_balancer_configs = {}  # 使用字典存储多个负载均衡器配置
-            self._load_balancer_instances = {}  # 缓存已创建的负载均衡器实例
+            self.load_balancer_configs = {}  # Store multiple load balancer configurations in a dictionary.
+            self._load_balancer_instances = {}  # Cache load balancer instances.
             self._initialized = True
 
     @classmethod
@@ -371,7 +371,7 @@ class ModelManager:
         """Clear all loaded model configurations."""
         self.model_configs.clear()
         self.load_balancer_configs.clear()
-        self._load_balancer_instances.clear()  # 清除负载均衡器实例缓存
+        self._load_balancer_instances.clear()  # Clear the load balancer instance cache.
 
     def get_configs_by_type(self, model_type: str) -> List[Dict[str, Any]]:
         """

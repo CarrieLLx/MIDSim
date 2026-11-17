@@ -36,12 +36,12 @@ class MasterNode(Node):
         self.workers = {}  # worker_id -> WorkerInfo
         self.agent_locations = {}  # agent_id -> worker_id
         self.expected_worker_count = config.get("expected_workers", 1)
-        self.initialized = asyncio.Event()  # 标记初始化完成
+        self.initialized = asyncio.Event()  # Signal that initialization is complete.
         self.sim_env = None  # Reference to simulation environment for data storage
         self.worker_lock = asyncio.Lock()
         self.event_bus = get_event_bus()
-        self.health_check_interval = config.get("health_check_interval", 1800)  # 默认2分钟检查一次
-        self.worker_timeout = config.get("worker_timeout", 3600)  # 默认3分钟超时
+        self.health_check_interval = config.get("health_check_interval", 1800)  # Default health check interval: 1800 seconds.
+        self.worker_timeout = config.get("worker_timeout", 3600)  # Default worker timeout: 3600 seconds.
         self._health_check_task = None
         self.shutting_down = False
 
@@ -54,26 +54,26 @@ class MasterNode(Node):
             self._server = await self._grpc_module.create_master_server(self, self.listen_port)
             logger.info(f"Master node {self.node_id} started gRPC server on port {self.listen_port}")
 
-        # 启动worker连接监视任务
+        # Start the worker connection watcher.
         asyncio.create_task(self._wait_for_workers())
 
-        # 启动健康检查任务
+        # Start the health check task.
         self._health_check_task = asyncio.create_task(self._periodic_health_check())
 
     async def _wait_for_workers(self):
-        """等待所有预期数量的worker连接"""
+        """Wait for the expected number of workers to connect."""
         logger.info(f"Waiting for {self.expected_worker_count} workers to connect...")
 
         while len(self.workers) < self.expected_worker_count:
             logger.info(f"Connected workers: {len(self.workers)}/{self.expected_worker_count}")
-            await asyncio.sleep(2)  # 每2秒检查一次
+            await asyncio.sleep(2)  # Check every 2 seconds.
         workers=[(worker.address, worker.port) for worker in self.workers.values()]
         await initialize_connection_manager(workers)
         logger.info(f"All {self.expected_worker_count} workers connected. Ready to initialize environment.")
-        self.initialized.set()  # 设置事件，表示所有worker已连接
+        self.initialized.set()  # Signal that all workers have connected.
 
     async def _periodic_health_check(self):
-        """定期执行健康检查，移除不响应的worker"""
+        """Periodically check health and remove unresponsive workers."""
         try:
             while True:
                 await asyncio.sleep(self.health_check_interval)
@@ -88,20 +88,20 @@ class MasterNode(Node):
 
     async def register_worker(self, worker_id: str, address: str, port: int) -> Tuple[bool, str]:
         """
-        注册Worker节点 (异步版本)
+        Register a worker node asynchronously.
         
         Args:
-            worker_id: Worker节点ID
-            address: Worker节点地址
-            port: Worker节点端口
+            worker_id: Worker node ID.
+            address: Worker node address.
+            port: Worker node port.
             
         Returns:
-            Tuple[bool, str]: (成功标志, 消息)
+            Tuple[bool, str]: (success flag, message).
         """
         try:
             # logger.info(f"Received registration request from worker {worker_id} at {address}:{port}")
 
-            async with self.worker_lock:  # 使用异步锁
+            async with self.worker_lock:  # Use an asynchronous lock.
                 if worker_id in self.workers:
                     logger.warning(f"Worker {worker_id} already registered, updating address and port")
                     self.workers[worker_id].address = address
@@ -129,7 +129,7 @@ class MasterNode(Node):
             logger.error("No workers available to allocate agent")
             return None
 
-        async with self.worker_lock:  # 使用异步锁
+        async with self.worker_lock:  # Use an asynchronous lock.
             # Find worker with lowest load
             target_worker = min(self.workers.values(), key=lambda w: w.agent_count)
             target_worker.agent_count += 1
@@ -154,7 +154,7 @@ class MasterNode(Node):
         target_address = None
         target_port = None
 
-        async with self.worker_lock:  # 使用异步锁
+        async with self.worker_lock:  # Use an asynchronous lock.
             # Find worker hosting this agent
             worker_id = self.agent_locations.get(to_agent_id)
             if not worker_id:
@@ -256,31 +256,31 @@ class MasterNode(Node):
             }
 
     async def stop_server(self) -> None:
-        """停止gRPC服务器"""
+        """Stop the gRPC server."""
         if self._server:
             await self._server.stop(0)
             logger.info("Master server stopped")
 
     async def update_worker_heartbeat(self, worker_id: str) -> None:
-        """更新Worker节点的最后心跳时间 (异步版本)"""
+        """Update the worker node's last heartbeat time asynchronously."""
         try:
-            async with self.worker_lock:  # 使用异步锁
+            async with self.worker_lock:  # Use an asynchronous lock.
                 if worker_id in self.workers:
                     previous_time = self.workers[worker_id].last_heartbeat
                     current_time = time.time()
                     elapsed = current_time - previous_time
 
-                    # 更新心跳时间和状态
+                    # Update heartbeat time and status.
                     self.workers[worker_id].last_heartbeat = current_time
                     self.workers[worker_id].status = "connected"
 
-                    # 只在大于60秒间隔或首次心跳时记录日志，避免日志过多
+                    # Log only the first heartbeat or those over 60 seconds apart to reduce log volume.
                     if elapsed > 60.0 or previous_time == 0:
                         logger.info(f"Received heartbeat from worker {worker_id} after {elapsed:.1f}s")
                 else:
                     logger.warning(f"Received heartbeat from unknown worker {worker_id}, suggesting registration")
 
-                    # 返回一个特殊响应提示重新注册
+                    # Return a special response asking the worker to register again.
                     return False
             return True
         except Exception as e:
@@ -289,35 +289,35 @@ class MasterNode(Node):
 
     async def check_workers_health(self, timeout: int = 60) -> List[str]:
         """
-        检查Worker节点健康状态，移除超时的节点 (异步版本)
+        Check worker health asynchronously and remove timed-out nodes.
         
         Args:
-            timeout: 超时时间（秒）
+            timeout: Timeout in seconds.
             
         Returns:
-            List[str]: 已移除worker的ID列表
+            List[str]: IDs of removed workers.
         """
         current_time = time.time()
 
-        # 获取待移除的worker列表
+        # Collect workers to remove.
         workers_to_remove = []
 
-        async with self.worker_lock:  # 使用异步锁
+        async with self.worker_lock:  # Use an asynchronous lock.
             for worker_id, worker in list(self.workers.items()):
                 time_since_heartbeat = current_time - worker.last_heartbeat
 
                 if time_since_heartbeat > timeout:
                     logger.warning(f"Worker {worker_id} timed out ({time_since_heartbeat:.1f}s without heartbeat), removing")
                     workers_to_remove.append(worker_id)
-                elif time_since_heartbeat > timeout * 0.7:  # 超过70%超时时间发出警告
+                elif time_since_heartbeat > timeout * 0.7:  # Warn after 70% of the timeout has elapsed.
                     logger.warning(f"Worker {worker_id} may be unhealthy, no heartbeat for {time_since_heartbeat:.1f}s")
 
-            # 移除超时的worker
+            # Remove timed-out workers.
             for worker_id in workers_to_remove:
                 worker_info = self.workers.pop(worker_id)
                 logger.info(f"Removed worker {worker_id} from {worker_info.address}:{worker_info.port}")
 
-                # 更新agent位置
+                # Update agent locations.
                 for agent_id in worker_info.agent_ids:
                     if agent_id in self.agent_locations and self.agent_locations[agent_id] == worker_id:
                         self.agent_locations.pop(agent_id)
@@ -356,11 +356,11 @@ class MasterNode(Node):
         logger.info(f"Shutting down master node {self.node_id}")
         self.shutting_down = True
 
-        # 取消健康检查任务
+        # Cancel the health check task.
         if self._health_check_task and not self._health_check_task.done():
             self._health_check_task.cancel()
 
-        # 发送终止信号给所有worker
+        # Send a termination signal to all workers.
         async with self.worker_lock:
             for worker_id, worker in self.workers.items():
                 try:
@@ -371,11 +371,11 @@ class MasterNode(Node):
                 except Exception as e:
                     logger.error(f"Error sending shutdown to worker {worker_id}: {e}")
 
-        # 停止gRPC服务器
+        # Stop the gRPC server.
         if self._server:
-            await self._server.stop(10)  # 10秒优雅停止
+            await self._server.stop(10)  # Allow 10 seconds for graceful shutdown.
 
-        # 调用父类shutdown方法
+        # Call the parent shutdown method.
         await super().shutdown()
 
         logger.info(f"Master node {self.node_id} shutdown complete")

@@ -1,0 +1,65 @@
+[
+  {
+    "slug": "fmla_c334ab",
+    "topic": "Should paid family and parental leave be provided?",
+    "post_count": 4,
+    "comment_count": 57,
+    "reply_count": 19,
+    "posts_with_comments": 3,
+    "path": "src/envs/facebook/doc/real_content_pool/fmla_c334ab/content_pool_snapshot.json"
+  },
+  {
+    "slug": "food_stamps_ecd548",
+    "topic": "Should college students have easier access to SNAP food assistance?",
+    "post_count": 4,
+    "comment_count": 25,
+    "reply_count": 14,
+    "posts_with_comments": 1,
+    "path": "src/envs/facebook/doc/real_content_pool/food_stamps_ecd548/content_pool_snapshot.json"
+  },
+  {
+    "slug": "hidden_fees_21044d",
+    "topic": "Should concert and sports tickets be required to show the full price?",
+    "post_count": 2,
+    "comment_count": 770,
+    "reply_count": 179,
+    "posts_with_comments": 2,
+    "path": "src/envs/facebook/doc/real_content_pool/hidden_fees_21044d/content_pool_snapshot.json"
+  },
+  {
+    "slug": "living_wage_bcd48e",
+    "topic": "Should the federal minimum wage be raised?",
+    "post_count": 6,
+    "comment_count": 101,
+    "reply_count": 49,
+    "posts_with_comments": 4,
+    "path": "src/envs/facebook/doc/real_content_pool/living_wage_bcd48e/content_pool_snapshot.json"
+  },
+  {
+    "slug": "no_tax_on_tips_f18fbe",
+    "topic": "Should tip income be tax-exempt?",
+    "post_count": 3,
+    "comment_count": 92,
+    "reply_count": 24,
+    "posts_with_comments": 3,
+    "path": "src/envs/facebook/doc/real_content_pool/no_tax_on_tips_f18fbe/content_pool_snapshot.json"
+  },
+  {
+    "slug": "rent_too_high_aebcfb",
+    "topic": "Should the United States expand affordable housing supply?",
+    "post_count": 3,
+    "comment_count": 74,
+    "reply_count": 16,
+    "posts_with_comments": 2,
+    "path": "src/envs/facebook/doc/real_content_pool/rent_too_high_aebcfb/content_pool_snapshot.json"
+  },
+  {
+    "slug": "universal_school_meals_6d389a",
+    "topic": "Should free school meals be expanded?",
+    "post_count": 3,
+    "comment_count": 33,
+    "reply_count": 24,
+    "posts_with_comments": 1,
+    "path": "src/envs/facebook/doc/real_content_pool/universal_school_meals_6d389a/content_pool_snapshot.json"
+  }
+]

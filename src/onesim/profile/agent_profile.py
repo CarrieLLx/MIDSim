@@ -259,7 +259,7 @@ class AgentProfile(ProfileBase):
         """Return a string representation of the profile in JSON format."""
         profile_data = self.get_profile(include_private=include_private)
         def json_serializable(obj):
-            """处理无法被JSON直接序列化的对象类型"""
+            """Handle object types that JSON cannot serialize directly."""
             try:
                 if isinstance(obj, datetime):
                     return obj.isoformat()
@@ -270,10 +270,10 @@ class AgentProfile(ProfileBase):
                 else:
                     return repr(obj)
             except Exception:
-                # 如果上述所有尝试都失败，则放弃该值
+                # Discard the value if all preceding attempts fail.
                 return None
         
-        # 递归地处理嵌套字典和列表中的不可序列化值
+        # Recursively process non-serializable values in nested dictionaries and lists.
         def clean_data(data):
             if isinstance(data, dict):
                 return {k: clean_data(v) for k, v in data.items()}

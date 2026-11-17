@@ -35,7 +35,7 @@ def _count_reasoning_steps(text: str) -> int:
     patterns = (
         r"(?im)^\s*(?:step\s*)?\d+[\.\):\-]\s+",
         r"(?im)^\s*###\s*step\s*\d+",
-        r"(?im)^\s*步骤\s*\d+",
+        '(?im)^\\s*\u6b65\u9aa4\\s*\\d+',
     )
     hits: set[int] = set()
     for pat in patterns:
@@ -52,11 +52,11 @@ def _is_degenerate_planning(text: str) -> bool:
         return True
     if _count_reasoning_steps(t) > _COT_MAX_REASONING_STEPS:
         return True
-    if t.count("### 步骤") >= 8:
+    if t.count('### \u6b65\u9aa4') >= 8:
         return True
     if t.count("```json") >= 2:
         return True
-    if re.search(r"步骤\d{2,}", t):
+    if re.search('\u6b65\u9aa4\\d{2,}', t):
         return True
     if re.search(r"(?i)step\s*\d{2,}", t):
         return True

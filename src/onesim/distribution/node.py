@@ -31,11 +31,11 @@ class Node:
             # Lazy import gRPC dependencies only when needed
             try:
                 self._grpc_module = importlib.import_module('onesim.distribution.grpc_impl')
-                # 初始化连接管理器
+                # Initialize the connection manager.
                 from onesim.distribution.connection_manager import connection_manager
-                # 确保连接管理器正确初始化（异步方式）
+                # Ensure the connection manager is initialized asynchronously.
                 await connection_manager.initialize()
-                # 确保批处理器也被导入
+                # Ensure the batch processor is also imported.
                 from onesim.distribution.batch_processor import batch_processor
                 logger.info(f"Initialized {self.role.value} node with gRPC support")
             except ImportError as e:
@@ -56,11 +56,11 @@ class Node:
         
         if self.role != NodeRole.SINGLE and self._initialized:
             try:
-                # 清理连接管理器资源
+                # Clean up connection manager resources.
                 from onesim.distribution.connection_manager import connection_manager
                 await connection_manager.stop()
                 
-                # 停止批处理器
+                # Stop the batch processor.
                 if self._grpc_module:
                     from onesim.distribution.batch_processor import batch_processor
                     batch_processor.stop()

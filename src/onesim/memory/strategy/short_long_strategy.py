@@ -84,7 +84,8 @@ class ShortLongStrategy(MemoryStrategy):
             else:
                 importance = 0
             
-        self.cumulated_importance += importance
+        if importance is not None:
+            self.cumulated_importance += importance
         
         # Check if triggering reflection
         if self.cumulated_importance > self.reflec_threshold:
@@ -146,7 +147,7 @@ class ShortLongStrategy(MemoryStrategy):
                         value = await metric.calculate(memory_item)
                         memory_item.attributes[metric_name] = value
                     
-                    if eval(f"{value} {condition}"):
+                    if value is not None and eval(f"{value} {condition}"):
                         return True
                 except Exception as e:
                     logger.error(f"Error evaluating condition '{condition}' for metric '{metric_name}': {e}")
@@ -193,7 +194,8 @@ class ShortLongStrategy(MemoryStrategy):
                         if metric_value is None:
                             metric_value = await metric.calculate(memory_item, query)
                             memory_item.attributes[metric_name] = metric_value
-                        score += metric_value * weight
+                        if metric_value is not None:
+                            score += metric_value * weight
                     except Exception as e:
                         logger.error(f"Error calculating metric {metric_name}: {e}")
             memory_item.attributes['score'] = score

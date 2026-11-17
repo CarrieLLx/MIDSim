@@ -1,0 +1,70 @@
+{
+  "exposure": {
+    "social": {
+      "probability": 1,
+      "social_feed_budget": 0
+    },
+    "recommendation": {
+      "probability": 1,
+      "types": [
+        "Interest Recommendation"
+      ],
+      "alpha": 0.8,
+      "interest_recommendation": {
+        "coarse_k": 20,
+        "current_posts_k": 1,
+        "posts_per_group": 10
+      },
+      "limit": 3,
+      "popularity_distribution": [
+        {
+          "propagation_count": 0,
+          "post_count": 6
+        }
+      ]
+    },
+    "search": {
+      "types": [
+        "BM25 Search"
+      ],
+      "alpha": 0.5,
+      "limit": 10
+    },
+    "notification": {
+      "attention_budget": 10
+    },
+    "profile_visit": {
+      "history_comment_limit": 2
+    }
+  },
+  "user": {
+    "own_note_cap_days": 7.0,
+    "memory_similarity": {
+      "policy": "memory_nonempty,keyword,embedding",
+      "multi_combine": "or",
+      "keyword_enabled": true,
+      "embedding_enabled": true,
+      "min_common_tokens": 2,
+      "embed_threshold": 0.58,
+      "include_historical_summary": true,
+      "embedding_config_path": "",
+      "embed_max_chars": 400,
+      "embed_max_chunks": 12,
+      "embed_chunk_agg": "mean"
+    },
+    "activity": {
+      "low_activity_memory_gate_threshold": 1.0
+    }
+  },
+  "simulator": {
+    "max_span_days": 24.0,
+    "max_step": 8,
+    "timestamp_schedule_type": "uniform",
+    "timestamp_power_p": 1.6,
+    "timestamp_sigmoid_scale": 1.2,
+    "timestamp_sigmoid_center_ratio": 0.5
+  },
+  "agent": {
+    "general_agent_locale": "en"
+  }
+}

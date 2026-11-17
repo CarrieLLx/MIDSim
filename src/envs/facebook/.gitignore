@@ -1,0 +1,27 @@
+# Local comparison snapshots and analysis artifacts
+/baseline/
+/doc/author_history/
+/doc/pic/
+/doc/real_content_pool/_text_diversity/
+/doc/process.html
+
+# Chinese prompt translations and maintenance notes; retain runtime TXT/TOML
+/code/prompts/**/*.zh-CN.md
+/code/prompts/*.md
+/code/prompts/policies/memory_backup.toml
+/code/tests/
+
+# Generated simulation output and Python caches
+/runs/
+/log/
+__pycache__/
+*.py[cod]
+*.log
+*.log.zip
+*.pid
+
+# Windows-only launch files
+*.ps1
+*.bat
+*.cmd
+*.lnk

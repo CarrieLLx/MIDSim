@@ -26,7 +26,7 @@ if _version_not_supported:
 
 
 class AgentServiceStub(object):
-    """事件服务定义
+    """Event service definition.
     """
 
     def __init__(self, channel):
@@ -123,123 +123,123 @@ class AgentServiceStub(object):
 
 
 class AgentServiceServicer(object):
-    """事件服务定义
+    """Event service definition.
     """
 
     def RegisterWorker(self, request, context):
-        """注册worker节点
+        """Register a worker node.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Heartbeat(self, request, context):
-        """心跳服务
+        """Heartbeat service.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def CreateAgent(self, request, context):
-        """在worker上创建agent
+        """Create an agent on a worker.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def SendEvent(self, request, context):
-        """发送事件
+        """Send an event.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def CreateAgentsBatch(self, request, context):
-        """批量创建agents
+        """Create agents in a batch.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def SendStorageEvent(self, request, context):
-        """发送数据存储事件
+        """Send a data storage event.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def SendStorageEventBatch(self, request, context):
-        """批量发送数据存储事件
+        """Send data storage events in a batch.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def SendDecisionRecord(self, request, context):
-        """发送决策记录
+        """Send a decision record.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def SendDecisionRecordBatch(self, request, context):
-        """批量发送决策记录
+        """Send decision records in a batch.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetEnvData(self, request, context):
-        """获取环境数据
+        """Get environment data.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def UpdateEnvData(self, request, context):
-        """更新环境数据
+        """Update environment data.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def StopSimulation(self, request, context):
-        """请求停止仿真
+        """Request simulation termination.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetAgentData(self, request, context):
-        """获取Agent数据
+        """Get agent data.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetAgentDataByType(self, request, context):
-        """获取指定类型的Agent数据
+        """Get data for agents of a specified type.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetTokenUsage(self, request, context):
-        """获取节点的Token使用情况
+        """Get token usage for a node.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def LocateAgent(self, request, context):
-        """定位Agent所在Worker
+        """Locate the worker hosting an agent.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def CollectDataBatch(self, request, context):
-        """Master向Worker批量收集数据
+        """Collect data from workers in a batch at the master's request.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -342,7 +342,7 @@ def add_AgentServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class AgentService(object):
-    """事件服务定义
+    """Event service definition.
     """
 
     @staticmethod

@@ -1,0 +1,38 @@
+{
+  "current_timestamp": 1781217960000,
+  "timestamp_duration": 0,
+  "reference_embedding_path": "datasets/facebook/embeddings/bge-base-en-v1.5_embeddings.json",
+  "scenario_topic": "Should free school meals be expanded?",
+  "content_pool": {
+    "pfbid021ik3bJXfKxXmbZrp6BaQjdmEigViHByyq51J8XkK4kTDY8t79XnWzaF4bTuKpStTl": {
+      "id": "pfbid021ik3bJXfKxXmbZrp6BaQjdmEigViHByyq51J8XkK4kTDY8t79XnWzaF4bTuKpStTl",
+      "content": "Universal free meals would put PLATES out of business - and we are _ there for that!!! _We are proud to stand alongside a powerful coalition of organizations endorsing the Universal School Meals Program Act of 2026, introduced by _ and _…",
+      "time": 1781217960000,
+      "url": "https://www.facebook.com/permalink.php?story_fbid=pfbid021ik3bJXfKxXmbZrp6BaQjdmEigViHByyq51J8XkK4kTDY8t79XnWzaF4bTuKpStTl&id=61589654765931",
+      "user_id": "platesak",
+      "username": "Providing Lunch Access To Every Student",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "pfbid02Nu2dzi2thXTDT1qtq2a4HFYeDdPsspAxL5agJ1AW9A9qjK2r75y52hAh6jum8h6ql": {
+      "id": "pfbid02Nu2dzi2thXTDT1qtq2a4HFYeDdPsspAxL5agJ1AW9A9qjK2r75y52hAh6jum8h6ql",
+      "content": "A quiet act that lifted a heavy, invisible weight._When school lunch debt quietly piled up across communities, it wasn't adults who felt it most. It was kids. Child…",
+      "time": 1782225250000,
+      "url": "https://www.facebook.com/permalink.php?story_fbid=pfbid02Nu2dzi2thXTDT1qtq2a4HFYeDdPsspAxL5agJ1AW9A9qjK2r75y52hAh6jum8h6ql&id=100071159708765",
+      "user_id": "profile.php?id=100071159708765",
+      "username": "Life Fact",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "pfbid0MNThSoUw4XZczTzuv1fbq2znihT2pHnyXKSvqaphamcbgzRjyRsPksXhcWzfT6Vql": {
+      "id": "pfbid0MNThSoUw4XZczTzuv1fbq2znihT2pHnyXKSvqaphamcbgzRjyRsPksXhcWzfT6Vql",
+      "content": "Citing improvements in school nutrition over the past 20 years, AAP calls for universal school meals as a strategy to ensure that all children have access to nutritious…",
+      "time": 1781618520000,
+      "url": "https://www.facebook.com/AmerAcadPeds/posts/pfbid0MNThSoUw4XZczTzuv1fbq2znihT2pHnyXKSvqaphamcbgzRjyRsPksXhcWzfT6Vql?__cft__[0]=AZY665HWLZ2BKdcxoRcGPyW47jqhDh8TPf-U7dBc86zD2iTUj39A_nFa_lDfnfcVGEiTCzYnBtZNE1qAA9-DyR5s5uUpd1zStEqi52qxzhyrpnUPJt0pbCwerFfG_C60jq0iF22YuXThV721ISjSg9O_5PxGdca0PcEuen7mkXANVUnOlQB_DwmTgOUW5iJWmsg&__tn__=%2CO%2CP-R",
+      "user_id": "AmerAcadPeds",
+      "username": "American Academy of Pediatrics",
+      "comment_count": 0,
+      "comments": {}
+    }
+  }
+}

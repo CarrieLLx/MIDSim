@@ -1,0 +1,385 @@
+{
+  "UserAgent": [
+    {
+      "id": 1,
+      "name": "get_exposure_stream",
+      "condition": "Triggered by StartEvent",
+      "description": "Per simulation step: request algorithm recommendations (GetAlgorithmRecommendationEvent), deliver pending @/propagation notifications (MentionEvent), replay keep-following posts (BookmarkEvent), and build social follow feed (SocialRecommendationEvent). Updates last_login_timestamp after social scan.",
+      "type": "OR",
+      "required_variables": [
+        {
+          "name": "current_posts",
+          "type": "dict",
+          "context": "event",
+          "description": "Posts visible in the current time window (from StartEvent / env.current_posts)."
+        },
+        {
+          "name": "mentions",
+          "type": "dict",
+          "context": "event",
+          "description": "Pending @/repost/quote/reply notifications for this user (from env.mention_pool via StartEvent)."
+        },
+        {
+          "name": "follow_ids",
+          "type": "list",
+          "context": "agent",
+          "description": "Followed user IDs for social feed filtering."
+        },
+        {
+          "name": "recommended_post_ids",
+          "type": "list",
+          "context": "agent",
+          "description": "Post IDs already seen; used to skip duplicates in social feed."
+        },
+        {
+          "name": "bookmark_post_ids",
+          "type": "list",
+          "context": "agent",
+          "description": "Post IDs to re-expose next round after LLM keep-following decision."
+        }
+      ],
+      "output_updates": [
+        {
+          "name": "last_login_timestamp",
+          "type": "int",
+          "context": "agent",
+          "description": "Updated after social feed scan (Unix seconds)."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "generate_memory_from_own_posts",
+      "condition": "Triggered by StartEvent",
+      "description": "Reflect on own posts published in the current step window and generate self-memory via LLM.",
+      "type": "OR",
+      "required_variables": [
+        {
+          "name": "current_posts",
+          "type": "dict",
+          "context": "event",
+          "description": "Current post window; filtered to posts authored by this user in [lo, hi)."
+        }
+      ],
+      "output_updates": []
+    },
+    {
+      "id": 8,
+      "name": "supplement_own_posts",
+      "condition": "Triggered by StartEvent",
+      "description": "Decide whether to add a supplementary comment on own posts from the last 14 days. Re-review a post only if never reviewed or its comment count changed (no mention notifications).",
+      "type": "OR",
+      "required_variables": [
+        {
+          "name": "current_posts",
+          "type": "dict",
+          "context": "event",
+          "description": "Current post window; filtered to this user's posts in the last 14 days."
+        }
+      ],
+      "output_updates": [
+        {
+          "name": "content_pool",
+          "type": "dict",
+          "context": "env",
+          "description": "May gain new comments on own posts."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "receive_recommendation",
+      "condition": "Triggered by SocialRecommendationEvent, AlgorithmRecommendationEvent, SearchResultEvent, or BookmarkEvent",
+      "description": "Consume recommended posts from social/algorithm/search/keep-following channels; run UserAgentGates + LLM to decide reposts, quotes, replies, @mentions, keep-following, and search; write propagation posts to content_pool and mention_pool.",
+      "type": "OR",
+      "required_variables": [
+        {
+          "name": "recommendations",
+          "type": "dict",
+          "context": "event",
+          "description": "Batch of post_id -> post dict from the incoming recommendation event."
+        },
+        {
+          "name": "recommended_post_ids",
+          "type": "list",
+          "context": "agent",
+          "description": "Historical recommended post IDs on profile."
+        },
+        {
+          "name": "follow_ids",
+          "type": "list",
+          "context": "agent",
+          "description": "For mentionable-user resolution."
+        },
+        {
+          "name": "fan_ids",
+          "type": "list",
+          "context": "agent",
+          "description": "For mentionable-user resolution."
+        },
+        {
+          "name": "content_pool",
+          "type": "dict",
+          "context": "env",
+          "description": "Full post pool for chain hints, depth gates, and parent lookup."
+        },
+        {
+          "name": "seed_root_post_ids",
+          "type": "list",
+          "context": "env",
+          "description": "Frozen env seed root post IDs for PostDepthGate hop limits."
+        }
+      ],
+      "output_updates": [
+        {
+          "name": "content_pool",
+          "type": "dict",
+          "context": "env",
+          "description": "New repost/quote/reply entries appended as top-level post_id keys."
+        },
+        {
+          "name": "mention_pool",
+          "type": "dict",
+          "context": "env",
+          "description": "Notifications for authors and @ targets."
+        },
+        {
+          "name": "recommended_post_ids",
+          "type": "list",
+          "context": "agent",
+          "description": "Updated after viewing recommendations."
+        },
+        {
+          "name": "recommended_post_ids_by_channel",
+          "type": "dict",
+          "context": "agent",
+          "description": "source_type (algorithm|social|search|bookmark) -> step -> [post_id]."
+        },
+        {
+          "name": "bookmark_post_ids",
+          "type": "list",
+          "context": "agent",
+          "description": "At most one post ID carried to next round."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "handle_mention",
+      "condition": "Triggered by MentionEvent",
+      "description": "Process @/repost/quote/reply notifications: LLM decides whether to propagate or search; writes posts via AddPostEvent and updates mention_pool; may trigger GetSearchResultEvent.",
+      "type": "OR",
+      "required_variables": [
+        {
+          "name": "mentions",
+          "type": "dict",
+          "context": "event",
+          "description": "post_id -> {post, mention_type} enriched from mention_pool."
+        },
+        {
+          "name": "follow_ids",
+          "type": "list",
+          "context": "agent",
+          "description": "For relationship hints and @ resolution."
+        },
+        {
+          "name": "fan_ids",
+          "type": "list",
+          "context": "agent",
+          "description": "For relationship hints and @ resolution."
+        },
+        {
+          "name": "content_pool",
+          "type": "dict",
+          "context": "env",
+          "description": "Post pool for context and depth gates."
+        },
+        {
+          "name": "seed_root_post_ids",
+          "type": "list",
+          "context": "env",
+          "description": "Env seed roots for PostDepthGate."
+        }
+      ],
+      "output_updates": [
+        {
+          "name": "content_pool",
+          "type": "dict",
+          "context": "env",
+          "description": "Propagation posts added via AddPostEvent."
+        },
+        {
+          "name": "mention_pool",
+          "type": "dict",
+          "context": "env",
+          "description": "Processed mentions removed; new notifications added."
+        },
+        {
+          "name": "mentioned_post_ids_by_channel",
+          "type": "dict",
+          "context": "agent",
+          "description": "mention_type (at|repost|quote|reply) -> step -> [post_id]."
+        },
+        {
+          "name": "bookmark_post_ids",
+          "type": "list",
+          "context": "agent",
+          "description": "Optional carry-over from mention-channel LLM."
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "review_followed_profiles",
+      "condition": "Triggered by StartEvent",
+      "description": "Review all followed accounts, or embedding top five when >5, with strict whole-account interest judgment.",
+      "type": "OR",
+      "required_variables": [],
+      "output_updates": []
+    },
+    {
+      "id": 13,
+      "name": "visit_profile",
+      "condition": "Triggered by ProfileVisitEvent",
+      "description": "Open authored historical replies and root/ancestor paths; decide whether to reply, search, bookmark, follow or visit another visible author.",
+      "type": "OR",
+      "required_variables": [],
+      "output_updates": []
+    }
+  ],
+  "Algorithm": [
+    {
+      "id": 5,
+      "name": "update_current_posts",
+      "condition": "Triggered by StartEvent (platform_agent_*)",
+      "description": "Sync Algorithm profile current_posts from StartEvent for random/popularity/interest recommendation and search candidate pools.",
+      "type": "OR",
+      "required_variables": [
+        {
+          "name": "current_posts",
+          "type": "dict",
+          "context": "event",
+          "description": "Current post window from StartEvent."
+        }
+      ],
+      "output_updates": [
+        {
+          "name": "current_posts",
+          "type": "dict",
+          "context": "agent",
+          "description": "Algorithm profile mirror of env current_posts."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "send_recommendation_results",
+      "condition": "Triggered by GetAlgorithmRecommendationEvent",
+      "description": "Run random / popularity / interest recommendation for requesting user; return AlgorithmRecommendationEvent with sampled post batch.",
+      "type": "OR",
+      "required_variables": [
+        {
+          "name": "current_posts",
+          "type": "dict",
+          "context": "agent",
+          "description": "Candidate post pool for this step."
+        },
+        {
+          "name": "user_profile",
+          "type": "dict",
+          "context": "event",
+          "description": "Requesting UserAgent profile payload."
+        },
+        {
+          "name": "recommended_post_ids",
+          "type": "list",
+          "context": "event",
+          "description": "Posts already recommended to this user (dedup input)."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "context": "event",
+          "description": "Optional algorithm type. Empty: Algorithm uses exposure.recommendation.types from params."
+        },
+        {
+          "name": "candidate_post_ids_by_user",
+          "type": "dict",
+          "context": "agent",
+          "description": "Interest recommendation per-user candidate lists."
+        }
+      ],
+      "output_updates": [
+        {
+          "name": "recommended_post_ids_by_user",
+          "type": "dict",
+          "context": "agent",
+          "description": "Tracks posts pushed per user."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "send_search_results",
+      "condition": "Triggered by GetSearchResultEvent",
+      "description": "Run relevant search over current_posts for the query; return SearchResultEvent.",
+      "type": "OR",
+      "required_variables": [
+        {
+          "name": "current_posts",
+          "type": "dict",
+          "context": "agent",
+          "description": "Search corpus."
+        },
+        {
+          "name": "user_profile",
+          "type": "dict",
+          "context": "event",
+          "description": "Requesting user profile."
+        },
+        {
+          "name": "search_keyword",
+          "type": "string",
+          "context": "event",
+          "description": "Keyword from UserAgent LLM decision."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "context": "event",
+          "description": "Search type, e.g. Relevant Search."
+        }
+      ],
+      "output_updates": []
+    }
+  ],
+  "Platform": [
+    {
+      "id": 11,
+      "name": "register_services",
+      "condition": "Triggered by StartEvent",
+      "description": "Remember recommendation/search Algorithm ids from StartEvent. No ranking.",
+      "type": "OR",
+      "required_variables": [],
+      "output_updates": []
+    },
+    {
+      "id": 9,
+      "name": "route_recommendation",
+      "condition": "Triggered by GetAlgorithmRecommendationEvent",
+      "description": "Forward the recommendation request to the recommendation Algorithm. No ranking.",
+      "type": "OR",
+      "required_variables": [],
+      "output_updates": []
+    },
+    {
+      "id": 10,
+      "name": "route_search",
+      "condition": "Triggered by GetSearchResultEvent",
+      "description": "Forward the search request to the search Algorithm. No ranking.",
+      "type": "OR",
+      "required_variables": [],
+      "output_updates": []
+    }
+  ]
+}

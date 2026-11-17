@@ -1,0 +1,190 @@
+{
+  "environment": {
+    "variables": [
+      {
+        "name": "content_pool",
+        "type": "dict",
+        "default_value": {},
+        "description": "Posts keyed by id (Instagram shortcode). Fields: id, content, time (Unix milliseconds), url, user_id (account username), username (display name), comment_count, comments. Runtime post_id and timestamp aliases support shared events and metrics. Comments use comment_id, post_id, user_id, username, content, time/timestamp and parent_comment_id."
+      },
+      {
+        "name": "current_timestamp",
+        "type": "int",
+        "default_value": 0,
+        "description": "Simulation clock in Unix milliseconds; advances using the configured schedule."
+      },
+      {
+        "name": "timestamp_duration",
+        "type": "int",
+        "default_value": 0,
+        "description": "Width of the next post window in milliseconds."
+      },
+      {
+        "name": "simulation_start_timestamp",
+        "type": "int",
+        "default_value": 0,
+        "description": "Anchor time at load; used with max_span_days to cap timeline."
+      },
+      {
+        "name": "current_step",
+        "type": "int",
+        "default_value": 1,
+        "description": "1-based step counter updated after each SimEnv._save_step_data."
+      },
+      {
+        "name": "current_posts",
+        "type": "dict",
+        "default_value": {},
+        "description": "Subset of content_pool with post.time < window_end; comments truncated for prompts using the Facebook selection logic."
+      },
+      {
+        "name": "mention_pool",
+        "type": "dict",
+        "default_value": {},
+        "description": "user_id -> comment_id -> notification containing post_id, comment_id, mentioner, mentioner_username, mention_type and timestamp."
+      },
+      {
+        "name": "seed_root_post_ids",
+        "type": "list",
+        "default_value": [],
+        "description": "Frozen list of initial content_pool keys at env load; used by PostDepthGate and diffusion metrics for hop depth / seed attribution."
+      },
+      {
+        "name": "reference_embedding_path",
+        "type": "string",
+        "default_value": "",
+        "description": "Instagram reference embeddings: datasets/ins/embeddings/bge-base-en-v1.5_embeddings.json."
+      },
+      {
+        "name": "post_embeddings_path",
+        "type": "string",
+        "default_value": "",
+        "description": "Alias / override for reference_embedding_path (post embedding JSON)."
+      }
+    ]
+  },
+  "agents": {
+    "UserAgent": {
+      "variables": [
+        {
+          "name": "recommended_post_ids",
+          "type": "list",
+          "default_value": [],
+          "description": "Flat list of post IDs already recommended to this user (legacy union)."
+        },
+        {
+          "name": "recommended_post_ids_by_channel",
+          "type": "dict",
+          "default_value": {},
+          "description": "source_type (algorithm|social|search|bookmark) -> step -> [post_id]."
+        },
+        {
+          "name": "mentioned_post_ids_by_channel",
+          "type": "dict",
+          "default_value": {},
+          "description": "mention_type (at|repost|quote|reply) -> step -> [post_id]."
+        },
+        {
+          "name": "bookmark_post_ids",
+          "type": "list",
+          "default_value": [],
+          "description": "At most one post ID to re-expose next round via BookmarkEvent."
+        },
+        {
+          "name": "recommendations",
+          "type": "dict",
+          "default_value": {},
+          "description": "Transient recommendation payload on profile (schema compat)."
+        },
+        {
+          "name": "mentions",
+          "type": "dict",
+          "default_value": {},
+          "description": "Transient mention payload on profile (schema compat)."
+        },
+        {
+          "name": "last_login_timestamp",
+          "type": "int",
+          "default_value": 0,
+          "description": "Last social-feed scan time (seconds); social feed uses [last_login, window_end)."
+        },
+        {
+          "name": "historical_posts",
+          "type": "dict",
+          "default_value": {},
+          "description": "Historical post IDs received."
+        },
+        {
+          "name": "historical_summary",
+          "type": "string",
+          "default_value": "",
+          "description": "Persona summary used in LLM prompts."
+        }
+      ]
+    },
+    "Algorithm": {
+      "variables": [
+        {
+          "name": "role",
+          "type": "string",
+          "default_value": "recommendation",
+          "description": "recommendation | search."
+        },
+        {
+          "name": "current_posts",
+          "type": "dict",
+          "default_value": {},
+          "description": "Mirror of env current_posts updated on StartEvent."
+        },
+        {
+          "name": "recommended_post_ids_by_user",
+          "type": "dict",
+          "default_value": {},
+          "description": "user_id -> list of post IDs ever pushed to that user."
+        },
+        {
+          "name": "coarse_interest_recommendation_content_pool",
+          "type": "dict",
+          "default_value": {},
+          "description": "Platform-shared coarse interest posts from recommendation.json."
+        },
+        {
+          "name": "fine_interest_recommendation_content_pool",
+          "type": "dict",
+          "default_value": {},
+          "description": "Topic-specific fine interest posts from topics/{slug}/recommendation.json."
+        },
+        {
+          "name": "interest_recommendation_content_pool",
+          "type": "dict",
+          "default_value": {},
+          "description": "Merged coarse+fine interest pool used by Algorithm.interest()."
+        },
+        {
+          "name": "candidate_post_ids_by_user",
+          "type": "dict",
+          "default_value": {},
+          "description": "Topic-level user_id -> candidate post IDs from topics/{slug}/recommendation.json."
+        },
+        {
+          "name": "random_rec_mau",
+          "type": "float",
+          "default_value": 588000000,
+          "description": "Random recommendation platform MAU."
+        },
+        {
+          "name": "random_rec_avg_posts_per_user_month",
+          "type": "float",
+          "default_value": 95.69,
+          "description": "Random recommendation avg posts per user per month."
+        },
+        {
+          "name": "recommendations",
+          "type": "dict",
+          "default_value": {},
+          "description": "Transient recommendation output (schema compat)."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "id": {
+        "type": "str",
+        "default": "PLATFORM",
+        "private": false,
+        "sampling": "default",
+        "description": "Well-known platform router id. UserAgent sends recommendation/search requests here."
+    }
+}

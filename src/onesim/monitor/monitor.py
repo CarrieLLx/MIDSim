@@ -3,6 +3,12 @@ import logging
 from collections import defaultdict
 import os
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
+
+_METRIC_EXECUTOR = ThreadPoolExecutor(max_workers=1, thread_name_prefix="metric-compute")
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 import json
@@ -291,16 +297,16 @@ class MonitorScheduler:
         Pause metric update
         """
         async with self.lock:
-            if metric_name in self.tasks:
-                task = self.tasks[metric_name]
-                task.cancel()
-                # Wait for the task to actually finish cancellation
-                try:
-                    await task 
-                except asyncio.CancelledError:
-                    pass # Expected
-                self.tasks.pop(metric_name, None)
-                logger.debug(f"Metric {metric_name} scheduling paused")
+            task = self.tasks.pop(metric_name, None)
+        if not task:
+            return
+        if not task.done():
+            task.cancel()
+            try:
+                await asyncio.wait_for(task, timeout=2.0)
+            except (asyncio.CancelledError, asyncio.TimeoutError):
+                pass
+        logger.debug(f"Metric {metric_name} scheduling paused")
     
     async def update_interval(self, metric_name: str, env: Any, monitor_manager: 'MonitorManager', new_frequency: int):
         """
@@ -334,9 +340,23 @@ class MonitorScheduler:
         logger.debug(f"Metric {metric_name} scheduling resumed")
     
     async def stop_all(self):
-        """Stop all metric updates"""
-        for metric_name in list(self.tasks.keys()):
-            await self.pause_metric(metric_name)
+        """Cancel every metric loop at once; do not wait forever on HTTP-bound updates."""
+        async with self.lock:
+            tasks = [self.tasks.pop(name) for name in list(self.tasks.keys())]
+        for task in tasks:
+            if not task.done():
+                task.cancel()
+        if not tasks:
+            return
+        try:
+            await asyncio.wait_for(
+                asyncio.gather(*tasks, return_exceptions=True),
+                timeout=2.0,
+            )
+        except asyncio.TimeoutError:
+            logger.warning(
+                f"{len(tasks)} monitor metric task(s) did not stop within 2s; continuing shutdown"
+            )
 
 
 class MonitorManager:
@@ -421,7 +441,8 @@ class MonitorManager:
                     logger.info(f"Successfully imported metrics calculation module: {module_path}")
             
             # Load metrics definitions from scene_info.json
-            scene_info_path = os.path.join(env_path, "scene_info.json")
+            from onesim.env_layout import get_scene_info_path
+            scene_info_path = get_scene_info_path(env_path)
             if os.path.exists(scene_info_path):
                 import json
                 import re
@@ -617,7 +638,22 @@ class MonitorManager:
             # Collect data
             data = await self.collector.collect_for_metric(env, metric_def)
             # Calculate metric value
-            raw_result = self.processor.calculate(metric_def, data)
+            if metric_name.startswith("Text ") or metric_name == "Same-Post Cross-User Similarity":
+                snapshot = deepcopy(data)
+                started = time.monotonic()
+                worker = asyncio.get_running_loop().run_in_executor(
+                    _METRIC_EXECUTOR, self.processor.calculate, metric_def, snapshot)
+                try:
+                    raw_result = await asyncio.shield(worker)
+                except asyncio.CancelledError:
+                    try:
+                        await worker
+                    except Exception:
+                        pass
+                    raise
+                logger.info("Metric {} computation finished in {:.2f}s", metric_name, time.monotonic() - started)
+            else:
+                raw_result = self.processor.calculate(metric_def, data)
             logger.info(summarize_metric_result_for_log(raw_result))
             if raw_result is None:
                 return
@@ -676,7 +712,7 @@ class MonitorManager:
             try:
                 await self.update_metric(metric_name, env)
             except Exception as e:
-                logger.error(f"refresh_all_metrics: 更新 {metric_name} 失败: {e}")
+                logger.error(f"refresh_all_metrics: failed to update {metric_name}: {e}")
 
     def _append_posting_user_behavior_snapshot(self, env: Any, raw_result: Dict[str, Any]) -> None:
         """Append posting-user diffusion snapshots to metrics_save_dir/posting_user_diffusion_behavior/snapshots.jsonl."""
@@ -1056,8 +1092,8 @@ class MonitorManager:
         # Save metrics data as JSON for reference
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         metrics_file = os.path.join(save_dir, f'metrics_{timestamp}.json')
-        with open(metrics_file, 'w') as f:
-            json.dump(metrics_data, f, indent=4)
+        with open(metrics_file, 'w', encoding='utf-8') as f:
+            json.dump(metrics_data, f, indent=4, ensure_ascii=False)
 
     def collect_metrics(self, env_data: Dict[str, Any], round_num: Optional[int] = None) -> Dict[str, Any]:
         """
@@ -2260,7 +2296,7 @@ class MonitorManager:
                     )
                 else:
                     data_filename = f"{metric_name}{round_info}_{timestamp}.json"
-                    with open(os.path.join(metric_dir, data_filename), "w") as f:
+                    with open(os.path.join(metric_dir, data_filename), "w", encoding="utf-8") as f:
                         if (
                             metric_name in (
                                 "Diffusion Volume Real Time",

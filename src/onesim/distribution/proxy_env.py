@@ -45,8 +45,8 @@ class ProxyEnv:
         self._data_update_futures: Dict[str, asyncio.Future] = {}
         self._sync_event = asyncio.Event()
         
-        # 使用全局BatchProcessor替代内部批处理实现
-        # 配置BatchProcessor
+        # Use the global BatchProcessor instead of an internal implementation.
+        # Configure BatchProcessor.
         batch_processor.batch_size = batch_size
         batch_processor.max_wait_time = flush_interval
         batch_processor.start(master_address, master_port)
@@ -443,14 +443,14 @@ class ProxyEnv:
                 if not task.done():
                     task.cancel()
             
-            # 请求停止模拟
+            # Request simulation termination.
             await grpc_impl.request_simulation_stop(
                 self.master_address,
                 self.master_port,
                 self.node_id
             )
             
-            # 执行资源清理
+            # Clean up resources.
             await self.shutdown()
             
         except Exception as e:
@@ -535,7 +535,7 @@ class ProxyEnv:
             batch_size: Maximum number of items to batch before sending, or None to keep current setting
             flush_interval: Seconds between forced batch flushes, or None to keep current setting
         """
-        # 更新全局BatchProcessor的配置
+        # Update the global BatchProcessor configuration.
         if batch_size is not None and batch_size > 0:
             batch_processor.batch_size = batch_size
         
@@ -550,7 +550,7 @@ class ProxyEnv:
         
         self._running = False
         
-        # 取消所有任务
+        # Cancel all tasks.
         for task in self._tasks:
             if not task.done():
                 task.cancel()
@@ -561,6 +561,6 @@ class ProxyEnv:
                 except Exception as e:
                     logger.error(f"Error cancelling task: {e}")
         
-        # BatchProcessor不需要在这里停止，它将由WorkerNode负责停止
+        # WorkerNode is responsible for stopping BatchProcessor; do not stop it here.
         
         logger.info(f"ProxyEnv for worker {self.node_id} shutdown complete")

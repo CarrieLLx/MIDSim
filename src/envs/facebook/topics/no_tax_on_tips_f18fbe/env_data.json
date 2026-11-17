@@ -1,0 +1,38 @@
+{
+  "current_timestamp": 1782211482000,
+  "timestamp_duration": 0,
+  "reference_embedding_path": "datasets/facebook/embeddings/bge-base-en-v1.5_embeddings.json",
+  "scenario_topic": "Should tip income be tax-exempt?",
+  "content_pool": {
+    "pfbid02aKVp66FnByhHdpoHeP2zhzb2QcbmwHYZR9QDnHgLpNMNZ8rpBFPb6G9RLPDgBKaJl": {
+      "id": "pfbid02aKVp66FnByhHdpoHeP2zhzb2QcbmwHYZR9QDnHgLpNMNZ8rpBFPb6G9RLPDgBKaJl",
+      "content": "no tax on overtime , no tax on tips, no tax on social security. President Trump just issued an executive order tilted - …",
+      "time": 1782247463000,
+      "url": "https://www.facebook.com/allante.mcauley/posts/pfbid02aKVp66FnByhHdpoHeP2zhzb2QcbmwHYZR9QDnHgLpNMNZ8rpBFPb6G9RLPDgBKaJl?__cft__[0]=AZadoonhV8iGiQlaFy_I_IiZG-yF6T68-cLNtSulfpTE8sOeU-sEl5Q5Y8ULMTiEQL5MBdNpOTYBF6o7o1TKCXLk80yx02KyDmpn-VimUQdUFy3A9GWRdFwPhECM36VaLKOlJywWKrqEb0-c79XimwtwsU4O0oKVqU0wppVeK6yeNQuLeEwqB1hCV8D1XPjEhA8&__tn__=%2CO%2CP-R",
+      "user_id": "allante.mcauley",
+      "username": "Allante McAuley",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "pfbid0fvBQdqyufPCe4vMCRc69Zdt6L8VgLgFBjChKFKrU2N5iw2HA8pGFhAuWTnt7afb4l": {
+      "id": "pfbid0fvBQdqyufPCe4vMCRc69Zdt6L8VgLgFBjChKFKrU2N5iw2HA8pGFhAuWTnt7afb4l",
+      "content": "Every month, working families in South Texas keep more of what they earn. No tax on tips. No tax on overtime. Tax relief on Social Security. For the families balancing …",
+      "time": 1782211482000,
+      "url": "https://www.facebook.com/monicaforcongress/posts/pfbid0fvBQdqyufPCe4vMCRc69Zdt6L8VgLgFBjChKFKrU2N5iw2HA8pGFhAuWTnt7afb4l?__cft__[0]=AZYl-xop4jFp-dhcp16W-vpf04_sI-mNHh8Cea0hBcnDbsc0Y9Id-DRxqBKEDAjU5hB-wTr7Y5BEtAuBdLVe_CeogjBRJR8IceEkGFbnm39N2r7Mr75a35ix2WYpwdkYMwEdHjQcITjjKTQ2DH80nCxDoEi8RelY7cKOjUUhrmlLGOaq4uSMlrAxcvt-xX39ML8&__tn__=%2CO%2CP-R",
+      "user_id": "monicaforcongress",
+      "username": "Monica De La Cruz",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "pfbid0td8VoSw6JMNFB3boUPfZwWdRa7niJiSWHUfDysyxLjKRViUnpsG2VBTZqYaWDn3Ql": {
+      "id": "pfbid0td8VoSw6JMNFB3boUPfZwWdRa7niJiSWHUfDysyxLjKRViUnpsG2VBTZqYaWDn3Ql",
+      "content": "But they voted against no tax on Social Security. They voted against no tax on tips. They voted against no tax on overtime,\"",
+      "time": 1782261870000,
+      "url": "https://www.facebook.com/karlton.healey/posts/pfbid0td8VoSw6JMNFB3boUPfZwWdRa7niJiSWHUfDysyxLjKRViUnpsG2VBTZqYaWDn3Ql?__cft__[0]=AZb7FxTZJzrSivXlNtjiJGi2G3ob_psUY1wpoyWt92eSx7zbP-ZG_KjLcOGbMRYNv6CbyP6RPJDW8x8oZ9nmeg4j2DAs-l3me4cwOS65Edi9KjHDawpO7jMAobTimtZGjbsLNJWWXqQuxZZMf-L9jljemgP0t3Doq4-hHR5n5mekbg&__tn__=%2CO%2CP-R",
+      "user_id": "karlton.healey",
+      "username": "Karlton Healey",
+      "comment_count": 0,
+      "comments": {}
+    }
+  }
+}

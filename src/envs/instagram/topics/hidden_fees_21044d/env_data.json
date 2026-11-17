@@ -1,0 +1,38 @@
+{
+  "current_timestamp": 1510099200000,
+  "timestamp_duration": 0,
+  "reference_embedding_path": "datasets/ins/embeddings/bge-base-en-v1.5_embeddings.json",
+  "scenario_topic": "Should concert and sports tickets be required to show the full price?",
+  "content_pool": {
+    "BbPjVn4lw6C": {
+      "id": "BbPjVn4lw6C",
+      "content": "How it feels when you find great seats and then get hit with the ticket fees...",
+      "time": 1510162877000,
+      "url": "https://www.instagram.com/p/BbPjVn4lw6C/",
+      "user_id": "kojutickets",
+      "username": "KOJU",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "BbQD1m7lgjg": {
+      "id": "BbQD1m7lgjg",
+      "content": "The number to call after you pay $100 extra in ticket fees. #NationalSuicidePrevention",
+      "time": 1510179916000,
+      "url": "https://www.instagram.com/p/BbQD1m7lgjg/",
+      "user_id": "kojutickets",
+      "username": "KOJU",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "BbxZ2tFFgdw": {
+      "id": "BbxZ2tFFgdw",
+      "content": "Protesting the price of ticket fees in America 🇺🇸🇺🇸",
+      "time": 1511298756000,
+      "url": "https://www.instagram.com/p/BbxZ2tFFgdw/",
+      "user_id": "kojutickets",
+      "username": "KOJU",
+      "comment_count": 0,
+      "comments": {}
+    }
+  }
+}

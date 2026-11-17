@@ -1,0 +1,15 @@
+### Memory Requirements
+
+Output exactly one non-empty memory string from the agent's perspective, including when no interaction was chosen. State truthfully that the agent scrolled past, did not comment, or remained silent when appropriate. Do not fabricate an interaction or omit the memory because nothing was said.
+
+### Suggested Sentence Pattern
+
+Through [channel] I encountered [topic]; the core is [key fact]. I [interaction or decision] toward [target] and expressed [attitude or response content].
+
+### Memory Quality
+
+- Summarize the event as if recounting what happened to a friend. Include concrete names, times, numbers, and rules or product names when available; avoid evaluative filler alone.
+- Preserve the target and substance of the agent's responses; distinguish observed information from what the agent expressed. For a batch, prioritize actual responses rather than listing every item that received no response.
+- If no interaction was chosen, state this briefly and, when useful, summarize the event-specific reason. Do not turn silence into an expressed stance, a completed interaction, a lasting personality trait, or a rule for future behavior.
+- Distinguish intended actions from confirmed results. Include an execution result only when supplied by the input; otherwise describe the decision without assuming success.
+- Use one concise sentence, ideally no more than 120 characters, preserving the key fact and the agent's response or non-interaction. Keep the memory as natural-language text, not a list of invented facts.

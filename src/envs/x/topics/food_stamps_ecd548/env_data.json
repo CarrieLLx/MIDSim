@@ -1,0 +1,208 @@
+{
+  "current_timestamp": 1761350400000,
+  "timestamp_duration": 0,
+  "reference_embedding_path": "datasets/x/embeddings/bge-base-en-v1.5_embeddings.json",
+  "scenario_topic": "Should college students have easier access to SNAP food assistance?",
+  "content_pool": {
+    "1982104914546557333": {
+      "id": "1982104914546557333",
+      "content": "I am not against SNAP benefits I know SNAP is a necessity for a lot of families. I think the woman in this video is abusing it. There's a difference https://t.co/7KpRkNyihZ",
+      "time": 1761405612000,
+      "url": "https://x.com/Ikennect/status/1982104914546557333",
+      "user_id": "ikennect",
+      "username": "I am Ken",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1982804412914364910": {
+      "id": "1982804412914364910",
+      "content": "I want my tax dollars to go to SNAP benefits, not Donald Trump's 7th golf trip of the month.",
+      "time": 1761572385000,
+      "url": "https://x.com/Ally_Sammarco/status/1982804412914364910",
+      "user_id": "ally_sammarco",
+      "username": "Ally Sammarco",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1982843989658337450": {
+      "id": "1982843989658337450",
+      "content": "If you thought the No Kings protests were big before just wait until 40 million Americans lose their SNAP benefits",
+      "time": 1761581821000,
+      "url": "https://x.com/theliamnissan/status/1982843989658337450",
+      "user_id": "theliamnissan",
+      "username": "Liam Nissan™",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1982870057576477156": {
+      "id": "1982870057576477156",
+      "content": "The problem is not the poor kid who gets $6 a day in food stamps. The problem is the Walton family, worth $469 billion, & Jeff Bezos, worth $247 billion pay wages so low that their workers need food stamps. The real welfare queens are the billionaires who pay starvation wages. https://t.co/GbkDFoINud",
+      "time": 1761588036000,
+      "url": "https://x.com/GunnelsWarren/status/1982870057576477156",
+      "user_id": "gunnelswarren",
+      "username": "Warren Gunnels",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1982933681036746950": {
+      "id": "1982933681036746950",
+      "content": "TWO CAN PLAY THAT GAME: The official Massachusetts state website for SNAP benefits is now displaying an alert warning that Trump is \"choosing not to issue November SNAP benefits that help you and many families put food on the table.\" The site also notes that people \"may have https://t.co/5OZyiHzLon",
+      "time": 1761603205000,
+      "url": "https://x.com/MeidasTouch/status/1982933681036746950",
+      "user_id": "meidastouch",
+      "username": "MeidasTouch",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1982968044369375266": {
+      "id": "1982968044369375266",
+      "content": "Newsmax host @RobFinnertyUSA just said what no one in mainstream media will admit about SNAP. He tore the mask off the entire food stamps program...and what he revealed will infuriate taxpayers. It's far worse than anyone realized. \"There are 42 million people in this country https://t.co/TlgBzzwZDx",
+      "time": 1761611398000,
+      "url": "https://x.com/overton_news/status/1982968044369375266",
+      "user_id": "overton_news",
+      "username": "Overton",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1983039779320279427": {
+      "id": "1983039779320279427",
+      "content": "More Americans exposing the truth about the SNAP EBT Program \"The real reason why a lot of people are upset about this whole food stamps snap benefit thing, bro, is because they're selling their food stamps. They're selling them. I'm telling you, they are selling their food https://t.co/Tl21EYzyoP",
+      "time": 1761628501000,
+      "url": "https://x.com/WallStreetApes/status/1983039779320279427",
+      "user_id": "wallstreetapes",
+      "username": "Wall Street Apes",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1983169577199788062": {
+      "id": "1983169577199788062",
+      "content": "🚨WOW \"59% of ALL illegal aliens are collecting food stamps, meaning that most of the people getting food stamps from the U.S. Government & the U.S. Taxpayer are not even Americans.\" \"we can confirm tonight that millions of illegal aliens…are now collecting food stamps\" https://t.co/sT4Opay9FZ",
+      "time": 1761659447000,
+      "url": "https://x.com/DerrickEvans4WV/status/1983169577199788062",
+      "user_id": "derrickevans4wv",
+      "username": "Derrick Evans",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1983284941103476856": {
+      "id": "1983284941103476856",
+      "content": "Donald Trump deleted this from the government website. Let's be clear: there's funding available to cover SNAP benefits next month. Trump is stopping SNAP benefits because he wants to. He is forcing mommas and babies to go hungry. https://t.co/ZxqBaLTQrP",
+      "time": 1761686952000,
+      "url": "https://x.com/SenWarren/status/1983284941103476856",
+      "user_id": "senwarren",
+      "username": "Elizabeth Warren",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1983557869959279086": {
+      "id": "1983557869959279086",
+      "content": "SNAP benefits are literally being used for DoorDash. The whole system needs to be reformed.",
+      "time": 1761752023000,
+      "url": "https://x.com/IanJaeger29/status/1983557869959279086",
+      "user_id": "ianjaeger29",
+      "username": "Ian Jaeger",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1983859697653366903": {
+      "id": "1983859697653366903",
+      "content": "\"But some people abuse food stamps by buying cookies & steak & lobster!\" So using the food stamps to buy food",
+      "time": 1761823984000,
+      "url": "https://x.com/megannn_lynne/status/1983859697653366903",
+      "user_id": "megannn_lynne",
+      "username": "Meg",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1984605948619731063": {
+      "id": "1984605948619731063",
+      "content": "Donald Trump hosted a Great Gatsby party while SNAP benefits were about to disappear for 42 million Americans. He does not give a damn about you. https://t.co/QVGtkqwHdF",
+      "time": 1762001905000,
+      "url": "https://x.com/GavinNewsom/status/1984605948619731063",
+      "user_id": "gavinnewsom",
+      "username": "Gavin Newsom",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1985673068929327336": {
+      "id": "1985673068929327336",
+      "content": "Rep. Jared Moskowitz (D-FL): \"I voted against the CR because the CR wasn't going to take care of people's health insurance. Healthcare was going to go up.\" Scott Jennings: \"But you did vote against the SNAP benefits?\" Rep. Jared Moskowitz (D-FL): \"I did not vote against the https://t.co/gpuMefc413",
+      "time": 1762256326000,
+      "url": "https://x.com/RedWavePress/status/1985673068929327336",
+      "user_id": "redwavepress",
+      "username": "RedWave Press",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1985741460910805182": {
+      "id": "1985741460910805182",
+      "content": "BREAKING 🚨 President Trump stuns America by announcing SNAP benefits will only be given out when the Democrats OPEN in the Government THIS IS EXACTLY WHAT I VOTED FOR 🔥 https://t.co/fErW4mREwM",
+      "time": 1762272632000,
+      "url": "https://x.com/MAGAVoice/status/1985741460910805182",
+      "user_id": "magavoice",
+      "username": "MAGA Voice",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1987237232152044006": {
+      "id": "1987237232152044006",
+      "content": "HOLY S'HT ⚖️ Justice (Ketanji Brown Jackson) issued the (48) hour stay on Snap benefits Raise your hand ✋️ if you want @SecRollins to make everyone to reapply for snap benefits This eliminates bots, dead people and Illegals.. let her know in the comments section LET'S GO https://t.co/ZyDRL0wA1R",
+      "time": 1762629251000,
+      "url": "https://x.com/Chicago1Ray/status/1987237232152044006",
+      "user_id": "chicago1ray",
+      "username": "@Chicago1Ray 🇺🇸",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1987465867576132035": {
+      "id": "1987465867576132035",
+      "content": "Supreme Court grants Trump Administration's SNAP appeal. Americans are not okay with 60% of SNAP benefits going to illegals or the corruption in the distribution of SNAP benefits. https://t.co/ul71xuqBZj",
+      "time": 1762683762000,
+      "url": "https://x.com/1109Patricia/status/1987465867576132035",
+      "user_id": "1109patricia",
+      "username": "Patricia 🇺🇸",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1987536906629058941": {
+      "id": "1987536906629058941",
+      "content": "It's pretty hard to blame the Democrats for people not getting SNAP benefits when the Republican president is fighting in court to make sure people don't get SNAP benefits.",
+      "time": 1762700699000,
+      "url": "https://x.com/BraddrofliT/status/1987536906629058941",
+      "user_id": "braddroflit",
+      "username": "Brad",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1989164405721026824": {
+      "id": "1989164405721026824",
+      "content": "If the last 40 days tell us anything about the radical-left Democrats, it's that they're willing to burn the country down just to get President Trump. Troops' salaries, SNAP Benefits, Air Traffic controllers – they don't care about the cost so long as it hurts Trump. https://t.co/G5oLTOgsPA",
+      "time": 1763088725000,
+      "url": "https://x.com/JDVance/status/1989164405721026824",
+      "user_id": "jdvance",
+      "username": "JD Vance",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1989410596119613885": {
+      "id": "1989410596119613885",
+      "content": "🚨BREAKING: The Trump admin. just caught 186,000 DEAD PEOPLE receiving SNAP benefits and 500,000 getting SNAP TWICE! They will now require all recipients to prove they can't \"survive without it.\" https://t.co/XXD8kYnwwe",
+      "time": 1763147422000,
+      "url": "https://x.com/BoLoudon/status/1989410596119613885",
+      "user_id": "boloudon",
+      "username": "Bo Loudon",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1989431001161093345": {
+      "id": "1989431001161093345",
+      "content": "This illegal alien stole over $150K in SNAP benefits. Even worse: 186,000 DEAD people are still receiving benefits. SNAP fraud is out of control. Thankfully, @SecRollins is getting to the bottom of it! https://t.co/UgMW1YIw6V",
+      "time": 1763152287000,
+      "url": "https://x.com/CollinsforTX/status/1989431001161093345",
+      "user_id": "collinsfortx",
+      "username": "Christian Collins",
+      "comment_count": 0,
+      "comments": {}
+    }
+  }
+}

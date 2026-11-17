@@ -1,0 +1,28 @@
+{
+  "wiselionman": {
+    "user_id": "wiselionman",
+    "username": "Reese Erick Forbes",
+    "comment_count": 1,
+    "comments": [
+      {
+        "comment_id": "1712185270643077449",
+        "timestamp": 1697051754000,
+        "ip_location": "",
+        "post_id": "1712159582670217284",
+        "user_id": "wiselionman",
+        "username": "Reese Erick Forbes",
+        "parent_comment_id": null,
+        "at_count": 2,
+        "content": "@VP @POTUS The rule should be - “ if you have not prominently disclosed it, you cannot charge it”.",
+        "sub_comment_count": 0,
+        "parent_user_id": null,
+        "parent_username": "",
+        "parent_content": "",
+        "post_author_id": "vp46archive",
+        "post_author_username": "Vice President Kamala Harris Archived",
+        "post_content": "Junk fees cost American families tens of billions of dollars each year. Today, @POTUS and I are announcing a new solution to crack down on surprise, hidden fees and lower costs for American consumers. https://t.co/toyN3FUsLF",
+        "on_own_post": false
+      }
+    ]
+  }
+}

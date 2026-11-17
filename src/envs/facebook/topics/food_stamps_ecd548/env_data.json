@@ -1,0 +1,38 @@
+{
+  "current_timestamp": 1782258993000,
+  "timestamp_duration": 0,
+  "reference_embedding_path": "datasets/facebook/embeddings/bge-base-en-v1.5_embeddings.json",
+  "scenario_topic": "Should college students have easier access to SNAP food assistance?",
+  "content_pool": {
+    "858790f5a47ea4e4d3f962c145b44566": {
+      "id": "858790f5a47ea4e4d3f962c145b44566",
+      "content": "A judge just reopened the candy aisle for SNAP recipients in 23 states. Not because soda and candy are healthy — but because of a legal technicality. Meanwhile, taxpaye…",
+      "time": 1782264851000,
+      "url": "https://www.facebook.com/stories/106574924804194/UzpfSVNDOjE1NzY3MTc4OTA0Nzk2NjI=/?view_single=false&__cft__[0]=AZZ4IR93KdR51GRLZymYZo3hilJhIQ3AN3ZSV8NehlW_sZThz2BdgQFeJ-XtgE4d8mz2KccNuS6SOcI5f7sH7jbXc1DhL9H2fFfHMtdW7o_Zp6vDgE1Q8P2i8u9cq_oIAZRy2ZXxLwfRPtICqzMjLaJaeXXIAG8x9eD2D-hUL0f1YFvXRYm3wmU51zXxNmwrwNrsUuRqxLD08RSkgoHTHanJ&__tn__=%3C%3C%2CP-R",
+      "user_id": "TheIncomparableDeezilGreezil",
+      "username": "Deezil Greezil",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "pfbid02NiDZ6eKCnm8mGn88DVrTGpEhnf9KRLLC8SDfymsNfKu1zPEQN2eYJWRLJCfxinEol": {
+      "id": "pfbid02NiDZ6eKCnm8mGn88DVrTGpEhnf9KRLLC8SDfymsNfKu1zPEQN2eYJWRLJCfxinEol",
+      "content": "I was just reading about people arguing about people on SNAP being able to buy soft drinks and candy. Also, they were arguing about the program existing at all._It seems a lot of people are unaware of the full scope of SNAP, and who all it benefits. The people purchasing food with it are not the only beneficiaries._Part of the inception of the whole program was that farmers were producing surplus food, but many people couldn't affor…",
+      "time": 1782268363000,
+      "url": "https://www.facebook.com/brad.lepik/posts/pfbid02NiDZ6eKCnm8mGn88DVrTGpEhnf9KRLLC8SDfymsNfKu1zPEQN2eYJWRLJCfxinEol?__cft__[0]=AZaxUezslK51b0_n_QYM0Pt4uchcvQYdmH36q6yzcEvTMV1bEvXAK3FfjU2ubW4DqXJ5-wnQEatR-_F40tNRpzrecG9HbhqA54zmOJJIIR9EEiiGHPwcfcw8B_KwTYhggFs_p8qftaUcXoBYSg5G6UGLj_zieBFyi9gtDxrTRRK8RYonTEQ6twiWtBCdoDQ61ag&__tn__=%2CO%2CP-R",
+      "user_id": "brad.lepik",
+      "username": "Brad Lepik",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "pfbid0UUQCWo4dC7jGH9Mt2EZRZKLo9MLPabtzBqYKb9M1qQW46m6i4hKyxwB9eeLRrr6rl": {
+      "id": "pfbid0UUQCWo4dC7jGH9Mt2EZRZKLo9MLPabtzBqYKb9M1qQW46m6i4hKyxwB9eeLRrr6rl",
+      "content": "SHOULD THE GOVERNMENT DECIDE WHAT SNAP RECIPIENTS CAN BUY? _A…",
+      "time": 1782258993000,
+      "url": "https://www.facebook.com/sonja.brown.5205/posts/pfbid0UUQCWo4dC7jGH9Mt2EZRZKLo9MLPabtzBqYKb9M1qQW46m6i4hKyxwB9eeLRrr6rl?__cft__[0]=AZY48eXwUV-y0iFVE9gyYbGQw8h5G1nGG8CobYvM5j2mQ1vMZfDKHA5LPqG2rhbNqmprPPCB1p3LYvV5Z9tX75bRW2lNGmdqpsbOjsZzJ_3pw5HvUnQciy2lmZ4AWngLzp5TDzL3_270FbevX9JtlNI1KfPfcX5RDM6Dj8kQYXP9XVeW95orXw4o6EtCyQsQNdk&__tn__=%2CO%2CP-R",
+      "user_id": "sonja.brown.5205",
+      "username": "Sonja Palmore",
+      "comment_count": 0,
+      "comments": {}
+    }
+  }
+}

@@ -5,6 +5,17 @@ import sys
 import os
 import time
 import uuid
+
+# Before numpy/seaborn: one BLAS thread avoids OpenBLAS "Memory allocation still failed".
+for _k, _v in (
+    ("MPLBACKEND", "Agg"),
+    ("OPENBLAS_NUM_THREADS", "1"),
+    ("OMP_NUM_THREADS", "1"),
+    ("MKL_NUM_THREADS", "1"),
+    ("NUMEXPR_NUM_THREADS", "1"),
+    ("VECLIB_MAXIMUM_THREADS", "1"),
+):
+    os.environ.setdefault(_k, _v)
 from typing import List, Dict, Type, Optional
 import json
 from datetime import datetime
@@ -19,11 +30,14 @@ from onesim.config import (
 )
 from onesim.simulator import AgentFactory, BasicSimEnv
 from onesim.models import ModelManager
-from onesim.events import get_event_bus, EventBus, Scheduler
+from onesim.events import get_event_bus, reset_event_bus, EventBus, Scheduler
 from onesim.agent import GeneralAgent
 from onesim.utils.work_graph import WorkGraph
 from onesim.distribution.node import get_node, NodeRole
 from onesim.utils.common import setup_logging
+
+_USER_ABORT = False
+_INTERRUPT_COUNT = 0
 # Component identifier constants from onesim module
 from onesim import (
     COMPONENT_MODEL,
@@ -31,6 +45,7 @@ from onesim import (
     COMPONENT_DISTRIBUTION,
     COMPONENT_MONITOR
 )
+from onesim.env_layout import get_actions_path, get_events_path, get_scene_info_path
 from onesim.distribution.proxy_env import ProxyEnv
 
 def parse_args():
@@ -95,8 +110,8 @@ async def run_agents(agents_dict: Dict[str, List[GeneralAgent]]) -> List[asyncio
     return tasks
 
 def build_graph(conf: OneSimConfig, agent_factory):
-    events_path = os.path.join(conf.env_path, "events.json")
-    actions_path = os.path.join(conf.env_path, "actions.json")
+    events_path = get_events_path(conf.env_path)
+    actions_path = get_actions_path(conf.env_path)
     events = parse_json(events_path)
     actions = parse_json(actions_path)
     
@@ -156,8 +171,8 @@ async def initialize_distributed_environment(config: OneSimConfig, args):
         
         return env
     elif node.role == NodeRole.WORKER:
-        events_path = os.path.join(config.env_path, "events.json")
-        actions_path = os.path.join(config.env_path, "actions.json")
+        events_path = get_events_path(config.env_path)
+        actions_path = get_actions_path(config.env_path)
         events = parse_json(events_path)
         actions = parse_json(actions_path)
         work_graph = WorkGraph()
@@ -183,7 +198,99 @@ async def initialize_distributed_environment(config: OneSimConfig, args):
     else:
         raise ValueError(f"Invalid node role: {node.role}")
 
-async def initialize_environment(config: OneSimConfig, args) -> Optional[BasicSimEnv]:
+async def _cancel_pending(pending, timeout: float = 30.0) -> set:
+    """Cancel once and report only tasks still running at the deadline."""
+    targets = set(pending)
+    leftover = [task for task in targets if not task.done()]
+    for task in leftover:
+        task.cancel()
+    # wait_for(gather(...)) cancels tasks again at the deadline and can itself
+    # wait indefinitely for cancellation. wait() leaves cleanup in progress.
+    remaining = set()
+    if leftover:
+        _, remaining = await asyncio.wait(leftover, timeout=timeout)
+    # Also retrieve errors from tasks that finished while shutdown was awaited.
+    for task in targets - remaining:
+        if not task.cancelled() and task.exception() is not None:
+            logger.error("Task {} failed during cleanup: {}", task.get_name(), task.exception())
+    if remaining:
+        names = ", ".join(sorted(task.get_name() for task in remaining))
+        logger.warning(
+            "{} task(s) did not stop within {:g}s after cancellation: {}",
+            len(remaining), timeout, names,
+        )
+    return remaining
+
+
+async def _watch_model_failures(sim_env):
+    """A caught platform exception must not silently remove an action from a run."""
+    while not sim_env.stopped_event.is_set():
+        failure = getattr(sim_env, '_llm_failure', None)
+        if not failure:
+            for agents in (getattr(sim_env, 'agents', None) or {}).values():
+                for agent in agents.values():
+                    failure = getattr(agent, '_llm_failure', None)
+                    if failure:
+                        break
+                if failure:
+                    break
+        if failure:
+            sim_env._llm_failure = failure
+            sim_env._pause_signal.set()
+            raise RuntimeError(f'Model request failed; stopping experiment: {failure}')
+        await asyncio.sleep(0.2)
+
+
+async def _run_environment_tasks(sim_env, termination_event, tasks) -> None:
+    """Keep runtime tasks alive until the environment finishes saving/exporting."""
+    signal_wait = asyncio.create_task(termination_event.wait(), name="wait_interrupt")
+    stopped_wait = asyncio.create_task(sim_env.stopped_event.wait(), name="wait_env_stopped")
+    model_wait = asyncio.create_task(_watch_model_failures(sim_env), name="wait_model_failure")
+    watched = set(tasks) | {signal_wait, stopped_wait, model_wait}
+    runtime_error = None
+    try:
+        done, _ = await asyncio.wait(watched, return_when=asyncio.FIRST_COMPLETED)
+        for task in done - {signal_wait, stopped_wait}:
+            if not task.cancelled() and task.exception() is not None:
+                runtime_error = RuntimeError(f"Runtime task {task.get_name()} failed: {task.exception()}")
+                logger.error(str(runtime_error))
+        if termination_event.is_set():
+            logger.info("Manual termination requested")
+        elif not sim_env.is_terminated() and not sim_env.stopped_event.is_set():
+            ended = ", ".join(sorted(task.get_name() for task in done))
+            runtime_error = runtime_error or RuntimeError(f"Runtime tasks exited before simulation completion: {ended}")
+            logger.error(str(runtime_error))
+        # A metrics task or event loop may finish early during shutdown. Join
+        # the idempotent shutdown rather than cancelling the task doing exports.
+        if getattr(sim_env, '_llm_failure', None):
+            runtime_error = runtime_error or RuntimeError('Model request failed; experiment is incomplete')
+        await sim_env.stop_simulation()
+        if runtime_error is not None:
+            raise runtime_error
+    except asyncio.CancelledError:
+        await sim_env.stop_simulation()
+        raise
+    finally:
+        timeout = float(os.environ.get("ONESIM_SHUTDOWN_TASK_TIMEOUT", "30"))
+        remaining = await _cancel_pending(watched, timeout=timeout)
+        if remaining:
+            # Do not reset the shared event bus under still-running tasks and
+            # let them write into the next batch topic.
+            raise RuntimeError("Runtime cleanup incomplete; stopping batch before the next scenario")
+
+
+async def reset_runtime_between_scenarios() -> None:
+    """Clear shared EventBus / monitor so the next batch topic starts clean."""
+    try:
+        monitor = get_component_registry().get_instance("monitor")
+        if monitor and hasattr(monitor, "stop_all_metrics"):
+            await monitor.stop_all_metrics()
+    except Exception as e:
+        logger.warning(f"Failed to stop monitor before next scenario: {e}")
+    reset_event_bus()
+
+
+async def initialize_environment(config: OneSimConfig, args, output_dir: Optional[str] = None) -> Optional[BasicSimEnv]:
     """Initialize simulation environment"""
     registry = get_component_registry()
 
@@ -262,7 +369,8 @@ async def initialize_environment(config: OneSimConfig, args) -> Optional[BasicSi
     env_settings = config.simulator_config.environment
 
     # Create timestamped output directory
-    output_dir = create_timestamped_output_dir(config.env_path)
+    if not output_dir:
+        output_dir = create_timestamped_output_dir(config.env_path)
 
     sim_env = SimEnv(
         config.env_name,
@@ -328,9 +436,15 @@ async def run_simulation(
         # Register signal handlers for graceful shutdown
         import signal
 
-        def signal_handler():
+        def signal_handler(*_args):
+            global _USER_ABORT, _INTERRUPT_COUNT
+            _INTERRUPT_COUNT += 1
+            _USER_ABORT = True
             logger.info("Received interrupt signal, initiating graceful shutdown")
             termination_event.set()
+            if _INTERRUPT_COUNT >= 2:
+                logger.error("Second interrupt: forcing process exit")
+                os._exit(1)
 
         try:
             if sys.platform.startswith('win'):
@@ -368,60 +482,19 @@ async def run_simulation(
             agent_tasks = []
             if node_role == NodeRole.SINGLE:
                 agents = sim_env.agents
-                # Create agent tasks
+                # Create agent tasks (Python 3.11+ requires Task objects, not bare coroutines)
                 for agent_type in agents:
                     for agent_id, agent in agents[agent_type].items():
-                        agent_tasks.append(agent.run())
+                        agent_tasks.append(asyncio.create_task(agent.run(), name=f"{agent_type}:{agent_id}"))
 
                 # Run all tasks with termination handling
-                event_bus_task = asyncio.create_task(event_bus.run())
+                event_bus_task = asyncio.create_task(event_bus.run(), name="event_bus")
                 all_tasks = [event_bus_task] + agent_tasks + env_tasks
-
-                # Wait for either tasks to complete or termination signal
-                done, pending = await asyncio.wait(
-                    [asyncio.create_task(termination_event.wait())] + all_tasks,
-                    return_when=asyncio.FIRST_COMPLETED
-                )
-
-                # Check if termination was requested
-                if any(t for t in done if termination_event.is_set()):
-                    logger.info("Manual termination requested")
-                    await sim_env.stop_simulation()
-
-                # Ensure cleanup of remaining tasks
-                for task in pending:
-                    if not task.done():
-                        task.cancel()
+                await _run_environment_tasks(sim_env, termination_event, all_tasks)
             else:
                 # Master mode - run event bus and environment tasks separately
-                event_bus_task = asyncio.create_task(event_bus.run())
-
-                try:
-                    # Wait for either env tasks to complete or termination signal
-                    done, pending = await asyncio.wait(
-                        [asyncio.create_task(termination_event.wait())] + env_tasks,
-                        return_when=asyncio.FIRST_COMPLETED
-                    )
-
-                    # Check if termination was requested
-                    if any(t for t in done if termination_event.is_set()):
-                        logger.info("Manual termination requested")
-                        await sim_env.stop_simulation()
-                finally:
-                    # Ensure event bus task can be cancelled
-                    if not event_bus_task.done():
-                        event_bus_task.cancel()
-                        try:
-                            await event_bus_task
-                        except asyncio.CancelledError:
-                            pass
-
-                    # Ensure environment fully stopped before node shutdown
-                    try:
-                        if hasattr(sim_env, 'stopped_event'):
-                            await sim_env.stopped_event.wait()
-                    except Exception as e:
-                        logger.warning(f"Waiting env stopped_event failed: {e}")
+                event_bus_task = asyncio.create_task(event_bus.run(), name="event_bus")
+                await _run_environment_tasks(sim_env, termination_event, [event_bus_task] + env_tasks)
 
         elif node_role == NodeRole.WORKER:
             logger.info("Worker node starting event processing")
@@ -435,10 +508,10 @@ async def run_simulation(
                     for agent_id, agent in agents[agent_type].items():
                         agent.set_env(node.proxy_env)
 
-            # Create agent tasks
+            # Create agent tasks (Python 3.11+ requires Task objects, not bare coroutines)
             for agent_type in agents:
                 for agent_id, agent in agents[agent_type].items():
-                    agent_tasks.append(agent.run())
+                    agent_tasks.append(asyncio.create_task(agent.run()))
 
             # Get proxy environment tasks
             env_tasks = []
@@ -478,6 +551,7 @@ async def run_simulation(
         # Ensure simulation is stopped if it was running
         if sim_env:
             await sim_env.stop_simulation()
+        raise
     except Exception as e:
         logger.error(f"Error in simulation: {e}")
         import traceback
@@ -538,11 +612,35 @@ async def async_main():
     registry = get_component_registry()
     is_distributed = registry.is_initialized(COMPONENT_DISTRIBUTION)
 
+    from onesim.scenario import (
+        apply_scenario_to_config,
+        clone_config_for_scenario,
+        get_batch_scenarios,
+    )
+
+    batch_scenarios = get_batch_scenarios(sim_config)
+
     # Initialize environment based on mode
     if not is_distributed:
-        # Single mode
-        env = await initialize_environment(sim_config, args)
-        await run_simulation(env, sim_config, args)
+        if len(batch_scenarios) > 1:
+            batch_dir = create_timestamped_output_dir(sim_config.env_path)
+            logger.info(f"Running batch scenarios: {batch_scenarios}")
+            for scenario_slug in batch_scenarios:
+                await reset_runtime_between_scenarios()
+                scenario_config = clone_config_for_scenario(sim_config, scenario_slug)
+                scenario_output = os.path.join(batch_dir, scenario_slug)
+                os.makedirs(scenario_output, exist_ok=True)
+                logger.info(f"Starting scenario '{scenario_slug}' -> {scenario_output}")
+                env = await initialize_environment(scenario_config, args, output_dir=scenario_output)
+                await run_simulation(env, scenario_config, args)
+                if _USER_ABORT:
+                    logger.info("Batch stopped after user interrupt")
+                    break
+        else:
+            if len(batch_scenarios) == 1:
+                apply_scenario_to_config(sim_config, batch_scenarios[0])
+            env = await initialize_environment(sim_config, args)
+            await run_simulation(env, sim_config, args)
     else:
         # Distributed mode (master/worker)
         node = registry.get_instance(COMPONENT_DISTRIBUTION)
@@ -560,21 +658,21 @@ async def async_main():
 
         # Keep node alive until interrupted
         if node.role == NodeRole.WORKER:
-            # 由 WorkerNode 的 stopped_event 退出，不使用固定超时
+            # Wait for WorkerNode's stopped_event without a fixed timeout.
             try:
                 await node.stopped_event.wait()
             except KeyboardInterrupt:
                 logger.info("Worker stopping due to keyboard interrupt")
-                # 键盘中断时执行一次清理
+                # Clean up once after a keyboard interrupt.
                 try:
                     await node.shutdown()
                 except Exception as e:
                     logger.error(f"Error during worker shutdown: {e}")
             return
         else:
-            # Master节点在模拟完成后也应该退出
+            # Exit the master node after the simulation completes.
             logger.info("Master node simulation completed, shutting down")
-            # 等待环境完全关闭，再优雅关闭Master分布式资源
+            # Wait for the environment to close before shutting down master resources.
             try:
                 if hasattr(env, 'stopped_event'):
                     await env.stopped_event.wait()
@@ -634,7 +732,14 @@ def create_timestamped_output_dir(env_path: str) -> str:
     output_dir = os.path.join(runs_dir, timestamp)
     os.makedirs(output_dir, exist_ok=True)
 
+    console_log = os.path.join(output_dir, "console.log")
+    logger.add(
+        console_log,
+        level=os.environ.get("ONESIM_LOG_LEVEL", "DEBUG").upper(),
+        enqueue=True,
+    )
     logger.info(f"Created output directory: {output_dir}")
+    logger.info(f"Run console log: {console_log}")
     return output_dir
 
 

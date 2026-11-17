@@ -5,7 +5,11 @@ import json
 import os
 from typing import Any, Optional, TYPE_CHECKING
 
-from .general_agent_prompts import normalize_prompt_locale
+def normalize_prompt_locale(locale: Optional[str]) -> str:
+    """Normalize locale for components that still support localized behavior."""
+    value = (locale or "zh").strip().lower()
+    return "en" if value in ("en", "english", "general_agent_en") else "zh"
+
 
 if TYPE_CHECKING:
     from onesim.config import AgentConfig, SimulatorConfig

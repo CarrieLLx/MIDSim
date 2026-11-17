@@ -1,0 +1,31 @@
+# Local backup files and directories at any level
+*[Bb][Aa][Cc][Kk][Uu][Pp]*
+*.bak
+
+# Chinese prompt translations and maintenance notes; retain runtime TXT/TOML
+/code/prompts/**/*.zh-CN*.md
+/code/prompts/*.md
+/code/prompts/policies/memory_light.toml
+/code/tests/
+
+# Historical migration reports; retain the selection report for validation tools
+/doc/facebook_runtime_alignment.json
+/doc/data_refresh_validation.json
+/doc/field_validation.json
+
+# Precomputed analysis results, generated output, and Python caches
+/doc/real_content_pool/_text_diversity/
+/runs/
+/log/
+/logs/
+__pycache__/
+*.py[cod]
+*.log
+*.log.zip
+*.pid
+
+# Windows-only launch files
+*.ps1
+*.bat
+*.cmd
+*.lnk

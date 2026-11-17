@@ -8,79 +8,79 @@ from typing import Dict, Any, Optional, Tuple, List, Set
 from loguru import logger
 
 class CircuitBreaker:
-    """熔断器实现，用于防止对故障服务的持续请求"""
+    """Circuit breaker that prevents repeated requests to a failing service."""
     
     def __init__(self, failure_threshold=5, recovery_timeout=30.0, half_open_success=2):
-        self.failure_threshold = failure_threshold  # 触发熔断的失败次数
-        self.recovery_timeout = recovery_timeout    # 熔断后尝试恢复的时间(秒)
-        self.half_open_success = half_open_success  # 半开状态需要成功次数
+        self.failure_threshold = failure_threshold  # Failure count that triggers the circuit breaker.
+        self.recovery_timeout = recovery_timeout    # Seconds before attempting recovery after the circuit opens.
+        self.half_open_success = half_open_success  # Successful requests required in the half-open state.
         
-        self.failures = 0                # 当前失败计数
-        self.state = "closed"            # 熔断器状态: closed(正常), open(熔断), half-open(尝试恢复)
-        self.last_failure_time = 0       # 最后一次失败时间
-        self.successes_since_half_open = 0  # 半开状态下的成功次数
+        self.failures = 0                # Current failure count.
+        self.state = "closed"            # Circuit state: closed (normal), open (blocked), half-open (testing recovery).
+        self.last_failure_time = 0       # Time of the most recent failure.
+        self.successes_since_half_open = 0  # Successful requests in the half-open state.
     
     def record_failure(self):
-        """记录一次失败"""
+        """Record a failed request."""
         self.failures += 1
         self.last_failure_time = time.time()
         
-        # 检查是否需要触发熔断
+        # Check whether to open the circuit.
         if self.state == "closed" and self.failures >= self.failure_threshold:
             logger.warning(f"Circuit breaker tripped after {self.failures} failures")
             self.state = "open"
         
-        # 如果熔断器已经半开且失败，重新熔断
+        # Reopen a half-open circuit after a failure.
         elif self.state == "half-open":
             logger.warning("Circuit breaker reopened after failure in half-open state")
             self.state = "open"
             self.successes_since_half_open = 0
     
     def record_success(self):
-        """记录一次成功"""
-        # 只有在半开状态时才需要记录成功
+        """Record a successful request."""
+        # Only count successes in the half-open state.
         if self.state == "half-open":
             self.successes_since_half_open += 1
             
-            # 检查是否达到恢复阈值
+            # Check whether the recovery threshold has been reached.
             if self.successes_since_half_open >= self.half_open_success:
                 logger.info(f"Circuit breaker reset after {self.successes_since_half_open} consecutive successes")
                 self.reset()
     
     def reset(self):
-        """重置熔断器状态"""
+        """Reset the circuit breaker state."""
         self.failures = 0
         self.state = "closed"
         self.last_failure_time = 0
         self.successes_since_half_open = 0
     
     def is_allowed(self):
-        """检查当前是否允许请求通过"""
-        # 如果熔断器关闭(正常状态)，允许请求
+        """Check whether a request is currently allowed through."""
+        # Allow requests while the circuit is closed (normal state).
         if self.state == "closed":
             return True
         
-        # 如果熔断器打开，检查是否达到恢复时间
+        # For an open circuit, check whether the recovery timeout has elapsed.
         if self.state == "open":
             elapsed = time.time() - self.last_failure_time
             if elapsed >= self.recovery_timeout:
-                # 进入半开状态，允许少量请求尝试
+                # Enter the half-open state and allow a few trial requests.
                 logger.info(f"Circuit half-open after {elapsed:.1f}s timeout")
                 self.state = "half-open"
                 self.successes_since_half_open = 0
                 return True
             return False
         
-        # 半开状态限制并发请求数，随机允许约20%的请求
+        # Limit half-open concurrency by randomly allowing about 20% of requests.
         if self.state == "half-open":
             return random.random() < 0.2
         
-        return True  # 默认安全情况
+        return True  # Safe default.
 
 
 class ConnectionShard:
     """
-    连接管理的分片，处理一部分连接的创建和维护
+    Connection-management shard responsible for creating and maintaining a subset of connections.
     """
     
     def __init__(self, 
@@ -89,125 +89,125 @@ class ConnectionShard:
                 lock_timeout: float = 5.0,
                 max_idle_time: float = 3600.0):
         """
-        初始化连接分片
+        Initialize the connection shard.
         
         Args:
-            shard_id: 分片标识符
-            semaphore_size: 信号量大小，控制并发访问数
-            lock_timeout: 获取锁的超时时间(秒)
-            max_idle_time: 闲置连接的最大保留时间(秒)
+            shard_id: Shard identifier.
+            semaphore_size: Semaphore capacity controlling concurrent access.
+            lock_timeout: Timeout in seconds for acquiring the lock.
+            max_idle_time: Maximum retention time in seconds for idle connections.
         """
         self.shard_id = shard_id
         
-        # 连接池相关
+        # Connection pool state.
         self.channels = {}  # {(address, port): (channel, last_used_time, use_count)}
         self.stubs = {}     # {(address, port, stub_type): stub}
         
-        # 并发控制
+        # Concurrency control.
         self.semaphore = asyncio.Semaphore(semaphore_size)
         self.lock_timeout = lock_timeout
         
-        # 连接管理
+        # Connection management.
         self.max_idle_time = max_idle_time
         self.cleanup_task = None
         
-        # 熔断器 {(address, port): CircuitBreaker}
+        # Circuit breakers: {(address, port): CircuitBreaker}.
         self.circuit_breakers = {}
         
-        # 已知可用的连接集合，避免重复检查
+        # Track known healthy connections to avoid repeated checks.
         self.known_good_connections = set()  # {(address, port)}
         
-        # 预连接标记
+        # Preconnection flag.
         self.preconnected = False
     
     async def get_channel(self, address: str, port: int) -> grpc.aio.Channel:
         """
-        获取或创建指定地址和端口的通道
+        Get or create a channel for the specified address and port.
         
         Args:
-            address: 目标地址
-            port: 目标端口
+            address: Destination address.
+            port: Destination port.
             
         Returns:
-            gRPC 异步通道
+            Asynchronous gRPC channel.
         """
         key = (address, port)
         
-        # 熔断器检查 - 如果连接被熔断，直接拒绝
+        # Reject immediately if the circuit breaker blocks this connection.
         if key in self.circuit_breakers and not self.circuit_breakers[key].is_allowed():
             raise RuntimeError(f"Circuit breaker open for {key}, service may be unavailable")
         
-        # 使用信号量控制并发
+        # Control concurrency with a semaphore.
         acquired = False
         try:
-            # 尝试获取信号量，设置超时
+            # Acquire the semaphore with a timeout.
             try:
                 acquired = await asyncio.wait_for(self.semaphore.acquire(), timeout=self.lock_timeout)
             except asyncio.TimeoutError:
                 logger.warning(f"Shard {self.shard_id}: Timeout acquiring semaphore for {key}, creating uncached channel")
-                # 超时情况下创建临时通道并返回，但不缓存
+                # On timeout, return a temporary channel without caching it.
                 return self._create_channel(address, port, cache=False)
                 
             if acquired:
                 try:
-                    # 先检查是否有缓存的通道且是已知良好的连接
+                    # First check for a cached channel that is known to be healthy.
                     if key in self.channels and key in self.known_good_connections:
                         channel, last_used, use_count = self.channels[key]
                         
-                        # 更新使用统计并返回
+                        # Update usage statistics and return.
                         self.channels[key] = (channel, time.time(), use_count + 1)
                         return channel
                     
-                    # 检查是否已有缓存的通道但需要验证状态
+                    # Check cached channels whose state still needs verification.
                     if key in self.channels:
                         channel, last_used, use_count = self.channels[key]
                         
-                        # 检查通道状态，确保它是可用的
+                        # Check channel state to ensure it is usable.
                         current_state = channel.get_state(try_to_connect=False)
                         
-                        # 如果通道已准备好，直接使用
+                        # Use the channel directly if it is ready.
                         if current_state == grpc.ChannelConnectivity.READY:
                             self.channels[key] = (channel, time.time(), use_count + 1)
                             self.known_good_connections.add(key)
                             return channel
                             
-                        # 如果通道处于IDLE状态且最近使用过，尝试激活它
+                        # Try to activate an IDLE channel if it was used recently.
                         elif current_state == grpc.ChannelConnectivity.IDLE and time.time() - last_used < 300:
-                            # 尝试等待通道就绪 - 但使用更短的超时
+                            # Wait for the channel to become ready with a shorter timeout.
                             try:
                                 is_ready = await self._wait_for_ready_state(channel, timeout=10.0)
                                 if is_ready:
-                                    # 通道现在已准备好
+                                    # The channel is now ready.
                                     self.channels[key] = (channel, time.time(), use_count + 1)
                                     self.known_good_connections.add(key)
                                     return channel
                             except Exception as e:
                                 logger.debug(f"Shard {self.shard_id}: Error checking idle channel: {e}")
                         
-                        # 其他状态或激活失败，创建新通道
+                        # Create a new channel for other states or failed activation.
                         logger.debug(f"Shard {self.shard_id}: Channel for {key} in state {current_state}, creating new one")
                         
-                        # 移除旧通道但不等待关闭完成，避免阻塞
+                        # Remove the old channel without waiting for closure to avoid blocking.
                         old_channel = self.channels.pop(key)[0]
                         asyncio.create_task(old_channel.close())
                     
-                    # 创建新通道并缓存
+                    # Create and cache a new channel.
                     channel = self._create_channel(address, port)
                     
-                    # 尝试快速检查通道状态 - 设置较短超时，避免阻塞太久
+                    # Check channel state with a short timeout to avoid prolonged blocking.
                     is_ready = False
                     try:
                         is_ready = await self._wait_for_ready_state(channel, timeout=10.0)
                     except Exception as e:
                         logger.debug(f"Shard {self.shard_id}: Error checking new channel: {e}")
                     
-                    # 无论是否就绪都缓存，下次使用时会再次检查
+                    # Cache regardless of readiness; check again on the next use.
                     self.channels[key] = (channel, time.time(), 1)
                     
                     if is_ready:
                         self.known_good_connections.add(key)
                         
-                        # 设置弱引用关闭回调
+                        # Register a weak-reference close callback.
                         weak_self = weakref.ref(self)
                         if hasattr(channel, "add_on_close_callback"):
                             channel.add_on_close_callback(
@@ -216,62 +216,62 @@ class ConnectionShard:
                                 )
                             )
                     
-                    # 如果通道创建成功，重置熔断器（如果存在）
+                    # Reset the circuit breaker, if present, after channel creation succeeds.
                     if key in self.circuit_breakers:
                         self.circuit_breakers[key].record_success()
                         
                     return channel
                     
                 finally:
-                    # 确保释放信号量
+                    # Ensure the semaphore is released.
                     self.semaphore.release()
                     
         except Exception as e:
             logger.error(f"Shard {self.shard_id}: Unexpected error in get_channel for {key}: {e}")
             
-            # 记录失败到熔断器
+            # Record the failure in the circuit breaker.
             if key in self.circuit_breakers:
                 self.circuit_breakers[key].record_failure()
             else:
-                # 创建新熔断器
+                # Create a new circuit breaker.
                 self.circuit_breakers[key] = CircuitBreaker()
                 self.circuit_breakers[key].record_failure()
                 
-            # 确保释放信号量
+            # Ensure the semaphore is released.
             if acquired:
                 self.semaphore.release()
                 
-            # 出错情况下创建临时通道
+            # Create a temporary channel on error.
             return self._create_channel(address, port, cache=False)
     
     def _create_channel(self, address: str, port: int, cache: bool = True) -> grpc.aio.Channel:
         """
-        创建gRPC通道，配置优化的参数
+        Create a gRPC channel with optimized settings.
         
         Args:
-            address: 目标地址
-            port: 目标端口
-            cache: 是否需要缓存此通道
+            address: Destination address.
+            port: Destination port.
+            cache: Whether to cache this channel.
             
         Returns:
-            gRPC异步通道
+            Asynchronous gRPC channel.
         """
-        # 创建新通道配置 - 优化以提高稳定性
+        # Configure a new channel for improved stability.
         options = [
-            ('grpc.keepalive_time_ms', 10000),           # 每10秒发送一次keepalive
-            ('grpc.keepalive_timeout_ms', 5000),         # 5秒等待keepalive响应
-            ('grpc.http2.max_pings_without_data', 5),    # 允许无数据ping
-            ('grpc.http2.max_ping_strikes', 0),          # 不因ping断开连接
+            ('grpc.keepalive_time_ms', 10000),           # Send a keepalive every 10 seconds.
+            ('grpc.keepalive_timeout_ms', 5000),         # Wait up to 5 seconds for a keepalive response.
+            ('grpc.http2.max_pings_without_data', 5),    # Allow pings without data.
+            ('grpc.http2.max_ping_strikes', 0),          # Do not disconnect because of ping strikes.
             ('grpc.http2.min_ping_interval_without_data_ms', 30000),
-            ('grpc.keepalive_permit_without_calls', 1),  # 空闲时允许keepalive
-            ('grpc.max_connection_idle_ms', 600000),     # 10分钟空闲超时
-            ('grpc.max_connection_age_ms', 1800000),     # 30分钟最大年龄
-            ('grpc.max_connection_age_grace_ms', 60000), # 1分钟关闭宽限期
-            ('grpc.enable_retries', 1),                  # 启用重试
-            ('grpc.min_reconnect_backoff_ms', 100),      # 最小重连间隔100ms
-            ('grpc.max_reconnect_backoff_ms', 5000),     # 最大重连间隔5秒
-            ('grpc.initial_reconnect_backoff_ms', 100),  # 初始重连间隔
-            ('grpc.client_idle_timeout_ms', -1),         # 禁用客户端空闲超时
+            ('grpc.keepalive_permit_without_calls', 1),  # Allow keepalive while idle.
+            ('grpc.max_connection_idle_ms', 600000),     # Idle timeout of 10 minutes.
+            ('grpc.max_connection_age_ms', 1800000),     # Maximum connection age of 30 minutes.
+            ('grpc.max_connection_age_grace_ms', 60000), # Shutdown grace period of 1 minute.
+            ('grpc.enable_retries', 1),                  # Enable retries.
+            ('grpc.min_reconnect_backoff_ms', 100),      # Minimum reconnection backoff of 100 ms.
+            ('grpc.max_reconnect_backoff_ms', 5000),     # Maximum reconnection backoff of 5 seconds.
+            ('grpc.initial_reconnect_backoff_ms', 100),  # Initial reconnection backoff.
+            ('grpc.client_idle_timeout_ms', -1),         # Disable the client idle timeout.
             ('grpc.service_config', json.dumps({
                 'methodConfig': [{
                     'name': [{'service': 'agent.AgentService'}],
@@ -293,38 +293,38 @@ class ConnectionShard:
                 
     async def _wait_for_ready_state(self, channel, timeout=10.0):
         """
-        等待通道达到READY状态 - 优化版本，使用更短的超时和间隔
+        Wait for the channel to reach READY using shorter timeouts and polling intervals.
         
         Args:
-            channel: 需要等待的gRPC通道
-            timeout: 最大等待时间（秒）
+            channel: gRPC channel to wait for.
+            timeout: Maximum wait in seconds.
             
         Returns:
-            bool: 如果通道变为READY则返回True，否则返回False
+            bool: True if the channel becomes READY, otherwise False.
         """
         start_time = time.time()
         end_time = start_time + timeout
         
-        # 首先检查当前状态
+        # Check the current state first.
         current_state = channel.get_state(try_to_connect=True)
         if current_state == grpc.ChannelConnectivity.READY:
             return True
         
-        # 循环等待，直到达到READY状态或超时
+        # Wait until the channel reaches READY or the timeout expires.
         while time.time() < end_time:
             try:
-                # 计算剩余时间
+                # Compute the remaining time.
                 remaining = end_time - time.time()
                 if remaining <= 0:
                     break
                     
-                # 等待状态变化，每次最多等待0.5秒 - 避免长时间阻塞
+                # Wait at most 0.5 seconds for each state change to avoid prolonged blocking.
                 await asyncio.wait_for(
                     channel.wait_for_state_change(current_state),
                     timeout=min(0.5, remaining)
                 )
                 
-                # 检查新状态
+                # Check the new state.
                 new_state = channel.get_state(try_to_connect=False)
                 
                 if new_state == grpc.ChannelConnectivity.READY:
@@ -332,11 +332,11 @@ class ConnectionShard:
                 elif new_state in (grpc.ChannelConnectivity.TRANSIENT_FAILURE, grpc.ChannelConnectivity.SHUTDOWN):
                     return False
                     
-                # 更新当前状态并继续等待
+                # Update the current state and continue waiting.
                 current_state = new_state
                 
             except asyncio.TimeoutError:
-                # 短暂超时，但总等待时间内，继续检查
+                # Continue checking after a short timeout while the overall deadline has not expired.
                 current_state = channel.get_state(try_to_connect=True)
                 
                 if current_state == grpc.ChannelConnectivity.READY:
@@ -344,15 +344,15 @@ class ConnectionShard:
                 elif current_state in (grpc.ChannelConnectivity.TRANSIENT_FAILURE, grpc.ChannelConnectivity.SHUTDOWN):
                     return False
         
-        # 检查最终状态
+        # Check the final state.
         final_state = channel.get_state(try_to_connect=False)
         return final_state == grpc.ChannelConnectivity.READY
     
     async def _on_channel_close(self, key):
-        """处理通道关闭回调"""
-        # 使用异步任务避免阻塞
+        """Handle the channel close callback."""
+        # Use an asynchronous task to avoid blocking.
         try:
-            # 如果存在于已知良好连接集合，移除
+            # Remove the connection from the known-healthy set if present.
             if key in self.known_good_connections:
                 self.known_good_connections.remove(key)
                 
@@ -360,7 +360,7 @@ class ConnectionShard:
                 if key in self.channels:
                     self.channels.pop(key, None)
                     
-                    # 移除相关存根
+                    # Remove associated stubs.
                     stub_keys = [k for k in self.stubs.keys() if k[0] == key[0] and k[1] == key[1]]
                     for stub_key in stub_keys:
                         self.stubs.pop(stub_key, None)
@@ -370,51 +370,51 @@ class ConnectionShard:
     
     async def get_stub(self, address: str, port: int, stub_type) -> Any:
         """
-        获取或创建指定地址、端口和类型的存根
+        Get or create a stub for the specified address, port and type.
         
         Args:
-            address: 目标地址
-            port: 目标端口
-            stub_type: 存根类型
+            address: Destination address.
+            port: Destination port.
+            stub_type: Stub class.
             
         Returns:
-            gRPC存根
+            gRPC stub.
         """
         key = (address, port, stub_type)
         
-        # 使用信号量控制并发
+        # Control concurrency with a semaphore.
         acquired = False
         try:
             try:
                 acquired = await asyncio.wait_for(self.semaphore.acquire(), timeout=self.lock_timeout)
             except asyncio.TimeoutError:
                 logger.warning(f"Shard {self.shard_id}: Timeout acquiring semaphore in get_stub for {key}")
-                # 超时情况下创建临时通道和存根
+                # Create a temporary channel and stub on timeout.
                 temp_channel = self._create_channel(address, port, cache=False)
                 return stub_type(temp_channel)
                 
             if acquired:
                 try:
-                    # 检查缓存
+                    # Check the cache.
                     if key in self.stubs:
                         return self.stubs[key]
                     
-                    # 释放信号量避免递归死锁
+                    # Release the semaphore to avoid recursive deadlock.
                     self.semaphore.release()
                     acquired = False
                     
-                    # 获取或创建通道
+                    # Get or create a channel.
                     channel = await self.get_channel(address, port)
                     
-                    # 重新获取信号量
+                    # Acquire the semaphore again.
                     try:
                         acquired = await asyncio.wait_for(self.semaphore.acquire(), timeout=self.lock_timeout)
                     except asyncio.TimeoutError:
-                        # 超时直接返回非缓存存根
+                        # Return an uncached stub directly on timeout.
                         return stub_type(channel)
                     
                     if acquired:
-                        # 创建并缓存存根
+                        # Create and cache the stub.
                         stub = stub_type(channel)
                         self.stubs[key] = stub
                         return stub
@@ -424,54 +424,54 @@ class ConnectionShard:
         except Exception as e:
             logger.error(f"Shard {self.shard_id}: Error in get_stub for {key}: {e}")
             
-            # 确保释放信号量
+            # Ensure the semaphore is released.
             if acquired:
                 self.semaphore.release()
                 
-            # 出错创建临时存根
+            # Create a temporary stub on error.
             temp_channel = self._create_channel(address, port, cache=False)
             return stub_type(temp_channel)
     
     async def with_stub(self, address: str, port: int, stub_type, func, *args, **kwargs):
         """
-        使用存根执行函数调用，处理重试逻辑
+        Call a function through the stub with retry handling.
         
         Args:
-            address: 目标地址
-            port: 目标端口
-            stub_type: 存根类型
-            func: 要调用的函数名
-            *args, **kwargs: 传递给函数的参数
+            address: Destination address.
+            port: Destination port.
+            stub_type: Stub class.
+            func: Name of the function to call.
+            *args, **kwargs: Arguments passed to the function.
             
         Returns:
-            函数调用结果
+            Result of the function call.
         """
         key = (address, port)
-        max_retries = 3  # 减少重试次数以避免长时间等待
+        max_retries = 3  # Limit retries to avoid prolonged waits.
         retry_count = 0
         last_exception = None
         
-        # 熔断器检查
+        # Check the circuit breaker.
         if key in self.circuit_breakers and not self.circuit_breakers[key].is_allowed():
             raise RuntimeError(f"Circuit breaker open for {key}, service may be unavailable")
         
         while retry_count < max_retries:
             try:
-                # 获取存根
+                # Get the stub.
                 stub = await self.get_stub(address, port, stub_type)
                 method = getattr(stub, func)
                 
-                # 设置超时，避免长时间阻塞
-                timeout = 600.0  # 减少默认超时
+                # Set a timeout to avoid prolonged blocking.
+                timeout = 600.0  # Default timeout in seconds.
                 
-                # 执行RPC调用
+                # Execute the RPC call.
                 try:
                     result = await asyncio.wait_for(
                         method(*args, **kwargs),
                         timeout=timeout
                     )
                     
-                    # 成功时记录到熔断器
+                    # Record successful calls in the circuit breaker.
                     if key in self.circuit_breakers:
                         self.circuit_breakers[key].record_success()
                         
@@ -483,11 +483,11 @@ class ConnectionShard:
                     raise RuntimeError(error_msg)
                 
             except asyncio.TimeoutError:
-                # RPC调用超时
+                # RPC call timed out.
                 last_exception = RuntimeError(f"RPC call {func} timed out")
                 logger.warning(f"Shard {self.shard_id}: Timeout calling {func} on {address}:{port}")
                 
-                # 记录失败到熔断器
+                # Record the failure in the circuit breaker.
                 if key in self.circuit_breakers:
                     self.circuit_breakers[key].record_failure()
                 else:
@@ -496,25 +496,25 @@ class ConnectionShard:
                 
                 retry_count += 1
                 
-                # 快速重试，避免长时间等待
+                # Retry quickly to avoid prolonged waits.
                 if retry_count < max_retries:
-                    wait_time = 0.1 * (2 ** retry_count)  # 指数退避但基数更小
+                    wait_time = 0.1 * (2 ** retry_count)  # Exponential backoff with a smaller base delay.
                     await asyncio.sleep(wait_time)
                 
             except grpc.aio.AioRpcError as e:
                 last_exception = e
                 
-                # 记录错误细节
+                # Log error details.
                 logger.warning(f"Shard {self.shard_id}: gRPC error in {func} on {address}:{port}: {e.code()}: {e.details()}")
                 
-                # 记录失败到熔断器
+                # Record the failure in the circuit breaker.
                 if key in self.circuit_breakers:
                     self.circuit_breakers[key].record_failure()
                 else:
                     self.circuit_breakers[key] = CircuitBreaker()
                     self.circuit_breakers[key].record_failure()
                 
-                # 检查是否应该重试
+                # Check whether to retry.
                 retriable_codes = (
                     grpc.StatusCode.UNAVAILABLE, 
                     grpc.StatusCode.DEADLINE_EXCEEDED,
@@ -531,7 +531,7 @@ class ConnectionShard:
                         await asyncio.sleep(wait_time)
                         continue
                 
-                # 不可重试的错误直接抛出
+                # Propagate errors that cannot be retried.
                 logger.error(f"Shard {self.shard_id}: Non-retriable gRPC error: {e.code()}: {e.details()}")
                 raise
                 
@@ -539,7 +539,7 @@ class ConnectionShard:
                 logger.error(f"Shard {self.shard_id}: Unexpected error in with_stub {address}:{port}: {e}")
                 last_exception = e
                 
-                # 记录失败到熔断器
+                # Record the failure in the circuit breaker.
                 if key in self.circuit_breakers:
                     self.circuit_breakers[key].record_failure()
                 else:
@@ -553,7 +553,7 @@ class ConnectionShard:
                     continue
                 raise
         
-        # 重试耗尽
+        # Retries exhausted.
         if last_exception:
             logger.error(f"Shard {self.shard_id}: Failed after {max_retries} attempts: {last_exception}")
             raise last_exception
@@ -561,18 +561,18 @@ class ConnectionShard:
             raise RuntimeError(f"Failed to execute {func} after {max_retries} retries")
 
     async def start_cleanup_task(self):
-        """启动清理任务"""
+        """Start the cleanup task."""
         if self.cleanup_task is None or self.cleanup_task.done():
             self.cleanup_task = asyncio.create_task(self._cleanup_idle_channels())
             logger.debug(f"Shard {self.shard_id}: Cleanup task started")
     
     async def _cleanup_idle_channels(self):
-        """定期清理空闲通道"""
+        """Periodically clean up idle channels."""
         try:
             while True:
-                await asyncio.sleep(300)  # 降低清理频率到5分钟一次
+                await asyncio.sleep(300)  # Run cleanup every 5 minutes.
                 
-                # 不使用信号量锁定太久，而是创建快照后处理
+                # Take a snapshot and process it without holding the semaphore for too long.
                 to_check = []
                 
                 async with self.semaphore:
@@ -581,10 +581,10 @@ class ConnectionShard:
                         if current_time - last_used > self.max_idle_time:
                             to_check.append((key, channel))
                 
-                # 在锁外逐个关闭通道
+                # Close channels individually outside the lock.
                 for key, channel in to_check:
                     try:
-                        # 再次检查是否仍需要关闭
+                        # Check again whether the channel still needs to close.
                         should_close = False
                         async with self.semaphore:
                             if key in self.channels:
@@ -593,16 +593,16 @@ class ConnectionShard:
                                     self.channels.pop(key)
                                     should_close = True
                                     
-                                    # 移除相关存根
+                                    # Remove associated stubs.
                                     stub_keys = [k for k in self.stubs.keys() if k[0] == key[0] and k[1] == key[1]]
                                     for stub_key in stub_keys:
                                         self.stubs.pop(stub_key, None)
                                     
-                                    # 从已知良好连接集合中移除
+                                    # Remove it from the known-healthy connection set.
                                     if key in self.known_good_connections:
                                         self.known_good_connections.remove(key)
                         
-                        # 如果确定要关闭，在锁外执行
+                        # Once closure is confirmed, execute it outside the lock.
                         if should_close:
                             await channel.close()
                     except Exception as e:
@@ -615,17 +615,17 @@ class ConnectionShard:
             
     async def preconnect(self, workers: List[Tuple[str, int]]):
         """
-        预连接到所有工作节点
+        Preconnect to all worker nodes.
         
         Args:
-            workers: 工作节点列表，每项为(地址, 端口)元组
+            workers: List of (address, port) tuples for worker nodes.
         """
         if self.preconnected:
             return
             
         logger.info(f"Shard {self.shard_id}: Pre-connecting to {len(workers)} workers")
         
-        # 使用信号量限制并发连接数
+        # Limit concurrent connections with a semaphore.
         sem = asyncio.Semaphore(min(10, len(workers)))
         
         async def connect_one(addr, port):
@@ -637,11 +637,11 @@ class ConnectionShard:
                     logger.warning(f"Shard {self.shard_id}: Failed to pre-connect to {addr}:{port}: {e}")
                     return (addr, port), False
         
-        # 创建所有连接任务
+        # Create all connection tasks.
         tasks = [connect_one(addr, port) for addr, port in workers]
         results = await asyncio.gather(*tasks, return_exceptions=True)
         
-        # 分析结果
+        # Analyze results.
         success_count = sum(1 for result in results if isinstance(result, tuple) and result[1])
         logger.info(f"Shard {self.shard_id}: Successfully pre-connected to {success_count}/{len(workers)} workers")
         
@@ -650,7 +650,7 @@ class ConnectionShard:
 
 class ShardedConnectionManager:
     """
-    分片连接管理器，通过哈希分片减少锁竞争
+    Connection manager that reduces lock contention by hashing connections into shards.
     """
     
     _instance = None
@@ -666,13 +666,13 @@ class ShardedConnectionManager:
         if self._initialized:
             return
             
-        # 配置
-        self.shard_count = 32 # 分片数量
-        self.semaphore_size = 10 # 每个分片的信号量大小
-        self.lock_timeout = 5.0  # 锁超时时间 (Reduced from 30.0)
-        self.max_idle_time = 600.0  # 空闲通道超时时间 (10 minutes)
+        # Configuration.
+        self.shard_count = 32 # Number of shards.
+        self.semaphore_size = 10 # Semaphore capacity per shard.
+        self.lock_timeout = 5.0  # Lock timeout in seconds (reduced from 30.0).
+        self.max_idle_time = 600.0  # Idle channel timeout in seconds (10 minutes).
         
-        # 创建分片
+        # Create shards.
         self.shards = [
             ConnectionShard(
                 shard_id=i, 
@@ -683,30 +683,30 @@ class ShardedConnectionManager:
             for i in range(self.shard_count)
         ]
         
-        # 预连接状态
+        # Preconnection state.
         self.preconnected = False
         self._initialized = True
     
     def get_shard(self, address: str, port: int) -> ConnectionShard:
         """
-        根据地址和端口选择对应的分片
+        Select the shard for an address and port.
         
         Args:
-            address: 目标地址
-            port: 目标端口
+            address: Destination address.
+            port: Destination port.
             
         Returns:
-            对应的连接分片
+            Corresponding connection shard.
         """
-        # 使用一致性哈希避免热点
+        # Use consistent hashing to avoid hotspots.
         key = f"{address}:{port}"
         shard_index = hash(key) % self.shard_count
         return self.shards[shard_index]
     
     async def initialize(self):
-        """初始化连接管理器（只需执行一次）"""
+        """Initialize the connection manager once."""
         async with self._init_lock:
-            # 启动所有分片的清理任务
+            # Start the cleanup task for each shard.
             for shard in self.shards:
                 await shard.start_cleanup_task()
             
@@ -714,69 +714,69 @@ class ShardedConnectionManager:
     
     async def get_channel(self, address: str, port: int) -> grpc.aio.Channel:
         """
-        获取或创建通道
+        Get or create a channel.
         
         Args:
-            address: 目标地址
-            port: 目标端口
+            address: Destination address.
+            port: Destination port.
             
         Returns:
-            gRPC异步通道
+            Asynchronous gRPC channel.
         """
         shard = self.get_shard(address, port)
         return await shard.get_channel(address, port)
     
     async def get_stub(self, address: str, port: int, stub_type) -> Any:
         """
-        获取或创建存根
+        Get or create a stub.
         
         Args:
-            address: 目标地址
-            port: 目标端口
-            stub_type: 存根类型
+            address: Destination address.
+            port: Destination port.
+            stub_type: Stub class.
             
         Returns:
-            gRPC存根
+            gRPC stub.
         """
         shard = self.get_shard(address, port)
         return await shard.get_stub(address, port, stub_type)
     
     async def with_stub(self, address: str, port: int, stub_type, func, *args, **kwargs):
         """
-        使用存根执行函数调用
+        Call a function through the stub.
         
         Args:
-            address: 目标地址
-            port: 目标端口
-            stub_type: 存根类型
-            func: 要调用的函数名
-            *args, **kwargs: 传递给函数的参数
+            address: Destination address.
+            port: Destination port.
+            stub_type: Stub class.
+            func: Name of the function to call.
+            *args, **kwargs: Arguments passed to the function.
             
         Returns:
-            函数调用结果
+            Result of the function call.
         """
         shard = self.get_shard(address, port)
         return await shard.with_stub(address, port, stub_type, func, *args, **kwargs)
     
     async def preconnect(self, workers: List[Tuple[str, int]]):
         """
-        预连接到所有工作节点
+        Preconnect to all worker nodes.
         
         Args:
-            workers: 工作节点列表
+            workers: List of worker nodes.
         """
         if self.preconnected:
             return
             
         logger.info(f"Pre-connecting to {len(workers)} workers across {self.shard_count} shards")
         
-        # 将工作节点分配到各个分片
+        # Assign worker nodes to shards.
         shard_workers = [[] for _ in range(self.shard_count)]
         for addr, port in workers:
             shard_index = hash(f"{addr}:{port}") % self.shard_count
             shard_workers[shard_index].append((addr, port))
         
-        # 并行执行各分片的预连接
+        # Preconnect all shards concurrently.
         tasks = []
         for i, worker_list in enumerate(shard_workers):
             if worker_list:
@@ -787,10 +787,10 @@ class ShardedConnectionManager:
         logger.info("Pre-connection to all workers completed")
     
     async def stop(self):
-        """停止连接管理器，关闭所有通道"""
+        """Stop the connection manager and close all channels."""
         logger.info("Stopping connection manager")
         
-        # 收集所有通道以关闭
+        # Collect all channels to close.
         all_channels = []
         for shard in self.shards:
             async with shard.semaphore:
@@ -803,7 +803,7 @@ class ShardedConnectionManager:
                 if shard.cleanup_task and not shard.cleanup_task.done():
                     shard.cleanup_task.cancel()
         
-        # 关闭所有通道（不使用锁）
+        # Close all channels without holding locks.
         for key, channel in all_channels:
             try:
                 await asyncio.wait_for(channel.close(), timeout=1.0)
@@ -813,24 +813,24 @@ class ShardedConnectionManager:
         logger.info("Connection manager stopped")
     
     def sync_stop(self):
-        """同步停止方法，用于非异步上下文"""
+        """Synchronous shutdown for non-async contexts."""
         logger.info("Sync stopping connection manager")
         for shard in self.shards:
             if shard.cleanup_task and not shard.cleanup_task.done():
                 shard.cleanup_task.cancel()
 
 
-# 创建全局单例
+# Create the global singleton.
 connection_manager = ShardedConnectionManager()
 
 
-# 为全局初始化提供便捷方法
+# Provide a convenience function for global initialization.
 async def initialize_connection_manager(workers: List[Tuple[str, int]] = None):
     """
-    全局初始化连接管理器，可选预连接到工作节点
+    Initialize the global connection manager and optionally preconnect to workers.
     
     Args:
-        workers: 可选的工作节点列表，如果提供则预连接
+        workers: Optional list of worker nodes to preconnect to.
     """
     await connection_manager.initialize()
     

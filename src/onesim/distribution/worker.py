@@ -34,8 +34,8 @@ class WorkerNode(Node):
         self.env_path=None
         self.profile_id2agent={}
         self.agents_created = asyncio.Event()
-        # 心跳配置
-        self.heartbeat_interval = config.get("heartbeat_interval", 300)  # 减少心跳间隔为15秒
+        # Heartbeat configuration.
+        self.heartbeat_interval = config.get("heartbeat_interval", 300)  # Default heartbeat interval: 300 seconds.
         self.heartbeat_max_retries = config.get("heartbeat_max_retries", 5)
         self.heartbeat_backoff_factor = config.get("heartbeat_backoff_factor", 2.0)
         self.heartbeat_max_interval = config.get("heartbeat_max_interval", 600)
@@ -49,7 +49,7 @@ class WorkerNode(Node):
         """Initialize the worker node and connect to master"""
         await super().initialize()
 
-        # 初始化批处理器
+        # Initialize the batch processor.
         from onesim.distribution.batch_processor import batch_processor
         batch_processor.start(
             master_address=self.master_address, 
@@ -74,12 +74,12 @@ class WorkerNode(Node):
             return
 
         retry_count = 0
-        max_retries = 10  # 增加重试次数
+        max_retries = 10  # Allow more retries.
 
         while retry_count < max_retries:
             try:
-                # 在注册前先尝试确认连接性，使用单独通道
-                # 这有助于避免注册时的连接问题
+                # Check connectivity using a separate channel before registration.
+                # This helps avoid connection issues during registration.
                 logger.info(f"Attempting to connect to master at {self.master_address}:{self.master_port} (attempt {retry_count+1})")
 
                 success = await self._grpc_module.register_with_master(
@@ -94,10 +94,10 @@ class WorkerNode(Node):
                     logger.info(f"Successfully registered node {self.node_id} {self.worker_address}:{self.listen_port} with master at {self.master_address}:{self.master_port}")
                     self._registered = True
 
-                    # 注册成功后立即发送第一次心跳，确保连接保持活跃
+                    # Send the first heartbeat immediately after registration to keep the connection active.
                     await self._send_immediate_heartbeat()
 
-                    # 启动定期心跳任务
+                    # Start the periodic heartbeat task.
                     if not self._heartbeat_task or self._heartbeat_task.done():
                         self._heartbeat_task = asyncio.create_task(self._send_heartbeat())
 
@@ -105,10 +105,10 @@ class WorkerNode(Node):
                 else:
                     logger.error("Failed to register with master")
 
-                # 增加指数退避重试延迟
+                # Increase the retry delay with exponential backoff.
                 retry_count += 1
                 if retry_count < max_retries:
-                    wait_time = min(2 ** retry_count, 60)  # 指数增长延迟，最多60秒
+                    wait_time = min(2 ** retry_count, 60)  # Exponential delay capped at 60 seconds.
                     logger.info(f"Retrying connection in {wait_time} seconds...")
                     await asyncio.sleep(wait_time)
 
@@ -123,12 +123,12 @@ class WorkerNode(Node):
         logger.error(f"Failed to connect to master after {max_retries} attempts")
 
     async def _send_immediate_heartbeat(self):
-        """立即发送一次心跳以确保连接保持活跃"""
+        """Send a heartbeat immediately to keep the connection active."""
         if not self._grpc_module:
             return
 
         try:
-            # 不使用连接池发送初始心跳，确保有新的连接
+            # Use a fresh connection for the initial heartbeat instead of the pool.
             success = await self._grpc_module.send_heartbeat_to_master(
                 self.master_address,
                 self.master_port,
@@ -161,14 +161,14 @@ class WorkerNode(Node):
                     )
 
                     if success:
-                        # 重置重试计数
+                        # Reset the retry count.
                         retry_count = 0
-                        # 正常情况下使用较短心跳间隔，保持连接活跃
+                        # Use the normal heartbeat interval to keep the connection active.
                         next_interval = base_interval
                         logger.debug(f"Heartbeat sent successfully, next in {next_interval}s")
                         await asyncio.sleep(next_interval)
                     else:
-                        # 失败但没有异常，增加重试延迟
+                        # Increase the retry delay when the request fails without an exception.
                         retry_count += 1
                         wait_time = min(base_interval * (self.heartbeat_backoff_factor ** retry_count), self.heartbeat_max_interval)
                         logger.warning(f"Heartbeat failed, retrying in {wait_time:.1f}s")
@@ -180,11 +180,11 @@ class WorkerNode(Node):
                     logger.error(f"Error sending heartbeat: {e}, retrying in {wait_time:.1f}s")
                     await asyncio.sleep(wait_time)
 
-                    # 达到最大重试次数时重新尝试连接
+                    # Reconnect after reaching the maximum retry count.
                     if retry_count >= self.heartbeat_max_retries:
                         logger.warning("Heartbeat failed too many times, attempting to reconnect to master")
                         self._registered = False
-                        # 强制清除连接池中可能损坏的连接
+                        # Force removal of potentially broken pooled connections.
                         if hasattr(self._grpc_module, 'connection_manager'):
                             try:
                                 await self._grpc_module.connection_manager._force_recreate_channel(
@@ -194,10 +194,10 @@ class WorkerNode(Node):
                             except Exception as e:
                                 logger.error(f"Error recreating channel: {e}")
 
-                        # 重新连接到master
+                        # Reconnect to the master.
                         asyncio.create_task(self._connect_to_master())
             else:
-                # 未注册状态下仍定期检查
+                # Continue periodic checks while unregistered.
                 await asyncio.sleep(5)
 
     async def _get_agent_location(self, agent_id: str) -> Optional[Tuple[str, int]]:
@@ -300,7 +300,7 @@ class WorkerNode(Node):
             }
 
     async def create_agents_batch(self, agent_configs: List[Dict[str, Any]]) -> List[str]:
-        """批量创建多个本地Agent"""
+        """Create multiple local agents in a batch."""
         created_agent_ids = []
         created_agent_ids = self.create_local_agents(agent_configs)
 
@@ -308,10 +308,10 @@ class WorkerNode(Node):
         return created_agent_ids
 
     async def handle_termination_signal(self, reason: str = "unknown") -> bool:
-        """处理来自主节点的终止信号"""
+        """Handle a termination signal from the master."""
         logger.info(f"Worker {self.node_id} received termination signal: {reason}")
 
-        # 执行清理操作
+        # Perform cleanup.
         await self.shutdown()
 
         return True
@@ -320,22 +320,22 @@ class WorkerNode(Node):
         """Clean shutdown of worker node resources"""
         logger.info(f"Shutting down worker node {self.node_id}")
 
-        # 取消心跳任务
+        # Cancel the heartbeat task.
         if self._heartbeat_task and not self._heartbeat_task.done():
             self._heartbeat_task.cancel()
 
-        # 关闭批处理器
+        # Close the batch processor.
         from onesim.distribution.batch_processor import batch_processor
         batch_processor.stop()
 
-        # 停止gRPC服务器
+        # Stop the gRPC server.
         if self._server:
-            await self._server.stop(5)  # 5秒优雅停止
+            await self._server.stop(5)  # Allow 5 seconds for graceful shutdown.
 
-        # 调用父类shutdown方法
+        # Call the parent shutdown method.
         await super().shutdown()
 
-        # 通知外部等待方：已完成关闭
+        # Notify external waiters that shutdown is complete.
         if not self.stopped_event.is_set():
             self.stopped_event.set()
 

@@ -1,0 +1,363 @@
+{
+  "domain": "Sociology",
+  "scene_name": "facebook",
+  "odd_protocol": {
+    "overview": {
+      "system_goal": "Simulate Twitter-style multi-channel information diffusion: users receive posts via algorithm feeds, social follow graph, search, and @/repost/quote/reply notifications; LLM agents decide reposts, quotes, and replies under memory/activity/depth gates.",
+      "agent_types": "UserAgent, Platform, Algorithm",
+      "environment_description": "Shared content_pool of posts with nested replies; mention_pool queues notifications per user; time advances in scheduled day slices with current_posts windows; seed_root_post_ids frozen from initial env_data for hop-depth metrics.",
+      "workflow_structure": "Each step: EnvAgent StartEvent → UserAgent (exposure + self-memory + own-post supplementary) + Algorithm (sync posts) → on-demand recommendation/search → propagation & mention side-effects → step advance."
+    },
+    "design_concepts": {
+      "interaction_patterns": "Pull-based algorithm recommendations (GetAlgorithmRecommendationEvent), probabilistic social follow feed, mention delivery via mention_pool, optional search continuation, keep-following re-exposure.",
+      "communication_protocols": "Propagation posts and mention_pool updates use AddPostEvent / MentionPoolUpdateEvent RPC to SimEnv (async, not in workflow graph). RecommendationSpreadingEvent / MentionSpreadingEvent mark handler completion.",
+      "decision_mechanisms": "UserAgentGates: memory similarity, activity level, PostDepthGate vs seed_root_post_ids; LLM JSON decisions for repost/quote/reply/@/search/keep-following.",
+      "execution_flow": "StartEvent → get_exposure_stream ∥ generate_memory_from_own_posts ∥ supplement_own_posts; StartEvent → Algorithm.update_current_posts; exposure → {AlgorithmRecommendationEvent|SocialRecommendationEvent|BookmarkEvent|SearchResultEvent} → receive_recommendation; exposure → MentionEvent → handle_mention"
+    },
+    "details": {
+      "agent_behaviors": "UserAgent scans follow feed since last_login_timestamp, requests algorithm types from params, processes mention_pool with attention_budget cap, and runs receive_recommendation / handle_mention with chunked LLM calls. Algorithm agents run random/popularity/interest recommenders and relevant search.",
+      "decision_algorithms": "Popularity: propagation_count distribution + rolling popularity; Random: MAU-weighted sampling; Interest: online BGE cosine coarse-rank on the interest pool then LLM fine-rank, mixed with current_posts_k window posts; Search: embedding relevance to query.",
+      "specific_constraints": "current_posts = posts with time < min(current_timestamp + timestamp_duration, simulation_cap); replies in prompts truncated; simulation capped by max_span_days and max_step from params; pure reposts excluded from text-diversity metrics.",
+      "process_sequence": "1) Load content_pool & profiles; 2) For each step broadcast StartEvent; 3) User exposure + memory; 4) Algorithm/on-demand feeds; 5) LLM propagation decisions → content_pool & mention_pool; 6) Mention handling; 7) Advance timestamp, rebuild current_posts, save channel snapshots & metrics."
+    }
+  },
+  "agent_types": {
+    "UserAgent": "Facebook user with profile (nickname, interest_tags, activity_level, follow_ids/fan_ids), memory, recommended_post_ids_by_channel, mentioned_post_ids_by_channel, bookmark_post_ids.",
+    "Platform": "Thin router: receives recommendation/search requests and forwards them to platform_agent_0001 / platform_agent_0002. No ranking.",
+    "Algorithm": "Platform agents: platform_agent_0001 (recommendation: random/popularity/interest), platform_agent_0002 (search: relevant)."
+  },
+  "metrics": [
+    {
+      "id": "diffusion_generation",
+      "name": "Diffusion Generation Over Time",
+      "description": "Counts propagation-only posts in content_pool: reposts, quotes, and replies (any parent/ref id set). Original posts are excluded.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_diffusion_generation",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "current_timestamp",
+          "source_type": "env",
+          "path": "current_timestamp",
+          "required": false
+        }
+      ],
+      "calculation_logic": "Count content_pool entries with any of reposted_post_id, quoted_post_id, replied_post_id/replyed_post_id set."
+    },
+    {
+      "id": "direct_post_generation",
+      "name": "Direct Post Pool Count Over Time",
+      "description": "Counts non-secondary propagation posts: parent post must be original (no repost/quote/reply parent refs).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_direct_post_generation",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Propagation posts whose immediate parent is an original post."
+    },
+    {
+      "id": "direct_repost_generation",
+      "name": "Direct Repost Count Over Time",
+      "description": "Non-secondary reposts only (parent is original).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_direct_repost_generation",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "reposted_post_id set and parent post is original."
+    },
+    {
+      "id": "direct_quote_generation",
+      "name": "Direct Quote Count Over Time",
+      "description": "Non-secondary quotes only (parent is original).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_direct_quote_generation",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "quoted_post_id set and parent post is original."
+    },
+    {
+      "id": "direct_reply_generation",
+      "name": "Direct Reply Count Over Time",
+      "description": "Non-secondary replies only (parent is original).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_direct_reply_generation",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "replied_post_id/replyed_post_id set and parent post is original."
+    },
+    {
+      "id": "diffusion_volume_realtime",
+      "name": "Diffusion Volume Real Time",
+      "description": "Propagation posts by post time: cumulative count + histogram (_viz_kind repost_realtime).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_diffusion_volume_realtime",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Collect propagation post timestamps via time_to_ms; twin-panel export in monitor."
+    },
+    {
+      "id": "user_diffusion_count_frequency",
+      "name": "User Diffusion Count Frequency",
+      "description": "Distribution of seed-attributed propagation entries per user; denominator = all post authors in content_pool.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_user_diffusion_count_frequency",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "seed_root_post_ids",
+          "source_type": "env",
+          "path": "seed_root_post_ids",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Histogram of per-user propagation totals; raw_data._viz_kind user_repost_count_freq_bar."
+    },
+    {
+      "id": "root_diffusion_count_frequency",
+      "name": "Root Diffusion Count Frequency",
+      "description": "Distribution of propagation nodes under each env seed root post.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_root_diffusion_count_frequency",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "seed_root_post_ids",
+          "source_type": "env",
+          "path": "seed_root_post_ids",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Histogram of per-seed-root descendant counts; raw_data._viz_kind root_repost_count_freq_bar."
+    },
+    {
+      "id": "diffusion_hop_depth_over_time",
+      "name": "Diffusion Hop Depth Over Time",
+      "description": "Count propagation posts by hop depth vs env seed roots (series hop_1, hop_2, ...).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_diffusion_hop_depth_over_time",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "seed_root_post_ids",
+          "source_type": "env",
+          "path": "seed_root_post_ids",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Parent walk repost → quote → reply until seed_root_post_ids; monitor splits hop panels."
+    },
+    {
+      "id": "posting_root_author_repost_behavior",
+      "name": "Root Author Self-Repost Behavior",
+      "description": "Per seed-root author: root_post_count, self_repost_hop_k, repost_on_others_count; CSV + JSONL under root_author_self_repost_behavior/.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_posting_root_author_repost_behavior",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "seed_root_post_ids",
+          "source_type": "env",
+          "path": "seed_root_post_ids",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Returns {users: [...]} table; monitor writes CSV and snapshots.jsonl."
+    },
+    {
+      "id": "user_received_propagation_frequency",
+      "name": "User Received Propagation Frequency",
+      "description": "Distribution of one-hop incoming propagation events per user (any parent edge in content_pool); denominator = pool authors.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_user_received_propagation_frequency",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Count propagation posts pointing at each author's post; raw_data._viz_kind received_propagation_freq_bar."
+    },
+    {
+      "id": "received_propagation_count_frequency",
+      "name": "Received Propagation Count Frequency",
+      "description": "Dual chart: seed-root descendant counts + seed-attributed one-hop received counts per user (_viz_kind received_propagation_count_freq_bar).",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_received_propagation_count_frequency",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "seed_root_post_ids",
+          "source_type": "env",
+          "path": "seed_root_post_ids",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Combined root + user received histograms for twin PNG export."
+    },
+    {
+      "id": "text_similarity",
+      "name": "Text Similarity",
+      "description": "Mean BGE cosine similarity between generated quote/reply texts and root post reference embeddings.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_text_similarity",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "reference_embedding_path",
+          "source_type": "env",
+          "path": "reference_embedding_path",
+          "required": false
+        },
+        {
+          "name": "post_embeddings_path",
+          "source_type": "env",
+          "path": "post_embeddings_path",
+          "required": false
+        }
+      ],
+      "calculation_logic": "Embed generated texts; align to root post_id in reference embedding JSON; return mean cosine or None."
+    },
+    {
+      "id": "text_diversity",
+      "name": "Text Diversity",
+      "description": "Lexical/semantic diversity of generated quote/reply texts: TTR, Distinct-2/3, 1-Self-BLEU, Div_sem. Pure reposts excluded.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_text_diversity",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Collect quote/reply texts; compute diversity metrics; embed via embedding_client; _viz_kind propagation_diversity."
+    },
+    {
+      "id": "text_max_reference_similarity",
+      "name": "Text Max Reference Similarity",
+      "description": "Reference-driven max cosine: each reference post embedding vs same-root simulated comments, then mean over matched posts.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_text_max_reference_similarity",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        },
+        {
+          "name": "reference_embedding_path",
+          "source_type": "env",
+          "path": "reference_embedding_path",
+          "required": false
+        },
+        {
+          "name": "post_embeddings_path",
+          "source_type": "env",
+          "path": "post_embeddings_path",
+          "required": false
+        }
+      ],
+      "calculation_logic": "Load reference_embedding_path JSON by post_id; embed generated comments; mean of max cosine per reference post."
+    },
+    {
+      "id": "cross_user_similarity",
+      "name": "Same-Post Cross-User Similarity",
+      "description": "Cosine similarity between different users on the same post. Mean weights user pairs equally, then eligible posts equally. Max is the highest cross-user comment-pair similarity. Includes all/root/reply scopes and per-post sample counts; insufficient samples are NA.",
+      "visualization_type": "line",
+      "update_interval": 5,
+      "function_name": "calculate_cross_user_similarity",
+      "variables": [
+        {
+          "name": "content_pool",
+          "source_type": "env",
+          "path": "content_pool",
+          "required": true
+        }
+      ],
+      "calculation_logic": "Reuse comment embeddings; exclude same-user and cross-post pairs. Report average and maximum similarity separately."
+    }
+  ]
+}

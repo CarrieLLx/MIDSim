@@ -1,0 +1,6 @@
+# Publish only the three active social environments.
+/*
+!/.gitignore
+!/facebook/
+!/instagram/
+!/x/

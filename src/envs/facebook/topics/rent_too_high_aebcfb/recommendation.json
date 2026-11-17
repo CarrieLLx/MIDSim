@@ -1,0 +1,124 @@
+{
+  "fine_interest_recommendation_content_pool": {
+    "fb_rent_too_high_aebcfb_01": {
+      "post_id": "fb_rent_too_high_aebcfb_01",
+      "desc": "Should the federal government do more to increase the supply of affordable housing? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_02": {
+      "post_id": "fb_rent_too_high_aebcfb_02",
+      "desc": "Why is it so difficult for working families to find housing they can actually afford? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_03": {
+      "post_id": "fb_rent_too_high_aebcfb_03",
+      "desc": "Should cities make it easier to build apartments and other high-density housing? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_04": {
+      "post_id": "fb_rent_too_high_aebcfb_04",
+      "desc": "Would building more homes help slow the growth of rents? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_05": {
+      "post_id": "fb_rent_too_high_aebcfb_05",
+      "desc": "Should governments provide more funding for affordable housing construction? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_06": {
+      "post_id": "fb_rent_too_high_aebcfb_06",
+      "desc": "Is the shortage of housing a bigger problem than rising demand in explaining high rents? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_07": {
+      "post_id": "fb_rent_too_high_aebcfb_07",
+      "desc": "Should zoning rules be changed to allow more apartments near jobs and public transportation? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_08": {
+      "post_id": "fb_rent_too_high_aebcfb_08",
+      "desc": "Would expanding housing vouchers be more effective than building new affordable housing? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_09": {
+      "post_id": "fb_rent_too_high_aebcfb_09",
+      "desc": "Should developers receive tax incentives for constructing below-market rental units? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_10": {
+      "post_id": "fb_rent_too_high_aebcfb_10",
+      "desc": "How much affordable housing should cities be required to include in new developments? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_11": {
+      "post_id": "fb_rent_too_high_aebcfb_11",
+      "desc": "Should vacant properties be converted into affordable rental housing? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_12": {
+      "post_id": "fb_rent_too_high_aebcfb_12",
+      "desc": "Would allowing more accessory dwelling units help increase the supply of affordable homes? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_13": {
+      "post_id": "fb_rent_too_high_aebcfb_13",
+      "desc": "Should federal housing programs focus more on renters who spend a large share of their income on rent? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_14": {
+      "post_id": "fb_rent_too_high_aebcfb_14",
+      "desc": "Can rent control solve housing affordability problems, or does the country need to build more homes? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_15": {
+      "post_id": "fb_rent_too_high_aebcfb_15",
+      "desc": "Should local governments reduce regulations that make apartment construction expensive and slow? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_16": {
+      "post_id": "fb_rent_too_high_aebcfb_16",
+      "desc": "Would more public housing reduce pressure on private rental markets? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_17": {
+      "post_id": "fb_rent_too_high_aebcfb_17",
+      "desc": "Should affordable housing be built near major employment centers rather than pushed to distant suburbs? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_18": {
+      "post_id": "fb_rent_too_high_aebcfb_18",
+      "desc": "Why are people expected to spend so much of their income on housing just to live near work? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_19": {
+      "post_id": "fb_rent_too_high_aebcfb_19",
+      "desc": "Should governments prioritize housing construction even when existing residents oppose new development? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    },
+    "fb_rent_too_high_aebcfb_20": {
+      "post_id": "fb_rent_too_high_aebcfb_20",
+      "desc": "Would a national affordable housing investment help communities where rents have risen much faster than wages? What do you think?",
+      "topic": "rent_too_high_aebcfb",
+      "post_type": "similar_topic_post"
+    }
+  }
+}

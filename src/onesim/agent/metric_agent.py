@@ -136,15 +136,15 @@ class MetricAgent(AgentBase):
                 
                 # Validate source_type
                 if "source_type" not in var or var["source_type"] not in self.source_types:
-                    logger.warning(f"指标 '{metric.get('name', 'unknown')}' 的变量 '{var.get('name', 'unknown')}' 使用了无效的source_type: {var.get('source_type', 'missing')}，已设为默认值'env'")
+                    logger.warning(f"Metric '{metric.get('name', 'unknown')}' variable '{var.get('name', 'unknown')}' has invalid source_type: {var.get('source_type', 'missing')}; using default 'env'")
                     var["source_type"] = "env"
             
             if not is_valid:
-                logger.warning(f"指标 '{metric.get('name', 'unknown')}' 使用了不存在的变量: {', '.join(invalid_vars)}，将跳过")
+                logger.warning(f"Metric '{metric.get('name', 'unknown')}' refers to missing variables: {', '.join(invalid_vars)}; skipping")
             else:
                 valid_metrics.append(metric)
         
-        logger.info(f"验证完成: {len(valid_metrics)}/{len(metrics)} 个指标有效")
+        logger.info(f"Validation complete: {len(valid_metrics)}/{len(metrics)} metrics are valid")
         return valid_metrics
     
     def _create_generation_prompt(self, scenario_description: str, agent_types: List[str], system_data_model: Dict = None, num_metrics: int = 3) -> str:

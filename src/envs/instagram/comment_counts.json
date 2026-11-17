@@ -1,0 +1,744 @@
+{
+  "source": "datasets/ins/comments.csv",
+  "note": "Observed comments are stored in doc/real_content_pool; initial comments in topics/env_data.json are empty.",
+  "topics": [
+    {
+      "slug": "fmla_c334ab",
+      "topic": "Should paid family and parental leave be provided?",
+      "keyword": "paid parental leave",
+      "platform": "Instagram",
+      "portrait": {
+        "UserAgent": 475
+      },
+      "post_count": 46,
+      "comment_count": 653,
+      "relationship_count": 137,
+      "thread_count": 411,
+      "root_comment_count": 410,
+      "reply_count": 243,
+      "orphan_reply_count": 1,
+      "window": {
+        "start": "2026-05-27",
+        "end_exclusive": "2026-06-20",
+        "days": 24,
+        "timezone": "UTC",
+        "selection_basis": "post_publication_time_in_original_account_sample",
+        "comment_scope": "all_collected_comments_on_selected_posts"
+      },
+      "profile_matched_count": 475,
+      "profile_missing_count": 0,
+      "profile_missing_usernames": [],
+      "profile_status_counts": {
+        "ok": 164,
+        "private": 293,
+        "unavailable": 18
+      },
+      "historical_post_count": 6390,
+      "users_with_history_count": 153,
+      "history_policy": "created_time < min(window_start, source_cutoff_iso); deduplicate by user and shortcode",
+      "history_exclusions": {
+        "at_or_after_cutoff": 342
+      },
+      "comments_outside_post_window": 14,
+      "selection_manifest": "config/datasets/instagram/selection_24day.json",
+      "real_content_pool_path": "doc/real_content_pool/fmla_c334ab/content_pool_snapshot.json",
+      "by_training_grade": {
+        "borderline_sample": 22,
+        "core_usable": 112,
+        "generally_usable": 195,
+        "relevant_context_only": 31,
+        "unusable": 51
+      },
+      "posts": [
+        {
+          "post_id": "DY0qgbDG9Nf",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DY2eWZ0nbvs",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DY2fuAIlMuo",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DY4vnmGCAcY",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DY4vxKiDVtp",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DY49LIqD9VM",
+          "comment_count": 3
+        },
+        {
+          "post_id": "DY50ICOjafG",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DY-GweUDQ4d",
+          "comment_count": 3
+        },
+        {
+          "post_id": "DY-Ue5BFDwc",
+          "comment_count": 3
+        },
+        {
+          "post_id": "DZAhv0GvKWh",
+          "comment_count": 7
+        },
+        {
+          "post_id": "DZBpX5SlPII",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZDC2PYihoS",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZFnpTTihXz",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZGM9w2lsOH",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZGsH9EDXgC",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZHyRk0orfs",
+          "comment_count": 3
+        },
+        {
+          "post_id": "DZIMd4jChdC",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZKVUpuCfXw",
+          "comment_count": 558
+        },
+        {
+          "post_id": "DZKxPCqCPsj",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZLmAprFmpP",
+          "comment_count": 12
+        },
+        {
+          "post_id": "DZL1rTvFeda",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZOm13ADPcm",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZOoSAPjfFr",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZY0mdaAdto",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZabmlFDSV3",
+          "comment_count": 2
+        },
+        {
+          "post_id": "DZbZUJ_DapL",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZcyznHCJfa",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZdAUy0DfxS",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZd3Sh8jfOc",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZgAn9vjTXX",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZh3D3TG3_r",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZiJ4jXnI8g",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZizE8fkcl0",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZnF-DpCK2S",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZn7re5lS-H",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZpqyBNiCH9",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZqoYCLEZog",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZsPkfqiKCh",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZsPkodiJbN",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZta3ATjaG_",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZu0XJ0DT2M",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZu0XWMiv5V",
+          "comment_count": 0
+        },
+        {
+          "post_id": "DZu18FZFltq",
+          "comment_count": 2
+        },
+        {
+          "post_id": "DZu8h3-iKAy",
+          "comment_count": 6
+        },
+        {
+          "post_id": "DZvQPotmNHr",
+          "comment_count": 38
+        },
+        {
+          "post_id": "DZxZBJrjRpM",
+          "comment_count": 1
+        }
+      ]
+    },
+    {
+      "slug": "food_stamps_ecd548",
+      "topic": "Should college students have easier access to SNAP food assistance?",
+      "keyword": "student food insecurity",
+      "platform": "Instagram",
+      "portrait": {
+        "UserAgent": 42
+      },
+      "post_count": 10,
+      "comment_count": 47,
+      "relationship_count": 14,
+      "thread_count": 34,
+      "root_comment_count": 34,
+      "reply_count": 13,
+      "orphan_reply_count": 0,
+      "window": {
+        "start": "2026-05-28",
+        "end_exclusive": "2026-06-21",
+        "days": 24,
+        "timezone": "UTC",
+        "selection_basis": "post_publication_time_in_original_account_sample",
+        "comment_scope": "all_collected_comments_on_selected_posts"
+      },
+      "profile_matched_count": 42,
+      "profile_missing_count": 0,
+      "profile_missing_usernames": [],
+      "profile_status_counts": {
+        "ok": 22,
+        "private": 18,
+        "unavailable": 2
+      },
+      "historical_post_count": 785,
+      "users_with_history_count": 19,
+      "history_policy": "created_time < min(window_start, source_cutoff_iso); deduplicate by user and shortcode",
+      "history_exclusions": {
+        "at_or_after_cutoff": 119
+      },
+      "comments_outside_post_window": 1,
+      "selection_manifest": "config/datasets/instagram/selection_24day.json",
+      "real_content_pool_path": "doc/real_content_pool/food_stamps_ecd548/content_pool_snapshot.json",
+      "by_training_grade": {
+        "borderline_sample": 4,
+        "core_usable": 5,
+        "generally_usable": 6,
+        "relevant_context_only": 3,
+        "unusable": 16
+      },
+      "posts": [
+        {
+          "post_id": "DY4a6FMkopf",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DY5RkZigLEu",
+          "comment_count": 11
+        },
+        {
+          "post_id": "DY7FQjBlVED",
+          "comment_count": 2
+        },
+        {
+          "post_id": "DY-DKkfjk-S",
+          "comment_count": 24
+        },
+        {
+          "post_id": "DZDwLn1Rb3s",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZK76Qvm-WC",
+          "comment_count": 4
+        },
+        {
+          "post_id": "DZPz9DwjWUL",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZQBri4jdOO",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZaeAk2EVzx",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZqAicBmn4c",
+          "comment_count": 1
+        }
+      ]
+    },
+    {
+      "slug": "hidden_fees_21044d",
+      "topic": "Should concert and sports tickets be required to show the full price?",
+      "keyword": "ticket fees",
+      "platform": "Instagram",
+      "portrait": {
+        "UserAgent": 4
+      },
+      "post_count": 3,
+      "comment_count": 6,
+      "relationship_count": 2,
+      "thread_count": 6,
+      "root_comment_count": 6,
+      "reply_count": 0,
+      "orphan_reply_count": 0,
+      "window": {
+        "start": "2017-11-08",
+        "end_exclusive": "2017-12-02",
+        "days": 24,
+        "timezone": "UTC",
+        "selection_basis": "post_publication_time_in_original_account_sample",
+        "comment_scope": "all_collected_comments_on_selected_posts"
+      },
+      "profile_matched_count": 4,
+      "profile_missing_count": 0,
+      "profile_missing_usernames": [],
+      "profile_status_counts": {
+        "ok": 3,
+        "private": 1
+      },
+      "historical_post_count": 101,
+      "users_with_history_count": 3,
+      "history_policy": "created_time < min(window_start, source_cutoff_iso); deduplicate by user and shortcode",
+      "history_exclusions": {
+        "at_or_after_cutoff": 8
+      },
+      "comments_outside_post_window": 0,
+      "selection_manifest": "config/datasets/instagram/selection_24day.json",
+      "real_content_pool_path": "doc/real_content_pool/hidden_fees_21044d/content_pool_snapshot.json",
+      "by_training_grade": {
+        "borderline_sample": 1,
+        "generally_usable": 1,
+        "relevant_context_only": 2,
+        "unusable": 2
+      },
+      "posts": [
+        {
+          "post_id": "BbPjVn4lw6C",
+          "comment_count": 2
+        },
+        {
+          "post_id": "BbQD1m7lgjg",
+          "comment_count": 1
+        },
+        {
+          "post_id": "BbxZ2tFFgdw",
+          "comment_count": 3
+        }
+      ]
+    },
+    {
+      "slug": "living_wage_bcd48e",
+      "topic": "Should the federal minimum wage be raised?",
+      "keyword": "federal minimum wage",
+      "platform": "Instagram",
+      "portrait": {
+        "UserAgent": 85
+      },
+      "post_count": 8,
+      "comment_count": 120,
+      "relationship_count": 72,
+      "thread_count": 71,
+      "root_comment_count": 71,
+      "reply_count": 49,
+      "orphan_reply_count": 0,
+      "window": {
+        "start": "2026-05-20",
+        "end_exclusive": "2026-06-13",
+        "days": 24,
+        "timezone": "UTC",
+        "selection_basis": "post_publication_time_in_original_account_sample",
+        "comment_scope": "all_collected_comments_on_selected_posts"
+      },
+      "profile_matched_count": 85,
+      "profile_missing_count": 0,
+      "profile_missing_usernames": [],
+      "profile_status_counts": {
+        "ok": 68,
+        "partial": 1,
+        "private": 12,
+        "unavailable": 4
+      },
+      "historical_post_count": 2692,
+      "users_with_history_count": 66,
+      "history_policy": "created_time < min(window_start, source_cutoff_iso); deduplicate by user and shortcode",
+      "history_exclusions": {
+        "at_or_after_cutoff": 340
+      },
+      "comments_outside_post_window": 17,
+      "selection_manifest": "config/datasets/instagram/selection_24day.json",
+      "real_content_pool_path": "doc/real_content_pool/living_wage_bcd48e/content_pool_snapshot.json",
+      "by_training_grade": {
+        "borderline_sample": 10,
+        "core_usable": 6,
+        "generally_usable": 28,
+        "relevant_context_only": 11,
+        "unusable": 16
+      },
+      "posts": [
+        {
+          "post_id": "DYkmPpvtFpW",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZCxiAMEYkK",
+          "comment_count": 12
+        },
+        {
+          "post_id": "DZGDELhNSOZ",
+          "comment_count": 10
+        },
+        {
+          "post_id": "DZIaItpFSv8",
+          "comment_count": 2
+        },
+        {
+          "post_id": "DZK373JDVyO",
+          "comment_count": 90
+        },
+        {
+          "post_id": "DZONe_kRZXz",
+          "comment_count": 3
+        },
+        {
+          "post_id": "DZVy10bkkJX",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZakcYslMWC",
+          "comment_count": 1
+        }
+      ]
+    },
+    {
+      "slug": "no_tax_on_tips_f18fbe",
+      "topic": "Should tip income be tax-exempt?",
+      "keyword": "tipped workers",
+      "platform": "Instagram",
+      "portrait": {
+        "UserAgent": 1613
+      },
+      "post_count": 14,
+      "comment_count": 1694,
+      "relationship_count": 310,
+      "thread_count": 1562,
+      "root_comment_count": 1561,
+      "reply_count": 133,
+      "orphan_reply_count": 1,
+      "window": {
+        "start": "2026-04-13",
+        "end_exclusive": "2026-05-07",
+        "days": 24,
+        "timezone": "UTC",
+        "selection_basis": "post_publication_time_in_original_account_sample",
+        "comment_scope": "all_collected_comments_on_selected_posts"
+      },
+      "profile_matched_count": 1613,
+      "profile_missing_count": 0,
+      "profile_missing_usernames": [],
+      "profile_status_counts": {
+        "ok": 645,
+        "partial": 4,
+        "private": 874,
+        "unavailable": 90
+      },
+      "historical_post_count": 18457,
+      "users_with_history_count": 516,
+      "history_policy": "created_time < min(window_start, source_cutoff_iso); deduplicate by user and shortcode",
+      "history_exclusions": {
+        "at_or_after_cutoff": 770
+      },
+      "comments_outside_post_window": 7,
+      "selection_manifest": "config/datasets/instagram/selection_24day.json",
+      "real_content_pool_path": "doc/real_content_pool/no_tax_on_tips_f18fbe/content_pool_snapshot.json",
+      "by_training_grade": {
+        "borderline_sample": 127,
+        "core_usable": 36,
+        "generally_usable": 347,
+        "relevant_context_only": 107,
+        "unusable": 945
+      },
+      "posts": [
+        {
+          "post_id": "DXFNr-ejyOH",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DXF6RrxjhFh",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DXGA-ggiIhh",
+          "comment_count": 3
+        },
+        {
+          "post_id": "DXGL6RzGARn",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DXGwV9oCGwN",
+          "comment_count": 36
+        },
+        {
+          "post_id": "DXG9YdEDNvr",
+          "comment_count": 2
+        },
+        {
+          "post_id": "DXHainSiATE",
+          "comment_count": 104
+        },
+        {
+          "post_id": "DXKPncREex5",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DXKe4jJjEtL",
+          "comment_count": 3
+        },
+        {
+          "post_id": "DXNs0r0lGLh",
+          "comment_count": 4
+        },
+        {
+          "post_id": "DXPFk4DDvcR",
+          "comment_count": 1230
+        },
+        {
+          "post_id": "DXPwN8IFJw1",
+          "comment_count": 6
+        },
+        {
+          "post_id": "DXQjmoIk4rq",
+          "comment_count": 301
+        },
+        {
+          "post_id": "DXViepDkSKm",
+          "comment_count": 1
+        }
+      ]
+    },
+    {
+      "slug": "rent_too_high_aebcfb",
+      "topic": "Should the United States expand affordable housing supply?",
+      "keyword": "rent too high",
+      "platform": "Instagram",
+      "portrait": {
+        "UserAgent": 52
+      },
+      "post_count": 10,
+      "comment_count": 63,
+      "relationship_count": 15,
+      "thread_count": 42,
+      "root_comment_count": 42,
+      "reply_count": 21,
+      "orphan_reply_count": 0,
+      "window": {
+        "start": "2026-06-17",
+        "end_exclusive": "2026-07-11",
+        "days": 24,
+        "timezone": "UTC",
+        "selection_basis": "post_publication_time_in_original_account_sample",
+        "comment_scope": "all_collected_comments_on_selected_posts"
+      },
+      "profile_matched_count": 52,
+      "profile_missing_count": 0,
+      "profile_missing_usernames": [],
+      "profile_status_counts": {
+        "ok": 31,
+        "partial": 1,
+        "private": 19,
+        "unavailable": 1
+      },
+      "historical_post_count": 1034,
+      "users_with_history_count": 27,
+      "history_policy": "created_time < min(window_start, source_cutoff_iso); deduplicate by user and shortcode",
+      "history_exclusions": {
+        "at_or_after_cutoff": 63
+      },
+      "comments_outside_post_window": 0,
+      "selection_manifest": "config/datasets/instagram/selection_24day.json",
+      "real_content_pool_path": "doc/real_content_pool/rent_too_high_aebcfb/content_pool_snapshot.json",
+      "by_training_grade": {
+        "borderline_sample": 4,
+        "core_usable": 6,
+        "generally_usable": 7,
+        "relevant_context_only": 4,
+        "unusable": 21
+      },
+      "posts": [
+        {
+          "post_id": "DZsM4HMAA6o",
+          "comment_count": 9
+        },
+        {
+          "post_id": "DZsjXaAAkWc",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZs4SdEvibU",
+          "comment_count": 23
+        },
+        {
+          "post_id": "DZvCAu3FBck",
+          "comment_count": 3
+        },
+        {
+          "post_id": "DZvverKPgyR",
+          "comment_count": 8
+        },
+        {
+          "post_id": "DZv4c0kFuQU",
+          "comment_count": 1
+        },
+        {
+          "post_id": "DZwBbznDsQH",
+          "comment_count": 2
+        },
+        {
+          "post_id": "DZwzPwhjHAj",
+          "comment_count": 5
+        },
+        {
+          "post_id": "DZw25pupRUV",
+          "comment_count": 10
+        },
+        {
+          "post_id": "DZxIkAciHz5",
+          "comment_count": 1
+        }
+      ]
+    },
+    {
+      "slug": "universal_school_meals_6d389a",
+      "topic": "Should free school meals be expanded?",
+      "keyword": "school lunch debt",
+      "platform": "Instagram",
+      "portrait": {
+        "UserAgent": 5
+      },
+      "post_count": 7,
+      "comment_count": 2,
+      "relationship_count": 4,
+      "thread_count": 2,
+      "root_comment_count": 2,
+      "reply_count": 0,
+      "orphan_reply_count": 0,
+      "window": {
+        "start": "2024-04-09",
+        "end_exclusive": "2024-05-03",
+        "days": 24,
+        "timezone": "UTC",
+        "selection_basis": "post_publication_time_in_original_account_sample",
+        "comment_scope": "all_collected_comments_on_selected_posts"
+      },
+      "profile_matched_count": 5,
+      "profile_missing_count": 0,
+      "profile_missing_usernames": [],
+      "profile_status_counts": {
+        "ok": 5
+      },
+      "historical_post_count": 234,
+      "users_with_history_count": 5,
+      "history_policy": "created_time < min(window_start, source_cutoff_iso); deduplicate by user and shortcode",
+      "history_exclusions": {
+        "at_or_after_cutoff": 16
+      },
+      "comments_outside_post_window": 0,
+      "selection_manifest": "config/datasets/instagram/selection_24day.json",
+      "real_content_pool_path": "doc/real_content_pool/universal_school_meals_6d389a/content_pool_snapshot.json",
+      "by_training_grade": {
+        "core_usable": 1,
+        "generally_usable": 1
+      },
+      "posts": [
+        {
+          "post_id": "C5iqe_Miny0",
+          "comment_count": 0
+        },
+        {
+          "post_id": "C5rCIyYPuNs",
+          "comment_count": 0
+        },
+        {
+          "post_id": "C5yvyWQPvBN",
+          "comment_count": 0
+        },
+        {
+          "post_id": "C5ywdaSrxRB",
+          "comment_count": 0
+        },
+        {
+          "post_id": "C50sCslCe2r",
+          "comment_count": 2
+        },
+        {
+          "post_id": "C6OdTp2Lscn",
+          "comment_count": 0
+        },
+        {
+          "post_id": "C6bXlFSp9Wi",
+          "comment_count": 0
+        }
+      ]
+    }
+  ]
+}

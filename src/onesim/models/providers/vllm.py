@@ -4,6 +4,9 @@ Implementation of vLLM chat model adapter with both sync and async support.
 
 import json
 import os
+import sys
+import time
+import secrets
 from typing import Any, Dict, Generator, List, Optional, Sequence, Union
 import asyncio
 
@@ -12,6 +15,89 @@ from loguru import logger
 from ..core.model_base import ModelAdapterBase
 from ..core.model_response import ModelResponse
 from ..core.message import Message
+from onesim.utils.llm_transport import exception_details
+from onesim.utils.model_retry import single_attempt_active
+
+# Shared cooldown so concurrent 429s wait on one window instead of dropping tasks.
+_rate_limit_until = 0.0
+
+
+def _rate_limit_wait_seconds() -> int:
+    try:
+        return max(int(os.environ.get("ONESIM_RATE_LIMIT_WAIT_SECONDS", "300")), 0)
+    except ValueError:
+        return 300
+
+
+def _is_rate_limit_error(exc: BaseException) -> bool:
+    status = getattr(exc, "status_code", None)
+    if status is None:
+        status = getattr(exc, "status", None)
+    if status == 429:
+        return True
+    if "ratelimit" in type(exc).__name__.lower():
+        return True
+    text = str(exc).lower()
+    return (
+        "error code: 429" in text
+        or "rate_limit" in text
+        or "no_available_accounts" in text
+        or "too many requests" in text
+    )
+
+
+def _connection_wait_seconds() -> int:
+    try:
+        return max(int(os.environ.get("ONESIM_CONNECTION_WAIT_SECONDS", "3")), 0)
+    except ValueError:
+        return 3
+
+
+def _connection_max_retries() -> int:
+    try:
+        return max(int(os.environ.get("ONESIM_CONNECTION_MAX_RETRIES", "3")), 0)
+    except ValueError:
+        return 3
+
+
+def _is_connection_error(exc: BaseException) -> bool:
+    if getattr(exc, 'status_code', None) in (408, 409, 500, 502, 503, 504):
+        return True
+    name = type(exc).__name__.lower()
+    if any(token in name for token in ("connection", "connecterror", "remoteprotocol", "timeout")):
+        return True
+    text = str(exc).lower()
+    return (
+        "connection error" in text
+        or "server disconnected" in text
+        or "connection reset" in text
+        or "connection aborted" in text
+        or "broken pipe" in text
+        or "remoteprotocolerror" in text
+        or "connecterror" in text
+        or "temporarily unavailable" in text
+        or "network is unreachable" in text
+    )
+
+
+def _arm_rate_limit_cooldown() -> None:
+    global _rate_limit_until
+    wait = _rate_limit_wait_seconds()
+    if wait <= 0:
+        return
+    now = time.monotonic()
+    if _rate_limit_until <= now:
+        _rate_limit_until = now + wait
+        logger.warning(
+            "LLM 429 rate limited; holding in-flight tasks and retrying silently in {}s",
+            wait,
+        )
+
+
+async def _wait_if_rate_limited() -> None:
+    remaining = _rate_limit_until - time.monotonic()
+    if remaining > 0:
+        await asyncio.sleep(remaining)
 
 
 class VLLMChatAdapter(ModelAdapterBase):
@@ -46,7 +132,7 @@ class VLLMChatAdapter(ModelAdapterBase):
             **kwargs: Additional parameters.
         """
         super().__init__(config_name=config_name, model_name=model_name, **kwargs)
-        # vLLM 注册的 model id 与 --model 路径一致，末尾多一个 / 会导致 /v1/chat 报 404
+        # The vLLM model ID matches the --model path; a trailing slash causes /v1/chat to return 404.
         if isinstance(self.model_name, str):
             self.model_name = self.model_name.rstrip("/")
 
@@ -72,6 +158,7 @@ class VLLMChatAdapter(ModelAdapterBase):
             api_key=api_key or "EMPTY",  # vLLM often doesn't need API key
             **client_args
         )
+        self._endpoint = base
 
         # Initialize the async client
         try:
@@ -210,7 +297,7 @@ class VLLMChatAdapter(ModelAdapterBase):
         Returns:
             ModelResponse: The response from the model.
         """
-        logger.info(f"[vLLM] {self.config_name} acall 入口（请求已进入 vLLM 适配器）")
+        logger.info(f"[vLLM] {self.config_name} acall entered the vLLM adapter")
 
         # Merge default arguments with provided ones
         call_kwargs = {**self.generate_args, **kwargs}
@@ -234,22 +321,52 @@ class VLLMChatAdapter(ModelAdapterBase):
         self._apply_backbone_call_guards(call_kwargs)
 
         try:
-            # Use async client if available, otherwise run sync client in thread
-            # if self.async_client:
-            #     logger.info("Acall llm in ansyn")
-            #     response = await self.async_client.chat.completions.create(**call_kwargs)
-            # else:
-            #     logger.info("Acall llm in non-ansys")
-            #     loop = asyncio.get_event_loop()
-            #     response = await loop.run_in_executor(
-            #         None, 
-            #         lambda: self.client.chat.completions.create(**call_kwargs)
-            #     )
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None, 
-                lambda: self.client.chat.completions.create(**call_kwargs)
-            )
+            conn_fails = 0
+            rate_fails = 0
+            while True:
+                await _wait_if_rate_limited()
+                try:
+                    if self.async_client is not None:
+                        client = self.async_client
+                        if single_attempt_active() and hasattr(client, 'with_options'):
+                            client = client.with_options(max_retries=0)
+                        response = await client.chat.completions.create(**call_kwargs)
+                    else:
+                        client = self.client
+                        if single_attempt_active() and hasattr(client, 'with_options'):
+                            client = client.with_options(max_retries=0)
+                        response = await asyncio.to_thread(client.chat.completions.create, **call_kwargs)
+                    break
+                except asyncio.CancelledError:
+                    raise
+                except Exception as e:
+                    if single_attempt_active():
+                        raise
+                    if (_is_rate_limit_error(e) and _rate_limit_wait_seconds() > 0
+                            and rate_fails < _connection_max_retries()):
+                        rate_fails += 1
+                        _arm_rate_limit_cooldown()
+                        continue
+                    wait = _connection_wait_seconds()
+                    max_retries = _connection_max_retries()
+                    if _is_connection_error(e) and conn_fails < max_retries:
+                        conn_fails += 1
+                        # Spread retries across concurrent agents without changing
+                        # the simulator's seeded random sequence or retry budget.
+                        wait = min(wait * (2 ** min(conn_fails - 1, 6)), max(wait, 60))
+                        wait *= 0.8 + secrets.randbelow(401) / 1000
+                        logger.warning(
+                            "LLM connection dropped ({}/{}); retrying in {}s: {}: {} details={}",
+                            conn_fails,
+                            max_retries,
+                            wait,
+                            type(e).__name__,
+                            e,
+                            exception_details(e),
+                        )
+                        await asyncio.sleep(wait)
+                        continue
+                    raise
             if use_stream:
                 logger.info("Handel straming response")
                 # Handle streaming response
@@ -315,8 +432,10 @@ class VLLMChatAdapter(ModelAdapterBase):
                 else:
                     raise ValueError(f"Invalid response format: {response_data}")
 
+        except asyncio.CancelledError:
+            raise
         except Exception as e:
-            logger.error(f"Error calling vLLM API asynchronously: {str(e)}") # Changed log message
+            logger.error("Error calling vLLM API asynchronously: {} details={}", e, exception_details(e))
             raise
 
     def list_models(self) -> List[str]:
@@ -333,11 +452,15 @@ class VLLMChatAdapter(ModelAdapterBase):
         return [self.model_name]
 
     def _apply_backbone_call_guards(self, call_kwargs: Dict[str, Any]) -> None:
-        """Llama backbone: default max_tokens + prompt truncation before vLLM request."""
-        from onesim.agent.backbone import is_llama_backbone
+        """Llama backbone: default max_tokens + prompt truncation before vLLM request.
 
-        if is_llama_backbone():
-            self._ensure_max_tokens_and_truncate_messages(call_kwargs)
+        Do not import onesim.agent here. That package pulls monitor/matplotlib and
+        can crash ranking scripts that only need a chat call.
+        """
+        backbone = sys.modules.get("onesim.agent.backbone")
+        if backbone is None or not getattr(backbone, "is_llama_backbone", lambda: False)():
+            return
+        self._ensure_max_tokens_and_truncate_messages(call_kwargs)
 
     def _ensure_max_tokens_and_truncate_messages(self, call_kwargs: Dict[str, Any]) -> None:
         """
@@ -462,7 +585,8 @@ class VLLMChatAdapter(ModelAdapterBase):
             return (
                 response.get("choices")
                 and response["choices"][0].get("message")
-                and "content" in response["choices"][0]["message"]
+                and isinstance(response["choices"][0]["message"].get("content"), str)
+                and bool(response["choices"][0]["message"]["content"].strip())
             )
         except (KeyError, IndexError):
             return False

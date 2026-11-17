@@ -1,0 +1,48 @@
+{
+  "current_timestamp": 1696982400000,
+  "timestamp_duration": 0,
+  "reference_embedding_path": "datasets/x/embeddings/bge-base-en-v1.5_embeddings.json",
+  "scenario_topic": "Should concert and sports tickets be required to show the full price?",
+  "content_pool": {
+    "1712100001608819016": {
+      "id": "1712100001608819016",
+      "content": "BREAKING: The Biden administration is announcing an economy-wide ban on junk fees. A proposed FTC rule would ban businesses from charging hidden fees and require full prices to be shown up front. This would mean no more surprise fees at check out for hotels, tickets and more.",
+      "time": 1697031424000,
+      "url": "https://x.com/MorePerfectUS/status/1712100001608819016",
+      "user_id": "moreperfectus",
+      "username": "More Perfect Union",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1712128583697641650": {
+      "id": "1712128583697641650",
+      "content": "THIS IS HUGE! The FTC is proposing a ban on hidden fees! Businesses would be required to show the full price of a transaction like concert tickets up front. Hidden junk fees will finally go where they belong: the trash.",
+      "time": 1697038238000,
+      "url": "https://x.com/Public_Citizen/status/1712128583697641650",
+      "user_id": "public_citizen",
+      "username": "Public Citizen",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1712159582670217284": {
+      "id": "1712159582670217284",
+      "content": "Junk fees cost American families tens of billions of dollars each year. Today, @POTUS and I are announcing a new solution to crack down on surprise, hidden fees and lower costs for American consumers. https://t.co/toyN3FUsLF",
+      "time": 1697045629000,
+      "url": "https://x.com/VP46Archive/status/1712159582670217284",
+      "user_id": "vp46archive",
+      "username": "Vice President Kamala Harris Archived",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1712529818355388621": {
+      "id": "1712529818355388621",
+      "content": "My Administration is taking our most comprehensive action ever to eliminate junk fees across the economy. We're proposing rules that would ban hidden fees, mandate transparent pricing, and make clear that bank fees for services like checking your account balance are illegal. https://t.co/8tzYMiIUSc",
+      "time": 1697133900000,
+      "url": "https://x.com/POTUS46Archive/status/1712529818355388621",
+      "user_id": "potus46archive",
+      "username": "President Biden Archived",
+      "comment_count": 0,
+      "comments": {}
+    }
+  }
+}

@@ -18,15 +18,15 @@ from onesim.distribution.connection_manager import connection_manager
 # Import BatchProcessor from the new module
 from onesim.distribution.batch_processor import batch_processor
 
-# 获取当前目录
+# Get the current directory.
 current_dir = Path(__file__).parent.absolute()
 
-# 先将当前目录添加到sys.path，确保能够正确导入模块
+# Add the current directory to sys.path first so modules can be imported correctly.
 sys.path.insert(0, str(current_dir))
 
-# 尝试导入proto模块
+# Try to import the proto modules.
 try:
-    # 尝试直接导入，不使用包路径
+    # Try direct imports without a package path.
     import onesim.distribution.agent_proto.agent_pb2 as agent_pb2
     import onesim.distribution.agent_proto.agent_pb2_grpc as agent_pb2_grpc
     
@@ -35,17 +35,17 @@ except ImportError as e:
     logger.warning(f"Failed to import proto modules: {e}")
     logger.info("Generating protobuf files...")
     
-    # 清理现有的proto目录，彻底解决可能存在的嵌套问题
+    # Clean the existing proto directory to resolve possible nested-directory issues.
     import shutil
     proto_dir = current_dir / "agent_proto"
     if proto_dir.exists():
         logger.info(f"Removing existing proto directory: {proto_dir}")
         shutil.rmtree(proto_dir)
     
-    # 创建新的proto目录
+    # Create a new proto directory.
     proto_dir.mkdir(exist_ok=True)
     
-    # 创建proto文件
+    # Create the proto file.
     proto_file = proto_dir / "agent.proto"
     with open(proto_file, "w") as f:
         f.write("""
@@ -53,264 +53,264 @@ syntax = "proto3";
 
 package agent;
 
-// 事件服务定义
+// Event service definition.
 service AgentService {
-  // 注册worker节点
+  // Register a worker node.
   rpc RegisterWorker (RegisterWorkerRequest) returns (RegisterWorkerResponse) {}
   
-  // 心跳服务
+  // Heartbeat service.
   rpc Heartbeat (HeartbeatRequest) returns (HeartbeatResponse) {}
   
-  // 在worker上创建agent
+  // Create an agent on a worker.
   rpc CreateAgent (CreateAgentRequest) returns (CreateAgentResponse) {}
   
-  // 发送事件
+  // Send an event.
   rpc SendEvent (EventRequest) returns (EventResponse) {}
   
-  // 批量创建agents
+  // Create agents in a batch.
   rpc CreateAgentsBatch (CreateAgentsBatchRequest) returns (CreateAgentsBatchResponse) {}
   
-  // 发送数据存储事件
+  // Send a data storage event.
   rpc SendStorageEvent (StorageEventRequest) returns (StorageEventResponse) {}
   
-  // 批量发送数据存储事件
+  // Send data storage events in a batch.
   rpc SendStorageEventBatch (StorageEventBatchRequest) returns (StorageEventBatchResponse) {}
   
-  // 发送决策记录
+  // Send a decision record.
   rpc SendDecisionRecord (DecisionRecordRequest) returns (DecisionRecordResponse) {}
   
-  // 批量发送决策记录
+  // Send decision records in a batch.
   rpc SendDecisionRecordBatch (DecisionRecordBatchRequest) returns (DecisionRecordBatchResponse) {}
   
-  // 获取环境数据
+  // Get environment data.
   rpc GetEnvData (EnvDataRequest) returns (EnvDataResponse) {}
   
-  // 更新环境数据
+  // Update environment data.
   rpc UpdateEnvData (EnvDataUpdateRequest) returns (EnvDataUpdateResponse) {}
   
-  // 请求停止仿真
+  // Request simulation termination.
   rpc StopSimulation (SimulationStopRequest) returns (SimulationStopResponse) {}
   
-  // 获取Agent数据
+  // Get agent data.
   rpc GetAgentData (AgentDataRequest) returns (AgentDataResponse) {}
   
-  // 获取指定类型的Agent数据
+  // Get data for agents of a specified type.
   rpc GetAgentDataByType (AgentDataByTypeRequest) returns (AgentDataByTypeResponse) {}
   
-  // 获取节点的Token使用情况
+  // Get token usage for a node.
   rpc GetTokenUsage (TokenUsageRequest) returns (TokenUsageResponse) {}
 
-  // 定位Agent所在Worker
+  // Locate the worker hosting an agent.
   rpc LocateAgent (LocateAgentRequest) returns (LocateAgentResponse) {}
 
-  // Master向Worker批量收集数据
+  // Collect data from workers in a batch at the master's request.
   rpc CollectDataBatch(BatchDataRequest) returns (BatchDataResponse) {}
 }
 
-// Worker注册请求
+// Worker registration request.
 message RegisterWorkerRequest {
   string worker_id = 1;
   string address = 2;
   int32 port = 3;
 }
 
-// Worker注册响应
+// Worker registration response.
 message RegisterWorkerResponse {
   bool success = 1;
   string message = 2;
 }
 
-// 心跳请求
+// Heartbeat request.
 message HeartbeatRequest {
   string worker_id = 1;
   int64 timestamp = 2;
 }
 
-// 心跳响应
+// Heartbeat response.
 message HeartbeatResponse {
   bool acknowledged = 1;
 }
 
-// 创建Agent请求
+// Agent creation request.
 message CreateAgentRequest {
   string agent_type = 1;
   string agent_id = 2;
-  string config_json = 3;  // JSON序列化的配置
+  string config_json = 3;  // JSON-serialized configuration.
 }
 
-// 创建Agent响应
+// Agent creation response.
 message CreateAgentResponse {
   bool success = 1;
   string message = 2;
   string agent_id = 3;
 }
 
-// 事件请求
+// Event request.
 message EventRequest {
   string event_id = 1;
   string event_kind = 2;
   string from_agent_id = 3;
   string to_agent_id = 4;
   int64 timestamp = 5;
-  string payload_json = 6;  // JSON序列化的payload
+  string payload_json = 6;  // JSON-serialized payload.
   string reply_to_worker_address = 7; // For P2P direct replies
   int32 reply_to_worker_port = 8;    // For P2P direct replies
 }
 
-// 事件响应
+// Event response.
 message EventResponse {
   bool received = 1;
 }
 
-// 批量事件请求 (用于P2P批量发送)
+// Batch event request for P2P delivery.
 message EventBatchRequest {
   repeated EventRequest events = 1;
 }
 
-// 批量事件响应
+// Batch event response.
 message EventBatchResponse {
   bool received = 1;
   int32 processed_count = 2;
   string error = 3;
 }
 
-// 数据存储事件请求
+// Data storage event request.
 message StorageEventRequest {
   string event_type = 1;
   string source_type = 2;
   string source_id = 3;
   string target_type = 4;
   string target_id = 5;
-  string payload_json = 6;  // JSON序列化的payload
+  string payload_json = 6;  // JSON-serialized payload.
 }
 
-// 数据存储事件响应
+// Data storage event response.
 message StorageEventResponse {
   bool received = 1;
 }
 
-// 批量数据存储事件请求
+// Batch data storage event request.
 message StorageEventBatchRequest {
   repeated StorageEventRequest events = 1;
 }
 
-// 批量数据存储事件响应
+// Batch data storage event response.
 message StorageEventBatchResponse {
   bool received = 1;
   int32 processed_count = 2;
   string error = 3;
 }
 
-// 决策记录请求
+// Decision record request.
 message DecisionRecordRequest {
   string agent_id = 1;
   string prompt = 2;
   string output = 3;
   double processing_time = 4;
-  string context_json = 5;  // JSON序列化的context
+  string context_json = 5;  // JSON-serialized context.
 }
 
-// 决策记录响应
+// Decision record response.
 message DecisionRecordResponse {
   bool received = 1;
 }
 
-// 批量决策记录请求
+// Batch decision record request.
 message DecisionRecordBatchRequest {
   repeated DecisionRecordRequest decisions = 1;
 }
 
-// 批量决策记录响应
+// Batch decision record response.
 message DecisionRecordBatchResponse {
   bool received = 1;
   int32 processed_count = 2;
   string error = 3;
 }
 
-// 批量创建agents请求
+// Batch agent creation request.
 message CreateAgentsBatchRequest {
   repeated string configs_json = 1;
 }
 
-// 批量创建agents响应
+// Batch agent creation response.
 message CreateAgentsBatchResponse {
   bool success = 1;
   string message = 2;
   repeated string agent_ids = 3;
 }
 
-// 环境数据请求
+// Environment data request.
 message EnvDataRequest {
   string key = 1;
-  string default_value_json = 2;  // JSON序列化的默认值
+  string default_value_json = 2;  // JSON-serialized default value.
 }
 
-// 环境数据响应
+// Environment data response.
 message EnvDataResponse {
   bool success = 1;
-  string value_json = 2;  // JSON序列化的值
+  string value_json = 2;  // JSON-serialized value.
   string error = 3;
 }
 
-// 环境数据更新请求
+// Environment data update request.
 message EnvDataUpdateRequest {
   string key = 1;
-  string value_json = 2;  // JSON序列化的值
+  string value_json = 2;  // JSON-serialized value.
 }
 
-// 环境数据更新响应
+// Environment data update response.
 message EnvDataUpdateResponse {
   bool success = 1;
   string error = 2;
 }
 
-// 停止仿真请求
+// Simulation termination request.
 message SimulationStopRequest {
   string worker_id = 1;
   string reason = 2;
   int64 timestamp = 3;
 }
 
-// 停止仿真响应
+// Simulation termination response.
 message SimulationStopResponse {
   bool acknowledged = 1;
   string message = 2;
 }
 
-// Agent数据请求
+// Agent data request.
 message AgentDataRequest {
   string agent_id = 1;
   string key = 2;
-  string default_value_json = 3;  // JSON序列化的默认值
+  string default_value_json = 3;  // JSON-serialized default value.
 }
 
-// Agent数据响应
+// Agent data response.
 message AgentDataResponse {
   bool success = 1;
-  string value_json = 2;  // JSON序列化的值
+  string value_json = 2;  // JSON-serialized value.
   string error = 3;
 }
 
-// 按类型获取Agent数据请求
+// Request for agent data by type.
 message AgentDataByTypeRequest {
   string agent_type = 1;
   string key = 2;
-  string default_value_json = 3;  // JSON序列化的默认值
+  string default_value_json = 3;  // JSON-serialized default value.
 }
 
-// 按类型获取Agent数据响应
+// Response containing agent data by type.
 message AgentDataByTypeResponse {
   bool success = 1;
-  string values_json = 2;  // JSON序列化的{agent_id: value}字典
+  string values_json = 2;  // JSON-serialized {agent_id: value} dictionary.
   string error = 3;
 }
 
-// 定位Agent请求
+// Agent location request.
 message LocateAgentRequest {
   string agent_id = 1;
 }
 
-// 定位Agent响应
+// Agent location response.
 message LocateAgentResponse {
   bool success = 1;
   string worker_address = 2;
@@ -318,47 +318,47 @@ message LocateAgentResponse {
   string error_message = 4;
 }
 
-// Token使用情况请求
+// Token usage request.
 message TokenUsageRequest {
   string worker_id = 1;
 }
 
-// Token使用情况响应
+// Token usage response.
 message TokenUsageResponse {
   bool success = 1;
-  string token_stats_json = 2;  // JSON序列化的token统计数据
+  string token_stats_json = 2;  // JSON-serialized token statistics.
   string error = 3;
 }
 
-// Master向Worker批量收集数据请求
+// Master request to collect data from workers in a batch.
 message BatchDataRequest {
-  string agent_type = 1;          // 要查询的Agent类型
-  string data_key = 2;            // 要获取的数据的键
-  string default_value_json = 3;  // JSON序列化的默认值 (可选)
+  string agent_type = 1;          // Agent type to query.
+  string data_key = 2;            // Key of the requested data.
+  string default_value_json = 3;  // Optional JSON-serialized default value.
 }
 
-// Master向Worker批量收集数据响应
+// Response to the master's batch data collection request.
 message BatchDataResponse {
   bool success = 1;
-  string collected_data_json = 2; // JSON序列化的收集到的数据 {agent_id: value}
-  string error_message = 3;       // 错误信息 (如果success为false)
+  string collected_data_json = 2; // JSON-serialized collected data: {agent_id: value}.
+  string error_message = 3;       // Error message when success is false.
 }        """)
     
-    # 创建__init__.py文件使proto成为一个包
+    # Create __init__.py to make proto a package.
     init_file = proto_dir / "__init__.py"
     with open(init_file, "w") as f:
         f.write("# Proto package\n")
     
-    # 运行protoc命令生成Python代码
+    # Run protoc to generate Python code.
     import subprocess
     try:
-        # 输出详细的命令信息，方便调试
+        # Log the full command for debugging.
         cmd = [
         "python", "-m", "grpc_tools.protoc",
         f"--proto_path={str(current_dir)}",
         f"--python_out={str(current_dir)}",
         f"--grpc_python_out={str(current_dir)}",
-        "agent_proto/agent.proto"  # 使用相对于proto_path的路径，不要用str(proto_file)
+        "agent_proto/agent.proto"  # Use a path relative to proto_path, not str(proto_file).
     ]
         logger.info(f"Running command: {' '.join(cmd)}")
         
@@ -375,7 +375,7 @@ message BatchDataResponse {
             
         logger.info("Successfully generated protobuf files")
         
-        # 重新导入生成的模块
+        # Import the generated modules again.
         import onesim.distribution.agent_proto.agent_pb2 as agent_pb2
         import onesim.distribution.agent_proto.agent_pb2_grpc as agent_pb2_grpc
     except Exception as e:
@@ -557,31 +557,31 @@ def run_async_safely(coro):
         # Don't close the loop here, as it might be used elsewhere
         pass
 
-# Master服务器实现
+# Master server implementation.
 class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
-    """Master节点的gRPC服务实现"""
+    """gRPC service implementation for the master node."""
     
     def __init__(self, master_node):
         self.master_node = master_node
         
     async def RegisterWorker(self, request, context):
-        """处理worker注册请求（异步版本）"""
+        """Handle worker registration asynchronously."""
         try:
             worker_id = request.worker_id
             address = request.address
             port = request.port
             
-            # # 在context中设置取消回调，以便长时间运行的操作可以被取消
+            # Set a cancellation callback on the context so long-running operations can be canceled.
             # context.add_done_callback(lambda _: logger.debug(f"RegisterWorker RPC for {worker_id} completed or cancelled"))
             
-            # 确保client_metadata可用
+            # Ensure client_metadata is available.
             client_ip = context.peer().split(':')[-2].strip('[]')
             #logger.info(f"RegisterWorker request from {client_ip} for worker {worker_id} at {address}:{port}")
             
             success, message = await self.master_node.register_worker(worker_id, address, port)
             
-            # 在返回前确保主节点已更新其数据结构
-            await asyncio.sleep(0.05)  # 短暂等待确保同步
+            # Ensure the master has updated its data structures before returning.
+            await asyncio.sleep(0.05)  # Wait briefly for synchronization.
             
             response = agent_pb2.RegisterWorkerResponse(success=success, message=message)
             return response
@@ -594,12 +594,12 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             )
     
     async def Heartbeat(self, request, context):
-        """更新worker的最后心跳时间"""
+        """Update the worker's last heartbeat time."""
         try:
             worker_id = request.worker_id
             result = await self.master_node.update_worker_heartbeat(worker_id)
             
-            # 如果worker未注册，返回特殊响应提示重新注册
+            # Return a special response asking unregistered workers to register again.
             if result is False:
                 logger.warning(f"Heartbeat from unregistered worker {worker_id}, suggesting re-registration")
                 return agent_pb2.HeartbeatResponse(acknowledged=False)
@@ -610,7 +610,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             return agent_pb2.HeartbeatResponse(acknowledged=False)
     
     async def SendEvent(self, request, context):
-        """从worker接收事件并转发"""
+        """Receive and forward an event from a worker."""
         try:
             event = proto_to_event(request)
             
@@ -718,7 +718,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             return agent_pb2.EventResponse(received=False)
         
     async def SendStorageEvent(self, request, context):
-        """接收worker发送的存储事件数据"""
+        """Receive storage event data from a worker."""
         try:
             event_type = request.event_type
             source_type = request.source_type
@@ -750,7 +750,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             return agent_pb2.StorageEventResponse(received=False)
     
     async def SendDecisionRecord(self, request, context):
-        """处理决策记录请求"""
+        """Handle a decision record request."""
         try:
             decision_data = {
                 'agent_id': request.agent_id,
@@ -768,7 +768,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
                 except json.JSONDecodeError:
                     logger.error(f"Invalid context JSON in decision record: {request.context_json}")
             
-            # 如果有sim_env引用，将决策记录转发给它
+            # Forward the decision record to sim_env if available.
             if hasattr(self.master_node, 'sim_env') and self.master_node.sim_env:
                 if hasattr(self.master_node.sim_env, 'queue_decision'):
                     await self.master_node.sim_env.queue_decision(decision_data)
@@ -779,7 +779,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             return agent_pb2.DecisionRecordResponse(received=False)
 
     async def GetEnvData(self, request, context):
-        """处理环境数据获取请求"""
+        """Handle an environment data request."""
         try:
             key = request.key
             default = None
@@ -790,7 +790,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
                 except json.JSONDecodeError:
                     logger.error(f"Invalid default value JSON: {request.default_value_json}")
             
-            # 如果有sim_env引用，从它获取数据
+            # Read data from sim_env if available.
             value = None
             success = False
             error = "Environment reference not available"
@@ -832,7 +832,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             )
     
     async def UpdateEnvData(self, request, context):
-        """处理环境数据更新请求"""
+        """Handle an environment data update request."""
         try:
             key = request.key
             value = None
@@ -847,7 +847,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
                         error="Invalid JSON value"
                     )
             
-            # 如果有sim_env引用，更新它的数据
+            # Update sim_env data if available.
             success = False
             error = "Environment reference not available"
             
@@ -875,14 +875,14 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             )
     
     async def StopSimulation(self, request, context):
-        """处理停止仿真请求"""
+        """Handle a simulation termination request."""
         try:
             worker_id = request.worker_id
             reason = request.reason
             
             logger.info(f"Received simulation stop request from worker {worker_id}: {reason}")
             
-            # 如果有sim_env引用，停止仿真
+            # Stop the simulation through sim_env if available.
             success = False
             message = "Environment reference not available"
             
@@ -911,7 +911,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             )
 
     async def GetAgentData(self, request, context):
-        """处理获取Agent数据请求"""
+        """Handle an agent data request."""
         try:
             agent_id = request.agent_id
             key = request.key
@@ -923,7 +923,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
                 except json.JSONDecodeError:
                     logger.error(f"Invalid default value JSON: {request.default_value_json}")
             
-            # 如果有sim_env引用，从它获取数据
+            # Read data from sim_env if available.
             value = None
             success = False
             error = "Environment reference not available"
@@ -965,7 +965,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             )
     
     async def GetAgentDataByType(self, request, context):
-        """处理获取指定类型Agent数据请求"""
+        """Handle a request for data from agents of a specified type."""
         try:
             agent_type = request.agent_type
             key = request.key
@@ -977,7 +977,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
                 except json.JSONDecodeError:
                     logger.error(f"Invalid default value JSON: {request.default_value_json}")
             
-            # 如果有sim_env引用，从它获取数据
+            # Read data from sim_env if available.
             values = {}
             success = False
             error = "Environment reference not available"
@@ -1019,7 +1019,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             )
 
     async def GetTokenUsage(self, request, context):
-        """处理获取节点的Token使用情况请求"""
+        """Handle a request for a node's token usage."""
         try:
             worker_id = request.worker_id
             try:
@@ -1045,7 +1045,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             )
 
     async def SendStorageEventBatch(self, request, context):
-        """接收worker批量发送的存储事件数据"""
+        """Receive a batch of storage events from a worker."""
         try:
             processed_count = 0
             
@@ -1088,7 +1088,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             )
     
     async def SendDecisionRecordBatch(self, request, context):
-        """处理批量决策记录请求"""
+        """Handle a batch of decision records."""
         try:
             processed_count = 0
             
@@ -1109,7 +1109,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
                     except json.JSONDecodeError:
                         logger.error(f"Invalid context JSON in batch decision record: {decision_request.context_json}")
                 
-                # 如果有sim_env引用，将决策记录转发给它
+                # Forward the decision record to sim_env if available.
                 if hasattr(self.master_node, 'sim_env') and self.master_node.sim_env:
                     if hasattr(self.master_node.sim_env, 'queue_decision'):
                         await self.master_node.sim_env.queue_decision(decision_data)
@@ -1157,7 +1157,7 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             )
 
     async def LocateAgent(self, request, context): # Added LocateAgent to MasterServicer
-        """处理定位Agent请求"""
+        """Handle an agent location request."""
         try:
             agent_id = request.agent_id
             location = self.master_node.find_worker_for_agent(agent_id)
@@ -1173,14 +1173,14 @@ class MasterServicer(agent_pb2_grpc.AgentServiceServicer):
             logger.error(f"Error in LocateAgent: {e}")
             return agent_pb2.LocateAgentResponse(success=False, error_message=str(e))
 
-# Worker服务器实现
+# Worker server implementation.
 class WorkerServicer(agent_pb2_grpc.AgentServiceServicer):
     def __init__(self, worker_node):
         self.worker_node = worker_node
         # self.p2p_reply_info_cache = {} # Cache for P2P: request_id -> (reply_addr, reply_port)
 
     async def SendEvent(self, request, context):
-        """接收来自master或其他worker的事件"""
+        """Receive an event from the master or another worker."""
         try:
             event = proto_to_event(request) # proto_to_event should handle reply_to fields
 
@@ -1200,11 +1200,11 @@ class WorkerServicer(agent_pb2_grpc.AgentServiceServicer):
             return agent_pb2.EventResponse(received=False)
 
     async def StopSimulation(self, request, context):
-        """处理来自master的停止仿真请求"""
+        """Handle a simulation termination request from the master."""
         try:
             reason = request.reason
 
-            # 先立即响应，再异步执行关停，避免在发送响应前就关闭gRPC服务导致对端报错
+            # Respond immediately, then shut down asynchronously so closing gRPC does not prevent delivery of the response.
             asyncio.create_task(self.worker_node.handle_termination_signal(reason))
             return agent_pb2.SimulationStopResponse(
                 acknowledged=True, message="Acknowledged"
@@ -1217,16 +1217,16 @@ class WorkerServicer(agent_pb2_grpc.AgentServiceServicer):
             )
 
     async def CreateAgent(self, request, context):
-        """接收创建agent的请求"""
+        """Receive an agent creation request."""
         try:
-            # 解析agent数据
+            # Parse agent data.
             agent_data = {
                 "type": request.agent_type,
                 "id": request.agent_id,
                 "config": json.loads(request.config_json)
             }
 
-            # 创建agent
+            # Create the agent.
             agent_id = await self.worker_node.create_agent(agent_data)
 
             return agent_pb2.CreateAgentResponse(
@@ -1241,14 +1241,14 @@ class WorkerServicer(agent_pb2_grpc.AgentServiceServicer):
             )
 
     async def CreateAgentsBatch(self, request, context):
-        """接收批量创建agent的请求"""
+        """Receive a batch agent creation request."""
         try:
-            # 解析agent配置
+            # Parse agent configurations.
             agent_configs = []
             for config_json in request.configs_json:
                 agent_configs.append(json.loads(config_json))
 
-            # 批量创建agent
+            # Create agents in a batch.
             agent_ids = await self.worker_node.create_agents_batch(agent_configs)
 
             # Ensure all agent IDs are strings
@@ -1267,7 +1267,7 @@ class WorkerServicer(agent_pb2_grpc.AgentServiceServicer):
             )
 
     async def GetTokenUsage(self, request, context):
-        """处理获取节点的Token使用情况请求"""
+        """Handle a request for a node's token usage."""
         try:
             worker_id = request.worker_id
             try:
@@ -1324,26 +1324,26 @@ class WorkerServicer(agent_pb2_grpc.AgentServiceServicer):
                 error_message=str(e)
             )
 
-# 服务器创建函数
+# Server creation functions.
 async def create_master_server(master_node, port):
-    """创建并启动master服务器"""
+    """Create and start the master server."""
     server = grpc.aio.server(
-        maximum_concurrent_rpcs=1000,  # 增加并发RPC限制，防止队列阻塞
+        maximum_concurrent_rpcs=1000,  # Allow more concurrent RPCs to prevent queue blocking.
         options=[
-            ('grpc.keepalive_time_ms', 10000),             # 每10秒发送keepalive
-            ('grpc.keepalive_timeout_ms', 5000),          # 5秒等待keepalive响应
-            ('grpc.http2.max_pings_without_data', 0),     # 允许无数据ping
-            ('grpc.http2.max_ping_strikes', 0),           # 不因ping断开连接
+            ('grpc.keepalive_time_ms', 10000),             # Send a keepalive every 10 seconds.
+            ('grpc.keepalive_timeout_ms', 5000),          # Wait up to 5 seconds for a keepalive response.
+            ('grpc.http2.max_pings_without_data', 0),     # Allow pings without data.
+            ('grpc.http2.max_ping_strikes', 0),           # Do not disconnect because of ping strikes.
             ('grpc.http2.min_ping_interval_without_data_ms', 30000),
-            ('grpc.keepalive_permit_without_calls', 1),   # 空闲时允许keepalive
-            ('grpc.max_connection_idle_ms', 900000),      # 15分钟连接空闲超时
-            ('grpc.max_connection_age_ms', 3600000),       # 60分钟最大连接年龄
-            ('grpc.max_connection_age_grace_ms', 120000),  # 2分钟连接关闭宽限期
-            ('grpc.server_handshake_timeout_ms', 60000),  # 握手超时延长
-            ('grpc.max_concurrent_streams', 1000),        # 增加并发流数量
-            ('grpc.max_receive_message_length', 10 * 1024 * 1024),  # 增加消息大小限制到10MB
-            ('grpc.initial_reconnect_backoff_ms', 100),   # 初始重连间隔
-            ('grpc.max_reconnect_backoff_ms', 10000)      # 最大重连间隔
+            ('grpc.keepalive_permit_without_calls', 1),   # Allow keepalive while idle.
+            ('grpc.max_connection_idle_ms', 900000),      # Connection idle timeout of 15 minutes.
+            ('grpc.max_connection_age_ms', 3600000),       # Maximum connection age of 60 minutes.
+            ('grpc.max_connection_age_grace_ms', 120000),  # Connection shutdown grace period of 2 minutes.
+            ('grpc.server_handshake_timeout_ms', 60000),  # Extend the handshake timeout.
+            ('grpc.max_concurrent_streams', 1000),        # Allow more concurrent streams.
+            ('grpc.max_receive_message_length', 10 * 1024 * 1024),  # Raise the message size limit to 10 MB.
+            ('grpc.initial_reconnect_backoff_ms', 100),   # Initial reconnection backoff.
+            ('grpc.max_reconnect_backoff_ms', 10000)      # Maximum reconnection backoff.
         ]
     )
 
@@ -1357,25 +1357,25 @@ async def create_master_server(master_node, port):
     return server
 
 async def create_worker_server(worker_node, port):
-    """创建并启动worker服务器"""
+    """Create and start the worker server."""
     servicer_instance = WorkerServicer(worker_node)
     server = grpc.aio.server(
-        maximum_concurrent_rpcs=1000,  # 增加并发RPC限制，防止队列阻塞
+        maximum_concurrent_rpcs=1000,  # Allow more concurrent RPCs to prevent queue blocking.
         options=[
-            ('grpc.keepalive_time_ms', 10000),             # 每10秒发送keepalive
-            ('grpc.keepalive_timeout_ms', 5000),          # 5秒等待keepalive响应
-            ('grpc.http2.max_pings_without_data', 0),     # 允许无数据ping
-            ('grpc.http2.max_ping_strikes', 0),           # 不因ping断开连接
+            ('grpc.keepalive_time_ms', 10000),             # Send a keepalive every 10 seconds.
+            ('grpc.keepalive_timeout_ms', 5000),          # Wait up to 5 seconds for a keepalive response.
+            ('grpc.http2.max_pings_without_data', 0),     # Allow pings without data.
+            ('grpc.http2.max_ping_strikes', 0),           # Do not disconnect because of ping strikes.
             ('grpc.http2.min_ping_interval_without_data_ms', 30000),
-            ('grpc.keepalive_permit_without_calls', 1),   # 空闲时允许keepalive
-            ('grpc.max_connection_idle_ms', 900000),      # 15分钟连接空闲超时
-            ('grpc.max_connection_age_ms', 3600000),       # 60分钟最大连接年龄
-            ('grpc.max_connection_age_grace_ms', 120000),  # 2分钟连接关闭宽限期
-            ('grpc.server_handshake_timeout_ms', 60000),  # 握手超时延长
-            ('grpc.max_concurrent_streams', 1000),        # 增加并发流数量
-            ('grpc.max_receive_message_length', 10 * 1024 * 1024),  # 增加消息大小限制到10MB
-            ('grpc.initial_reconnect_backoff_ms', 100),   # 初始重连间隔
-            ('grpc.max_reconnect_backoff_ms', 10000)      # 最大重连间隔
+            ('grpc.keepalive_permit_without_calls', 1),   # Allow keepalive while idle.
+            ('grpc.max_connection_idle_ms', 900000),      # Connection idle timeout of 15 minutes.
+            ('grpc.max_connection_age_ms', 3600000),       # Maximum connection age of 60 minutes.
+            ('grpc.max_connection_age_grace_ms', 120000),  # Connection shutdown grace period of 2 minutes.
+            ('grpc.server_handshake_timeout_ms', 60000),  # Extend the handshake timeout.
+            ('grpc.max_concurrent_streams', 1000),        # Allow more concurrent streams.
+            ('grpc.max_receive_message_length', 10 * 1024 * 1024),  # Raise the message size limit to 10 MB.
+            ('grpc.initial_reconnect_backoff_ms', 100),   # Initial reconnection backoff.
+            ('grpc.max_reconnect_backoff_ms', 10000)      # Maximum reconnection backoff.
         ]
     )
     
@@ -1396,33 +1396,33 @@ async def create_worker_server(worker_node, port):
 
 
 def get_host_ip():
-    """获取本机可用于网络通信的IP地址"""
+    """Get a local IP address suitable for network communication."""
     import socket
     try:
-        # 创建一个临时socket连接来获取用于外部通信的IP
+        # Use a temporary socket to determine the IP used for external communication.
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
         s.close()
         return ip
     except Exception:
-        # 回退机制
+        # Fallback.
         return socket.gethostbyname(socket.gethostname())
 
-# 客户端异步函数
+# Asynchronous client functions.
 async def register_with_master(master_address, master_port, worker_id, worker_port, worker_address=None):
-    """Worker向Master注册"""
-    # 最多尝试5次注册
+    """Register the worker with the master."""
+    # Try registration at most five times.
     max_retries = 5
     retry_count = 0
     
     while retry_count < max_retries:
         try:
             if worker_address is None:
-                # 默认使用127.0.0.1连接本地master
+                # Use 127.0.0.1 by default to connect to a local master.
                 if master_address == "127.0.0.1" or master_address == "localhost":
                     worker_address = "127.0.0.1"
-                # 否则尝试获取外部IP
+                # Otherwise try to obtain an external IP address.
                 else:
                     worker_address = get_host_ip()
                 
@@ -1433,7 +1433,7 @@ async def register_with_master(master_address, master_port, worker_id, worker_po
                 port=worker_port
             )
             
-            # 使用更长时间超时和更高优先级
+            # Use a longer timeout and higher priority.
             response = await connection_manager.with_stub(
                 master_address, 
                 master_port, 
@@ -1449,9 +1449,9 @@ async def register_with_master(master_address, master_port, worker_id, worker_po
             logger.error(f"Error registering with master (attempt {retry_count}/{max_retries}): {e}")
             
             if retry_count < max_retries:
-                # 指数退避
+                # Exponential backoff.
                 wait_time = 1.0 * (2 ** retry_count)
-                wait_time = min(wait_time, 30.0)  # 最多等待30秒
+                wait_time = min(wait_time, 30.0)  # Wait at most 30 seconds.
                 logger.info(f"Retrying registration in {wait_time:.1f} seconds...")
                 await asyncio.sleep(wait_time)
             else:
@@ -1461,14 +1461,14 @@ async def register_with_master(master_address, master_port, worker_id, worker_po
     return False
 
 async def send_heartbeat_to_master(master_address, master_port, worker_id):
-    """发送心跳到Master"""
+    """Send a heartbeat to the master."""
     try:
         request = agent_pb2.HeartbeatRequest(
             worker_id=worker_id,
             timestamp=int(time.time() * 1000)
         )
         
-        # 使用更短的超时时间
+        # Use a shorter timeout.
         response = await connection_manager.with_stub(
             master_address, 
             master_port, 
@@ -1477,7 +1477,7 @@ async def send_heartbeat_to_master(master_address, master_port, worker_id):
             request
         )
         
-        # 检查响应，如果未确认可能需要重新注册
+        # Check the acknowledgment; registration may need to be repeated.
         if not response.acknowledged:
             logger.warning("Heartbeat not acknowledged by master, may need to re-register")
             return False
@@ -1488,7 +1488,7 @@ async def send_heartbeat_to_master(master_address, master_port, worker_id):
         return False
 
 async def send_event_to_worker(worker_address, worker_port, event):
-    """发送事件到worker节点"""
+    """Send an event to a worker node."""
     try:
         proto_event = event_to_proto(event)
 
@@ -1526,7 +1526,7 @@ async def send_event_to_worker(worker_address, worker_port, event):
         return False
 
 async def send_termination_to_worker(worker_address, worker_port, event):
-    """发送终止信号到worker节点"""
+    """Send a termination signal to a worker node."""
     try:
         logger.info(f"Sending termination signal to worker at {worker_address}:{worker_port}")
 
@@ -1576,7 +1576,7 @@ async def send_termination_to_worker(worker_address, worker_port, event):
         return False
 
 async def send_event_to_master(master_address, master_port, event):
-    """发送事件到Master"""
+    """Send an event to the master."""
     try:
         request = event_to_proto(event)
         
@@ -1594,7 +1594,7 @@ async def send_event_to_master(master_address, master_port, event):
         return False
 
 async def create_agent_on_worker(worker_address, worker_port, agent_data):
-    """在Worker上创建Agent"""
+    """Create an agent on a worker."""
     try:
         request = agent_pb2.CreateAgentRequest(
             agent_type=agent_data["type"],
@@ -1616,9 +1616,9 @@ async def create_agent_on_worker(worker_address, worker_port, agent_data):
         return False
 
 async def create_agents_batch_on_worker(worker_address, worker_port, agent_configs):
-    """在Worker上批量创建Agent"""
+    """Create agents on a worker in a batch."""
     try:
-        # 将每个配置转为JSON字符串
+        # Serialize each configuration as JSON.
         configs_json = [json.dumps(config) for config in agent_configs]
         
         request = agent_pb2.CreateAgentsBatchRequest(
@@ -1638,16 +1638,16 @@ async def create_agents_batch_on_worker(worker_address, worker_port, agent_confi
         logger.error(f"Error creating agents batch on worker: {e}")
         return False
 
-# 添加从worker发送数据到master的函数
+# Functions for sending data from workers to the master.
 async def send_storage_event_to_master(master_address, master_port, event_data):
-    """发送存储事件数据到Master"""
+    """Send storage event data to the master."""
     # If event_data is a list, use batch sending
     if isinstance(event_data, list):
         return await send_storage_event_batch_to_master(master_address, master_port, event_data)
         
     # Original single-event implementation
     try:
-        # 构建请求
+        # Build the request.
         request = agent_pb2.StorageEventRequest(
             event_type=event_data.get('event_type', ''),
             source_type=event_data.get('source_type', ''),
@@ -1671,14 +1671,14 @@ async def send_storage_event_to_master(master_address, master_port, event_data):
         return False
 
 async def send_decision_record_to_master(master_address, master_port, decision_data):
-    """发送决策记录数据到Master"""
+    """Send decision record data to the master."""
     # If decision_data is a list, use batch sending
     if isinstance(decision_data, list):
         return await send_decision_record_batch_to_master(master_address, master_port, decision_data)
         
     # Original single-decision implementation
     try:
-        # 构建请求
+        # Build the request.
         request = agent_pb2.DecisionRecordRequest(
             agent_id=decision_data.get('agent_id', ''),
             prompt=decision_data.get('prompt', ''),
@@ -1701,12 +1701,12 @@ async def send_decision_record_to_master(master_address, master_port, decision_d
         return False
 
 async def send_storage_event_batch_to_master(master_address, master_port, event_data_list):
-    """批量发送存储事件数据到Master"""
+    """Send storage event data to the master in a batch."""
     try:
         if not event_data_list:
             return True  # Nothing to send
             
-        # 构建批量请求
+        # Build the batch request.
         event_requests = []
         for event_data in event_data_list:
             request = agent_pb2.StorageEventRequest(
@@ -1738,12 +1738,12 @@ async def send_storage_event_batch_to_master(master_address, master_port, event_
         return False
 
 async def send_decision_record_batch_to_master(master_address, master_port, decision_data_list):
-    """批量发送决策记录数据到Master"""
+    """Send decision record data to the master in a batch."""
     try:
         if not decision_data_list:
             return True  # Nothing to send
             
-        # 构建批量请求
+        # Build the batch request.
         decision_requests = []
         for decision_data in decision_data_list:
             request = agent_pb2.DecisionRecordRequest(

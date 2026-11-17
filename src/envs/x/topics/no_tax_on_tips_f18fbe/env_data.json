@@ -1,0 +1,258 @@
+{
+  "current_timestamp": 1745971200000,
+  "timestamp_duration": 0,
+  "reference_embedding_path": "datasets/x/embeddings/bge-base-en-v1.5_embeddings.json",
+  "scenario_topic": "Should tip income be tax-exempt?",
+  "content_pool": {
+    "1917387431516479735": {
+      "id": "1917387431516479735",
+      "content": "NO TAX ON TIPS. NO TAX ON SOCIAL SECURITY. NO TAX ON OVERTIME. Congress must pass this one big, beautiful bill!! https://t.co/vE3OZ5J9wc",
+      "time": 1745975761000,
+      "url": "https://x.com/FmrRepMTG/status/1917387431516479735",
+      "user_id": "fmrrepmtg",
+      "username": "Former Congresswoman Marjorie Taylor Greene🇺🇸",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1918473961064808558": {
+      "id": "1918473961064808558",
+      "content": "President Trump asked me to conduct an online survey since the bill hasn't passed both chambers. Do you approve: A. No tax on tips; B. No tax on overtime; C. No tax on social security; D. All of the above. https://t.co/rJPu9PHZiZ",
+      "time": 1746234810000,
+      "url": "https://x.com/WHLeavitt/status/1918473961064808558",
+      "user_id": "whleavitt",
+      "username": "𝔉🅰𝒏 Karoline Leavitt",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1920235075251417165": {
+      "id": "1920235075251417165",
+      "content": "We are making great progress on \"The One, Big, Beautiful Bill.\" Our Economy is doing well, but it's going to BOOM in a way never seen before. We are going to do NO TAX ON TIPS, NO TAX ON SENIORS' SOCIAL SECURITY, NO TAX ON OVERTIME, and much more. It will be the biggest Tax Cut",
+      "time": 1746654692000,
+      "url": "https://x.com/TrumpDailyPosts/status/1920235075251417165",
+      "user_id": "trumpdailyposts",
+      "username": "Commentary Trump Daily Posts",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1922009928258011488": {
+      "id": "1922009928258011488",
+      "content": "🚨BREAKING: No tax on tips and overtime is confirmed to be on President Trump's One Big Beautiful Bill. Promises kept. https://t.co/WPOAArJ5G8",
+      "time": 1747077850000,
+      "url": "https://x.com/bennyjohnson/status/1922009928258011488",
+      "user_id": "bennyjohnson",
+      "username": "Benny Johnson",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1922183941282320636": {
+      "id": "1922183941282320636",
+      "content": "President Trump directed me to conduct an online poll to gain support for his historic tax cut, the largest in U.S. history. Do you approve: A. No tax on tips; B. No tax on overtime; C. No tax on social security; D. All of the above. https://t.co/o6TYHDdps1",
+      "time": 1747119338000,
+      "url": "https://x.com/WHLeavitt/status/1922183941282320636",
+      "user_id": "whleavitt",
+      "username": "𝔉🅰𝒏 Karoline Leavitt",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1922487981799002225": {
+      "id": "1922487981799002225",
+      "content": "For those keeping score at home: Democrats have now spent the last 8+ hours furiously arguing against cutting taxes for overtime workers, tipped workers, seniors, and families buying American-made cars.",
+      "time": 1747191827000,
+      "url": "https://x.com/WaysandMeansGOP/status/1922487981799002225",
+      "user_id": "waysandmeansgop",
+      "username": "Ways and Means Committee",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1922541802005172487": {
+      "id": "1922541802005172487",
+      "content": "Democrats have spent *12 HOURS* opposing tax cuts for tipped workers, overtime workers, families buying cars, and middle class workers and families. The only thing that unites Democrats is their hatred of Donald Trump and his agenda.",
+      "time": 1747204659000,
+      "url": "https://x.com/RepJasonSmith/status/1922541802005172487",
+      "user_id": "repjasonsmith",
+      "username": "Rep. Jason Smith",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1922714770697761099": {
+      "id": "1922714770697761099",
+      "content": "RFK Jr: The president is not trying to do tax cuts for billionaires. He's trying to have no tax on tips and no tax on overtime SANDERS: $235 billion through the estate tax RFK Jr: How many billionaires do you know that are making overtime? https://t.co/tTiiNhrA69",
+      "time": 1747245898000,
+      "url": "https://x.com/atrupar/status/1922714770697761099",
+      "user_id": "atrupar",
+      "username": "Aaron Rupar",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1922733162590769558": {
+      "id": "1922733162590769558",
+      "content": "BERNIE: \"Should we give tax breaks to billionaires and throw kids off of Medicaid?\" RFK JR: \"The president is … trying to have no tax on tips and no tax for overtime. How many billionaires do you know that are making overtime, or making any part of their money on tips?\" 🤣 https://t.co/TF4YWIk0Zn",
+      "time": 1747250283000,
+      "url": "https://x.com/TheChiefNerd/status/1922733162590769558",
+      "user_id": "thechiefnerd",
+      "username": "Chief Nerd",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1923083607209353320": {
+      "id": "1923083607209353320",
+      "content": "Over 4 million Americans are tipped workers. The One, Big, Beautiful Bill delivers tax relief to these workers by eliminating tax on tips.",
+      "time": 1747333835000,
+      "url": "https://x.com/RepJasonSmith/status/1923083607209353320",
+      "user_id": "repjasonsmith",
+      "username": "Rep. Jason Smith",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1923192236797301176": {
+      "id": "1923192236797301176",
+      "content": "The bill omits a tax exemption for Social Security income, though it includes 'no tax on tips' and 'no tax on overtime.' We demand the addition of 'no tax on Social Security.' Do you agree with me? https://t.co/Fb00uCQwON",
+      "time": 1747359735000,
+      "url": "https://x.com/WHLeavitt/status/1923192236797301176",
+      "user_id": "whleavitt",
+      "username": "𝔉🅰𝒏 Karoline Leavitt",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1923403043099353577": {
+      "id": "1923403043099353577",
+      "content": "Trump asked me to conduct an online survey since the bill hasn't passed both chambers. Do you support: A. No tax on tips; B. No tax on overtime; C. No tax on social security; D. All of the above. https://t.co/EpLn9ybOK5",
+      "time": 1747409995000,
+      "url": "https://x.com/TulsiGabbardDNI/status/1923403043099353577",
+      "user_id": "tulsigabbarddni",
+      "username": "ᶠₐₙ Tulsi Gabbard",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1923451432436424852": {
+      "id": "1923451432436424852",
+      "content": "NO TAX ON TIPS! NO TAX ON OVERTIME!",
+      "time": 1747421532000,
+      "url": "https://x.com/Republicans/status/1923451432436424852",
+      "user_id": "republicans",
+      "username": "Republicans",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1924317923688251707": {
+      "id": "1924317923688251707",
+      "content": "BREAKING NEWS: President Trump's One Big Beautiful Bill, has officially PASSED the House Budget Committee and will now move onto the Rules Committee. No tax on tips. No tax on overtime Tax relief for Seniors. Tax cuts for everyone. Border wall. $$ for mass deportations.",
+      "time": 1747628119000,
+      "url": "https://x.com/Milajoy/status/1924317923688251707",
+      "user_id": "milajoy",
+      "username": "Mila Joy",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1924457094352122317": {
+      "id": "1924457094352122317",
+      "content": ".@PressSec spends seven minutes listing the benefits of the One, Big, Beautiful Bill — making good on @POTUS's promises: Biggest tax cut ever. No tax on tips or overtime. Making border security permanent. Building the wall. Protecting Medicaid for American citizens. https://t.co/4Zdb284iOI",
+      "time": 1747661300000,
+      "url": "https://x.com/RapidResponse47/status/1924457094352122317",
+      "user_id": "rapidresponse47",
+      "username": "Rapid Response 47",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1924925957770551647": {
+      "id": "1924925957770551647",
+      "content": "🚨 #BREAKING: The US Senate has UNANIMOUSLY passed President Trump's No Tax on Tips Act Tipped workers: Trump is KEEPING HIS PROMISE! Relief is coming soon! 🇺🇸🔥 https://t.co/yrwcFHt8S9",
+      "time": 1747773086000,
+      "url": "https://x.com/nicksortor/status/1924925957770551647",
+      "user_id": "nicksortor",
+      "username": "Nick Sortor",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1924927238635479184": {
+      "id": "1924927238635479184",
+      "content": "🚨BREAKING: The Senate has passed President Trumps \"No Tax on Tips Act.\" 100-0 vote. Promises made. Promises Kept. https://t.co/coG7S39b1b",
+      "time": 1747773391000,
+      "url": "https://x.com/bennyjohnson/status/1924927238635479184",
+      "user_id": "bennyjohnson",
+      "username": "Benny Johnson",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1924987614521704883": {
+      "id": "1924987614521704883",
+      "content": "Passing the no tax on tips act is all well and good, but if Republicans wanna stay in the majority in the U.S Senate and House They better make no tax on Social security a priority.... Trump ran on it and Seniors deserve it @SpeakerJohnson and @LeaderJohnThune are failing us https://t.co/Vem21RthZv",
+      "time": 1747787786000,
+      "url": "https://x.com/Chicago1Ray/status/1924987614521704883",
+      "user_id": "chicago1ray",
+      "username": "@Chicago1Ray 🇺🇸",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1925009871260283224": {
+      "id": "1925009871260283224",
+      "content": "No tax on tips, but massive tariffs on everything that tipped workers buy.",
+      "time": 1747793092000,
+      "url": "https://x.com/davidfrum/status/1925009871260283224",
+      "user_id": "davidfrum",
+      "username": "David Frum",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1925176314094293173": {
+      "id": "1925176314094293173",
+      "content": "The reason everyone voted yes on no tax on tips is because it's a single subject matter bill and democrats can't possibly get away with voting no in front of their voting base. Now you see why Congress barely ever puts forth single subject matter bills?",
+      "time": 1747832775000,
+      "url": "https://x.com/DefiyantlyFree/status/1925176314094293173",
+      "user_id": "defiyantlyfree",
+      "username": "Insurrection Barbie",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1925506606889869592": {
+      "id": "1925506606889869592",
+      "content": "🚨 #BREAKING: The House of Representatives ERUPTS in cheers and applause as President Trump's One Big Beautiful Bill officially PASSES CONGRATULATIONS, 47! 🇺🇸🔥 ✅ No tax on tips or overtime ✅ $175B for deportations and the wall ✅ Tax relief for seniors ✅ Making his 2017 tax https://t.co/HtchiQqvCx",
+      "time": 1747911523000,
+      "url": "https://x.com/nicksortor/status/1925506606889869592",
+      "user_id": "nicksortor",
+      "username": "Nick Sortor",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1925510589322829953": {
+      "id": "1925510589322829953",
+      "content": "🚨 MAJOR BREAKING: Trump's One Big Beautiful Bill has PASSED the House, CHEERS erupt on the floor. 215-214. No tax on tips, no tax on over time, border security funding, and other major aspects of the Trump agenda. Well-done! https://t.co/kBP3qa5UPt",
+      "time": 1747912473000,
+      "url": "https://x.com/EricLDaugh/status/1925510589322829953",
+      "user_id": "ericldaugh",
+      "username": "Eric Daugherty",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1925529830893744155": {
+      "id": "1925529830893744155",
+      "content": "Reconciliation is PASSED! That means, pending Senate approval: • NO tax on tips • NO tax on overtime • PERMANENT Trump tax cuts for the working and middle class •Tax relief for seniors •Social Security and Medicaid PROTECTED! Promises made. Promises kept. 🇺🇸",
+      "time": 1747917060000,
+      "url": "https://x.com/RepLuna/status/1925529830893744155",
+      "user_id": "repluna",
+      "username": "Rep. Anna Paulina Luna",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1925550710558425338": {
+      "id": "1925550710558425338",
+      "content": "Dear middle class Americans, When Democrats were in power, they passed laws to make you report your $600 Venmo transactions and hired 87,000 IRS agents to hunt you down When Republicans are in power, they passed laws so that you have No Tax on Tips and No Tax on Overtime I",
+      "time": 1747922039000,
+      "url": "https://x.com/DC_Draino/status/1925550710558425338",
+      "user_id": "dc_draino",
+      "username": "DC_Draino",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1925566572015559162": {
+      "id": "1925566572015559162",
+      "content": "No tax on tips huh? https://t.co/96S7peTQrD",
+      "time": 1747925820000,
+      "url": "https://x.com/JustTheFacts_68/status/1925566572015559162",
+      "user_id": "justthefacts_68",
+      "username": "JustTheFacts! ⚓️ 🇺🇸🦅",
+      "comment_count": 0,
+      "comments": {}
+    }
+  }
+}

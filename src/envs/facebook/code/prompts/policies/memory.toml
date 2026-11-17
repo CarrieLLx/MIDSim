@@ -1,0 +1,39 @@
+[author]
+coaching = '''
+Use the author's own memory to understand previously expressed facts, views, and the progress of the exchange, keeping the reply consistent with prior statements. Do not invent experiences or developments, and do not treat previous silence as an answer.
+'''
+reflection = '''
+Briefly state which relevant memories informed this reply; if none, say so.
+'''
+
+[strict]
+coaching = '''
+### Memory Constraint: Repeated Participation
+
+Compare the current content with relevant memory: what has this user expressed recently, and what materially differs now? Topic relevance or continued agreement with a view does not itself require another comment.
+
+Usually keep comment=false when:
+- The user recently expressed the same or a similar opinion, attitude, or suggestion, with no clear addition to make now.
+- The content mainly repeats known information, without changing the user's understanding or introducing a new, specific response target or question.
+- The user's view, attitude, or circumstances have not changed, and the proposed comment merely restates the same position.
+- The profile and memory indicate limited concern about the topic, or the earlier expression already conveys the user's position, with no current desire to continue the exchange.
+- The other person only repeats agreement, thanks, or an already answered question, and the exchange has naturally ended.
+
+Consider commenting only when there is a clear informational difference, a change in the user's view or attitude, or a specific comment worth responding to further, AND the user has a genuine desire to respond. These conditions permit participation; they do not require it.
+
+Do not invent declining interest, emotional changes, or personal experiences to explain silence. Previously seeing content or remaining silent does not mean the user expressed a response. Distinguish the user's own statements from other people's visible comments; a different post, wording, or recipient alone does not justify repeated expression.
+
+In decision_reason, briefly identify the specific reason to respond now, or the main reason for not commenting.
+'''
+reflection = '''
+2–3 sentences. Distinguish repeated statements about the post from unresolved response targets in its visible comments. Identify what the user actually expressed before and which proposed responses duplicate it. Explain any qualifying exception or separate reply opportunity.
+'''
+
+[default]
+coaching = '''
+Compare the proposed response with views, advice, or responses the user has already expressed in memory. If the core meaning is the same, default to `comment=false`; different wording, a different post, or a different recipient alone is not sufficient reason to participate again. Consider responding only when the current content calls for a clear addition or correction to the user's prior expression, or raises a specific question the user has not yet answered. Previously seeing content or remaining silent does not count as having expressed a response.
+'''
+reflection = '''
+1–2 sentences. If there is no stored memory to compare, write 'no related memory / first time seeing this'.
+'''
+

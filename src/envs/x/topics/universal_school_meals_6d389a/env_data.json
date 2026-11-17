@@ -1,0 +1,98 @@
+{
+  "current_timestamp": 1603152000000,
+  "timestamp_duration": 0,
+  "reference_embedding_path": "datasets/x/embeddings/bge-base-en-v1.5_embeddings.json",
+  "scenario_topic": "Should free school meals be expanded?",
+  "content_pool": {
+    "1318492074837237760": {
+      "id": "1318492074837237760",
+      "content": "Over a million children could go hungry over half term and Christmas holidays if free school meals aren't extended. Conservative MPs must listen to campaigners, including @MarcusRashford, and vote with Labour tomorrow to extend free schools meals.",
+      "time": 1603187981000,
+      "url": "https://x.com/Keir_Starmer/status/1318492074837237760",
+      "user_id": "keir_starmer",
+      "username": "Keir Starmer",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1318932788914102273": {
+      "id": "1318932788914102273",
+      "content": "Today, Conservative MPs can do the right thing and vote to extend free school meals over half term and the Christmas holiday.",
+      "time": 1603293056000,
+      "url": "https://x.com/Keir_Starmer/status/1318932788914102273",
+      "user_id": "keir_starmer",
+      "username": "Keir Starmer",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1319005533626650624": {
+      "id": "1319005533626650624",
+      "content": "I pleaded with the Conservatives to find it in their heart to ensure children don't go hungry. Tonight they voted against our proposals for Free School Meals this Christmas. https://t.co/vdDOVz4OeU",
+      "time": 1603310399000,
+      "url": "https://x.com/TaiwoOwatemi/status/1319005533626650624",
+      "user_id": "taiwoowatemi",
+      "username": "Taiwo Owatemi",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1319006051073740807": {
+      "id": "1319006051073740807",
+      "content": "Rishi Sunak spent £500m on the \"Eat Out to Help Out\" scheme. It costs around £20m to provide free school meals for a week. There is money for half-price Nando's but there's no money to feed children?",
+      "time": 1603310523000,
+      "url": "https://x.com/NadiaWhittomeMP/status/1319006051073740807",
+      "user_id": "nadiawhittomemp",
+      "username": "Nadia Whittome MP",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1319013516242767874": {
+      "id": "1319013516242767874",
+      "content": "The Children's Minister, voting against free school meals for the poorest children. That is all. https://t.co/c8A9mSYT1x",
+      "time": 1603312303000,
+      "url": "https://x.com/MartinBarrow/status/1319013516242767874",
+      "user_id": "martinbarrow",
+      "username": "Martin Barrow",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1319698900069076994": {
+      "id": "1319698900069076994",
+      "content": "A Conservative MP has said that free school meals are effectively a direct payment to brothels and drug dealers. Notwithstanding the fact that the vouchers in summer could only be used to purchase food, this stigmatisation of working class families is disgraceful and disgusting. https://t.co/0gvieYM4a9",
+      "time": 1603475711000,
+      "url": "https://x.com/AngelaRayner/status/1319698900069076994",
+      "user_id": "angelarayner",
+      "username": "Angela Rayner",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1320293036413288450": {
+      "id": "1320293036413288450",
+      "content": "Labour will force another vote on free school meals if the Government does not change course before the Christmas break. It's not too late to do the right thing.",
+      "time": 1603617364000,
+      "url": "https://x.com/Keir_Starmer/status/1320293036413288450",
+      "user_id": "keir_starmer",
+      "username": "Keir Starmer",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1322962721881661458": {
+      "id": "1322962721881661458",
+      "content": "Healthcare for All. A homes guarantee. A Green New Deal. Universal school meals. This is what we believe in. And it's all on the ballot.",
+      "time": 1604253867000,
+      "url": "https://x.com/IlhanMN/status/1322962721881661458",
+      "user_id": "ilhanmn",
+      "username": "Ilhan Omar",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1325354330636029952": {
+      "id": "1325354330636029952",
+      "content": "The 320 shameless, cowardly & spineless conservative MP's who voted with the Government against free school meals for hungry children during the school holidays will be feeling very foolish this morning after yet another U-turn. Let's hope next time they manage to find a backbone",
+      "time": 1604824070000,
+      "url": "https://x.com/PeterStefanovi2/status/1325354330636029952",
+      "user_id": "peterstefanovi2",
+      "username": "Peter Stefanovic",
+      "comment_count": 0,
+      "comments": {}
+    }
+  }
+}

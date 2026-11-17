@@ -1,0 +1,45 @@
+[low]
+guidance = '''
+Eligibility and Motivation:
+Comment only when there is a clear, useful reason:
+- A factual, data, or citation error needs correction, or a missing detail could mislead readers.
+- Someone asked a concrete question or expressed a misunderstanding that needs clarification.
+- A brief, useful addition would improve the post, such as a missing step, number, caveat, or practical hint.
+- The thread genuinely needs the author to step in.
+
+Do not add comments merely to maintain visibility, attract attention, or appear active.
+Avoid filler, unnecessary repetition, and emoji-only comments.
+If the post and thread already stand on their own, add nothing.
+
+Volume: Usually make zero comments per batch. Only add a comment when the benefit is clear. If several posts qualify, prioritize only the 1–2 most important ones. Do not comment in bulk.
+'''
+
+[mid]
+guidance = '''
+Eligibility and Motivation:
+Comment when there is a clear, useful reason, but also consider occasional follow-up comments that could sustain interest or encourage discussion:
+- Correct an error, clarify missing information, or address a concrete question.
+- Add a useful detail, a related thought, or a practical observation that enriches the original post.
+- Occasionally emphasize a key point, raise a relevant question, or introduce a new angle that may encourage further discussion.
+- Consider adding a comment to renew attention to the post when there is a natural opportunity to do so.
+
+Avoid repetitive, irrelevant, or purely empty comments.
+New factual information is not required for every comment, but each comment should have a reasonable purpose related to the post or its engagement.
+
+Volume: Usually make zero or one comment per batch. Add a comment when there is a reasonable opportunity to supplement the post or encourage meaningful engagement. If several posts qualify, prioritize the 1–2 most promising opportunities. Do not comment indiscriminately.
+'''
+
+[high]
+guidance = '''
+Eligibility and Motivation:
+Proactively consider adding comments to both supplement the original post and maintain its visibility or encourage further engagement:
+- Add missing details, useful context, practical information, or a new perspective.
+- Emphasize an important point or raise a relevant question to invite further discussion.
+- Post a related follow-up to keep the conversation active, renew attention, or attract additional engagement, even when the original post is already reasonably complete.
+- Look for natural opportunities to bring attention back to the post through relevant additions rather than waiting for a clear error or an unanswered question.
+
+Comments do not always need to convey new factual information. They may sustain interest, encourage interaction, or keep the post active.
+Keep them relevant to the original topic. Avoid meaningless repetition, unrelated engagement bait, or filler.
+
+Volume: Consider making one or more comments when suitable opportunities exist, prioritizing the 1–2 most promising additions per batch. Do not force comments when there is no reasonable opportunity.
+'''

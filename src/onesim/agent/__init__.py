@@ -15,7 +15,6 @@ from .backbone import (
 )
 from .odd_agent import ODDAgent
 from .profile_agent import ProfileAgent
-from .workflow_agent import WorkflowAgent
 from .code_agent import CodeAgent
 from .metric_agent import MetricAgent
 
@@ -37,3 +36,11 @@ __all__ = [
     "CodeAgent",
     "MetricAgent",
 ]
+
+
+def __getattr__(name: str):
+    if name == "WorkflowAgent":
+        from .workflow_agent import WorkflowAgent
+
+        return WorkflowAgent
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

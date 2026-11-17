@@ -1,0 +1,130 @@
+{
+  "simulator": {
+    "environment": {
+      "name": "x",
+      "mode": "round",
+      "max_steps": 8,
+      "interval": 86400.0,
+      "bus_idle_timeout": 30.0,
+      "export_training_data": true,
+      "export_event_data": true,
+      "collection_interval": 3000,
+      "additional_config": {
+        "export_event_flow": true,
+        "event_flow_output_file": "event_flow.json",
+        "params_path": "config/params_x.json",
+        "batch_from_manifest": true,
+        "batch_scenarios": []
+      }
+    }
+  },
+  "agent": {
+    "profile": {
+      "UserAgent": {
+        "count": 10,
+        "profile_path": "UserAgent.json",
+        "schema_path": "UserAgent.json"
+      },
+      "Algorithm": {
+        "count": 2,
+        "schema_path": "Algorithm.json",
+        "profiles": [
+          {
+            "id": "platform_agent_0001",
+            "role": "recommendation"
+          },
+          {
+            "id": "platform_agent_0002",
+            "role": "search"
+          }
+        ]
+      },
+      "Platform": {
+        "count": 1,
+        "schema_path": "Platform.json",
+        "profiles": [
+          {
+            "id": "PLATFORM"
+          }
+        ]
+      }
+    },
+    "planning": "COTPlanning",
+    "memory": {
+      "strategy": "ShortLongStrategy",
+      "storages": {
+        "short_term_storage": {
+          "class": "ListMemoryStorage",
+          "capacity": 100
+        },
+        "long_term_storage": {
+          "class": "VectorMemoryStorage",
+          "capacity": 100,
+          "model_config_name": "vllm-embedding-bert"
+        }
+      },
+      "metric_weights": {
+        "recency": 0.7
+      },
+      "transfer_conditions": {},
+      "operations": {
+        "add": {
+          "class": "AddMemoryOperation"
+        },
+        "retrieve": {
+          "class": "RetrieveMemoryOperation"
+        },
+        "remove": {
+          "class": "RemoveMemoryOperation"
+        }
+      },
+      "metrics": {
+        "recency": {
+          "class": "RecencyMetric",
+          "weight": 0.5
+        },
+        "relevance": {
+          "class": "RelevanceMetric",
+          "model_config_name": "vllm-embedding-bert",
+          "weight": 0.5
+        },
+        "importance": {
+          "class": "ImportanceMetric",
+          "model_config_name": "vllm-qwen-9888",
+          "weight": 0.5
+        }
+      }
+    }
+  },
+  "database": {
+    "enabled": false,
+    "host": "localhost",
+    "port": 5432,
+    "dbname": "onesim",
+    "user": "postgres",
+    "password": "YOUR_DATABASE_PASSWORD"
+  },
+  "distribution": {
+    "enabled": false,
+    "mode": "single",
+    "node_id": "1",
+    "master_address": "localhost",
+    "master_port": 10051
+  },
+  "monitor": {
+    "enabled": true,
+    "update_interval": 30,
+    "visualization_defaults": {
+      "line": {
+        "max_points": 100
+      },
+      "bar": {
+        "sort": true
+      },
+      "pie": {
+        "sort": true,
+        "merge_threshold": 0.05
+      }
+    }
+  }
+}

@@ -344,19 +344,19 @@ class WorkGraph(metaclass=SingletonMeta):
                 if event.get('to_action_name') == 'terminate':
                     end_events.append(event['event_name'])
         return end_events
-    # ===================== 可视化 =====================
+    # ===================== Visualization =====================
 
     def visualize_interactive_graph(self, filename="workflow.html"):
-        """使用 pyvis 交互式可视化图形。
+        """Visualize the graph interactively with pyvis.
         
-        参数:
-            filename (str): 保存的 HTML 文件名。
+        Args:
+            filename (str): Output HTML filename.
         """
         with self._lock:
             net = Network(height="750px", width="100%", directed=True)
             net.barnes_hut(gravity=-8000, central_gravity=0.2, spring_length=150, spring_strength=0.05, damping=0.09)
 
-            # 为每种 Agent 生成唯一颜色
+            # Generate a unique color for each agent type.
             agent_colors = {}
             for node_id, node_data in self.graph.nodes(data=True):
                 agent_type = node_data.get("agent_type", "UnknownAgent")
@@ -375,7 +375,7 @@ class WorkGraph(metaclass=SingletonMeta):
                     borderWidth=2
                 )
 
-            # 添加边并确保 event_name 唯一
+            # Add edges and ensure event_name is unique.
             for source_id, target_id, edge_data in self.graph.edges(data=True):
                 edge_label = edge_data.get("event_name", "")
                 edge_title = f"Event: {edge_label}\nInfo: {edge_data.get('event_info', '')}"
@@ -389,7 +389,7 @@ class WorkGraph(metaclass=SingletonMeta):
                     arrows="to"
                 )
 
-            # 设置 pyvis 的图形选项
+            # Configure pyvis graph options.
             net.set_options("""
             var options = {
                 "nodes": {
@@ -463,6 +463,6 @@ class WorkGraph(metaclass=SingletonMeta):
             }
             """)
 
-            # 保存 HTML 文件
+            # Save the HTML file.
             net.save_graph(filename)
-            logger.info(f"交互式图形已保存到 {filename}。请在浏览器中打开以查看。")
+            logger.info(f"Interactive graph saved to {filename}. Open it in a browser to view it.")

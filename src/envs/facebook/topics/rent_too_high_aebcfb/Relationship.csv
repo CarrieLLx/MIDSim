@@ -1,0 +1,8 @@
+source_agent,target_agent,direction,relationship_type
+RepJayapal,timetravelagency,unidirectional,follower
+RepJayapal,ernie.abdo,unidirectional,follower
+RepJayapal,rosalyn.mitchell.921,unidirectional,follower
+RepJayapal,jeffsgirl69,unidirectional,follower
+RepJayapal,taracummins.realtor,unidirectional,follower
+RepJayapal,joseph.hancock.589,unidirectional,follower
+RepJayapal,abhagee,unidirectional,follower

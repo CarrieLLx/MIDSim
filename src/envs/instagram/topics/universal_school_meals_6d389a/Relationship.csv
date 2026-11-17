@@ -1,0 +1,5 @@
+source_agent,target_agent,direction,relationship_type
+allforlunchinc,hungersolutionsny,unidirectional,following
+hungersolutionsny,pattyk48,unidirectional,following
+hungersolutionsny,xaviermission,unidirectional,following
+xaviermission,hungersolutionsny,unidirectional,following

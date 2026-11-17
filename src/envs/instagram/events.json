@@ -1,0 +1,439 @@
+{
+    "-1": {
+        "id": -1,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "get_exposure_stream",
+        "from_action_id": 0,
+        "to_action_id": 1,
+        "event_name": "StartEvent",
+        "event_info": "Begin step: build algorithm/social/mention/keep-following exposure for each UserAgent",
+        "fields": [
+            {
+                "name": "timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Current simulation time (Unix seconds; ms accepted at load)."
+            },
+            {
+                "name": "timestamp_duration",
+                "type": "int",
+                "default_value": "0",
+                "description": "Width of the next post window (seconds)."
+            },
+            {
+                "name": "simulation_cap_timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Hard upper bound of simulation timeline (seconds)."
+            },
+            {
+                "name": "current_step",
+                "type": "int",
+                "default_value": "1",
+                "description": "1-based simulation step index."
+            },
+            {
+                "name": "max_step",
+                "type": "int",
+                "default_value": "8",
+                "description": "Total configured steps."
+            },
+            {
+                "name": "current_posts",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "Posts with time < window_end subset of content_pool (replies truncated for prompts)."
+            },
+            {
+                "name": "mentions",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "Pending mention_pool entries for target user, enriched with post snapshots."
+            }
+        ]
+    },
+    "-2": {
+        "id": -2,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "generate_memory_from_own_posts",
+        "from_action_id": 0,
+        "to_action_id": 2,
+        "event_name": "StartEvent",
+        "event_info": "Same StartEvent payload; triggers self-memory from own posts in the current step window",
+        "fields": []
+    },
+    "-4": {
+        "id": -4,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "supplement_own_posts",
+        "from_action_id": 0,
+        "to_action_id": 8,
+        "event_name": "StartEvent",
+        "event_info": "Same StartEvent payload; triggers optional supplementary comments on own posts from the last 14 days",
+        "fields": []
+    },
+    "-3": {
+        "id": -3,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "Algorithm",
+        "to_action_name": "update_current_posts",
+        "from_action_id": 0,
+        "to_action_id": 5,
+        "event_name": "StartEvent",
+        "event_info": "StartEvent for recommender/search Algorithm agents: sync current_posts",
+        "fields": []
+    },
+    "-5": {
+        "id": -5,
+        "from_agent_type": "EnvAgent",
+        "from_action_name": "start",
+        "to_agent_type": "Platform",
+        "to_action_name": "register_services",
+        "from_action_id": 0,
+        "to_action_id": 11,
+        "event_name": "StartEvent",
+        "event_info": "StartEvent for Platform: register recommendation/search Algorithm agent ids",
+        "fields": [
+            {
+                "name": "recommendation_agent_id",
+                "type": "string",
+                "default_value": "",
+                "description": "Live recommendation Algorithm agent id for this run."
+            },
+            {
+                "name": "search_agent_id",
+                "type": "string",
+                "default_value": "",
+                "description": "Live search Algorithm agent id for this run."
+            }
+        ]
+    },
+    "1": {
+        "id": 1,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "get_exposure_stream",
+        "to_agent_type": "Platform",
+        "to_action_name": "route_recommendation",
+        "from_action_id": 1,
+        "to_action_id": 9,
+        "event_name": "GetAlgorithmRecommendationEvent",
+        "event_info": "User pulls algorithm feed; Platform routes to the recommendation Algorithm",
+        "fields": [
+            {
+                "name": "timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Simulation time (seconds)."
+            },
+            {
+                "name": "timestamp_duration",
+                "type": "int",
+                "default_value": "0",
+                "description": "Step window duration (seconds)."
+            },
+            {
+                "name": "current_step",
+                "type": "int",
+                "default_value": "1",
+                "description": "Current step."
+            },
+            {
+                "name": "max_step",
+                "type": "int",
+                "default_value": "8",
+                "description": "Max steps."
+            },
+            {
+                "name": "user_profile",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "Requesting UserAgent profile (include_private=True)."
+            },
+            {
+                "name": "current_posts",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "Candidate posts for recommendation."
+            },
+            {
+                "name": "recommended_post_ids",
+                "type": "list",
+                "default_value": "[]",
+                "description": "Already recommended post IDs for deduplication."
+            },
+            {
+                "name": "algorithm_type",
+                "type": "string",
+                "default_value": "",
+                "description": "random | popularity | interest when set; otherwise Algorithm uses exposure.recommendation.types from params."
+            }
+        ]
+    },
+    "2": {
+        "id": 2,
+        "from_agent_type": "Algorithm",
+        "from_action_name": "send_recommendation_results",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "receive_recommendation",
+        "from_action_id": 6,
+        "to_action_id": 3,
+        "event_name": "AlgorithmRecommendationEvent",
+        "event_info": "Algorithm returns recommended posts to requesting user",
+        "fields": [
+            {
+                "name": "timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Simulation time (seconds)."
+            },
+            {
+                "name": "timestamp_duration",
+                "type": "int",
+                "default_value": "0",
+                "description": "Step window duration (seconds)."
+            },
+            {
+                "name": "current_step",
+                "type": "int",
+                "default_value": "1",
+                "description": "Current step."
+            },
+            {
+                "name": "max_step",
+                "type": "int",
+                "default_value": "8",
+                "description": "Max steps."
+            },
+            {
+                "name": "recommendations",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "post_id -> post dict recommended by algorithm."
+            }
+        ]
+    },
+    "3": {
+        "id": 3,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "get_exposure_stream",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "receive_recommendation",
+        "from_action_id": 1,
+        "to_action_id": 3,
+        "event_name": "SocialRecommendationEvent",
+        "event_info": "Follow-feed posts from followed authors since last_login_timestamp",
+        "fields": [
+            {
+                "name": "timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Simulation time (seconds)."
+            },
+            {
+                "name": "timestamp_duration",
+                "type": "int",
+                "default_value": "0",
+                "description": "Step window duration (seconds)."
+            },
+            {
+                "name": "current_step",
+                "type": "int",
+                "default_value": "1",
+                "description": "Current step."
+            },
+            {
+                "name": "max_step",
+                "type": "int",
+                "default_value": "8",
+                "description": "Max steps."
+            },
+            {
+                "name": "recommendations",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "post_id -> post dict from social follow graph."
+            }
+        ]
+    },
+    "4": {
+        "id": 4,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "get_exposure_stream",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "receive_recommendation",
+        "from_action_id": 1,
+        "to_action_id": 3,
+        "event_name": "BookmarkEvent",
+        "event_info": "Re-expose posts the user chose to keep following from a prior LLM decision",
+        "fields": [
+            {
+                "name": "recommendations",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "post_id -> post dict for bookmark_post_ids."
+            }
+        ]
+    },
+    "5": {
+        "id": 5,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "get_exposure_stream",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "handle_mention",
+        "from_action_id": 1,
+        "to_action_id": 4,
+        "event_name": "MentionEvent",
+        "event_info": "Deliver pending @/repost/quote/reply notifications (after attention_budget sampling)",
+        "fields": [
+            {
+                "name": "mentions",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "post_id -> {post, mention_type} with enriched post snapshot."
+            }
+        ]
+    },
+    "6": {
+        "id": 6,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "receive_recommendation",
+        "to_agent_type": "Platform",
+        "to_action_name": "route_search",
+        "from_action_id": 3,
+        "to_action_id": 10,
+        "event_name": "GetSearchResultEvent",
+        "event_info": "User LLM requested search; Platform routes to the search Algorithm",
+        "fields": [
+            {
+                "name": "user_profile",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "Requesting user profile."
+            },
+            {
+                "name": "search_keyword",
+                "type": "string",
+                "default_value": "",
+                "description": "Search keyword from LLM."
+            },
+            {
+                "name": "algorithm_type",
+                "type": "string",
+                "default_value": "",
+                "description": "Relevant Search (stored as event.type)."
+            }
+        ]
+    },
+    "7": {
+        "id": 7,
+        "from_agent_type": "Algorithm",
+        "from_action_name": "send_search_results",
+        "to_agent_type": "UserAgent",
+        "to_action_name": "receive_recommendation",
+        "from_action_id": 7,
+        "to_action_id": 3,
+        "event_name": "SearchResultEvent",
+        "event_info": "Search results returned as a recommendation batch",
+        "fields": [
+            {
+                "name": "recommendations",
+                "type": "dict",
+                "default_value": "{}",
+                "description": "post_id -> post dict from search ranking."
+            }
+        ]
+    },
+    "8": {
+        "id": 8,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "receive_recommendation",
+        "to_agent_type": "EnvAgent",
+        "to_action_name": "terminate",
+        "from_action_id": 3,
+        "to_action_id": -1,
+        "event_name": "RecommendationSpreadingEvent",
+        "event_info": "Step completion signal after recommendation-channel interaction (not simulation exit)",
+        "fields": [
+            {
+                "name": "timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Simulation time (seconds)."
+            },
+            {
+                "name": "current_step",
+                "type": "int",
+                "default_value": "1",
+                "description": "Current step."
+            },
+            {
+                "name": "max_step",
+                "type": "int",
+                "default_value": "8",
+                "description": "Max steps."
+            }
+        ]
+    },
+    "9": {
+        "id": 9,
+        "from_agent_type": "UserAgent",
+        "from_action_name": "handle_mention",
+        "to_agent_type": "EnvAgent",
+        "to_action_name": "terminate",
+        "from_action_id": 4,
+        "to_action_id": -1,
+        "event_name": "MentionSpreadingEvent",
+        "event_info": "Step completion signal after mention-channel interaction",
+        "fields": [
+            {
+                "name": "timestamp",
+                "type": "int",
+                "default_value": "0",
+                "description": "Simulation time (seconds)."
+            },
+            {
+                "name": "current_step",
+                "type": "int",
+                "default_value": "1",
+                "description": "Current step."
+            },
+            {
+                "name": "max_step",
+                "type": "int",
+                "default_value": "8",
+                "description": "Max steps."
+            }
+        ]
+    },
+    "10": {
+        "id": 10,
+        "from_agent_type": "Platform",
+        "from_action_name": "route_recommendation",
+        "to_agent_type": "Algorithm",
+        "to_action_name": "send_recommendation_results",
+        "from_action_id": 9,
+        "to_action_id": 6,
+        "event_name": "GetAlgorithmRecommendationEvent",
+        "event_info": "Platform forwards the recommendation request to the recommendation Algorithm",
+        "fields": []
+    },
+    "11": {
+        "id": 11,
+        "from_agent_type": "Platform",
+        "from_action_name": "route_search",
+        "to_agent_type": "Algorithm",
+        "to_action_name": "send_search_results",
+        "from_action_id": 10,
+        "to_action_id": 7,
+        "event_name": "GetSearchResultEvent",
+        "event_info": "Platform forwards the search request to the search Algorithm",
+        "fields": []
+    }
+}

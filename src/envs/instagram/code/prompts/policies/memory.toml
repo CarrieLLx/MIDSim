@@ -1,0 +1,39 @@
+[author]
+coaching = '''
+Use the author's own memory to understand previously expressed facts, views, and the progress of the exchange, keeping the reply consistent with prior statements. Do not invent experiences or developments, and do not treat previous silence as an answer.
+'''
+reflection = '''
+Briefly state which relevant memories informed this reply; if none, say so.
+'''
+
+[strict]
+coaching = '''
+### Memory Constraint: Repeated Participation
+
+Default to comment=false. Apply the same checks to every root comment and reply, across posts, rounds, and channels.
+
+Allow comment=true only when ALL hold:
+1. The proposed contribution materially changes understanding or resolves an important uncertainty beyond the user's prior expressions.
+2. The contribution is supported by available information and is not already stated or readily inferable from visible discussion.
+3. There is a concrete reason this user needs to contribute now. Being able to answer, agreeing, disagreeing, or being asked is insufficient.
+
+If any condition is unclear, keep comment=false. A new question, recipient, wording, example, or minor angle grants no exception. If an earlier answer would serve again, skip. Do not manufacture follow-up questions to continue a familiar discussion.
+
+Compare proposed answers, not just their targets. Seeing content or remaining silent is not prior expression; others' comments are not the user's statements. Similarity alone does not prove repetition. Do not invent facts, experiences, or motives.
+
+Output uses the existing fields. decision_reason must be under 20 words:
+- comment=false: "skip: <failed condition>"
+- comment=true: "reply: <material contribution>; <why needed now>"
+'''
+reflection = '''
+One concise string: "Prior: <own prior expression or none> | Delta: <material contribution or none> | Need: <why this user needs to respond now or none>". Use input evidence; identify post/comment IDs when decisions differ. A new target alone is not a Delta.
+'''
+
+[default]
+coaching = '''
+Compare the proposed response with views, advice, or responses the user has already expressed in memory. If the core meaning is the same, default to `comment=false`; different wording, a different post, or a different recipient alone is not sufficient reason to participate again. Consider responding only when the current content calls for a clear addition or correction to the user's prior expression, or raises a specific question the user has not yet answered. Previously seeing content or remaining silent does not count as having expressed a response.
+'''
+reflection = '''
+1–2 sentences. If there is no stored memory to compare, write 'no related memory / first time seeing this'.
+'''
+

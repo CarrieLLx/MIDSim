@@ -22,6 +22,7 @@ import asyncio
 from onesim.config import SimulatorConfig, AgentConfig, AgentMemoryConfig
 from onesim.agent.locale import get_general_agent_locale, resolve_general_agent_locale
 from onesim.agent.backbone import get_backbone_profile, resolve_backbone_profile
+from onesim.env_layout import get_actions_path, get_schema_path
 
 class AgentFactory:
     def __init__(self, simulator_config: SimulatorConfig, model_config_name: str, env_path: str, agent_config: Optional[AgentConfig] = None) -> None:
@@ -42,7 +43,7 @@ class AgentFactory:
 
         # Load action definitions
         with open(
-            os.path.join(self.env_path, "actions.json"), "r", encoding='utf-8'
+            get_actions_path(self.env_path), "r", encoding='utf-8'
         ) as f:
             actions = json.load(f)
 
@@ -74,13 +75,13 @@ class AgentFactory:
                 profile_config = agent_profiles[agent_type]
                 schema_path = profile_config.get("schema_path")
                 if schema_path:
-                    schema_path = os.path.join(self.env_path, "profile", "schema", schema_path)
+                    schema_path = get_schema_path(self.env_path, agent_type, schema_path)
                 else:
-                    schema_path = os.path.join(self.env_path, "profile", "schema", f"{agent_type}.json")
+                    schema_path = get_schema_path(self.env_path, agent_type)
 
             # Fallback to default path if not found
             if not schema_path:
-                schema_path = os.path.join(self.env_path, f"profile/schema/{agent_type}.json")
+                schema_path = get_schema_path(self.env_path, agent_type)
 
             # Try to load the schema
             try:
@@ -149,6 +150,7 @@ class AgentFactory:
         for agent_type in self.all_agents.keys():
             count = 5  # Default count
             profile_file_path = None
+            profile_config = agent_profiles.get(agent_type, {})
 
             # Try to get profile from agent config
             if agent_type in agent_profiles:
@@ -156,7 +158,10 @@ class AgentFactory:
                 count = profile_config.get("count", 5)
                 profile_path = profile_config.get("profile_path")
                 if profile_path:
-                    profile_file_path = os.path.join(self.env_path, "profile", "data", profile_path)
+                    if os.path.isabs(profile_path) or os.path.isfile(profile_path):
+                        profile_file_path = profile_path
+                    else:
+                        profile_file_path = os.path.join(self.env_path, "profile", "data", profile_path)
 
             # Fallback to default path if not found
             if not profile_file_path:
@@ -167,7 +172,15 @@ class AgentFactory:
                 logger.warning(f"No schema found for {agent_type}. Skipping profile generation.")
                 continue
 
-            if os.path.exists(profile_file_path):
+            if "profiles" in profile_config:
+                rows = profile_config["profiles"]
+                if not isinstance(rows, list) or not rows or not all(isinstance(row, dict) for row in rows):
+                    raise ValueError(f"Inline profiles for {agent_type} must be a nonempty list of objects")
+                base_profiles = self._profiles_from_rows(
+                    agent_type, schema, copy.deepcopy(rows), count, self.agent_index,
+                    source_path=profile_file_path,
+                )
+            elif os.path.exists(profile_file_path):
                 base_profiles = self.load_profiles(
                     agent_type, schema, profile_file_path, count, self.agent_index
                 )
@@ -177,6 +190,24 @@ class AgentFactory:
                     profile_file_path,
                     self.agent_index
                 )
+            if agent_type == "Algorithm":
+                overlay_path = ""
+                if agent_type in agent_profiles:
+                    overlay_path = agent_profiles[agent_type].get("recommendation_overlay") or ""
+                if overlay_path:
+                    from onesim.scenario import (
+                        apply_recommendation_overlay_to_profiles,
+                        load_recommendation_overlay,
+                    )
+                    platform_overlay = ""
+                    if agent_type in agent_profiles:
+                        platform_overlay = (
+                            agent_profiles[agent_type].get("platform_recommendation_overlay") or ""
+                        )
+                    apply_recommendation_overlay_to_profiles(
+                        base_profiles,
+                        load_recommendation_overlay(overlay_path, platform_overlay),
+                    )
 
             if not base_profiles:
                 logger.warning(f"No base profiles for {agent_type}. Skipping.")
@@ -425,8 +456,37 @@ class AgentFactory:
 
         logger.info(f"Loading relationships for {self.tiles_needed} tiles, each tile size = {self.global_base_count} profiles.")
 
+        # following/follower are directed. direction=bidirectional does not imply mutual following.
+        # A one-way follow still needs a reverse lookup so the other person can read
+        # the profile; that reverse entry uses the inverse role and does not count as a follow.
+        social_inverse = {"following": "follower", "follower": "following"}
+
+        def _public_profile(agent):
+            if agent is None:
+                return None
+            if isinstance(agent, dict):
+                return agent.get("profile_data")
+            return agent.get_profile(include_private=False)
+
+        def _upsert(owner_id: str, target_id: str, description: str, target_info, explicit: bool) -> None:
+            entries = relationships_by_agent.setdefault(owner_id, {})
+            current = entries.get(target_id)
+            if current is None:
+                entries[target_id] = {
+                    "target_id": target_id,
+                    "description": description,
+                    "target_info": target_info,
+                    "explicit": explicit,
+                }
+                return
+            if explicit:
+                current["description"] = description
+                current["target_info"] = target_info
+                current["explicit"] = True
+
         # Process relationships for all tiles
         for tile_index in range(self.tiles_needed):
+            parsed = []
             for rel in base_relationships:
                 # CSV base IDs (typically 0-based)
                 # Support both 'source_id'/'target_id' and 'source_agent'/'target_agent' formats
@@ -443,55 +503,33 @@ class AgentFactory:
                 # Add offset and convert to 1-based system IDs
                 source_id = source_base_id + "_" + str(tile_index) if tile_index > 0 else source_base_id
                 target_id = target_base_id + "_" + str(tile_index) if tile_index > 0 else target_base_id
-
-                description = rel.get("relationship_type", "Unknown")
-                direction = rel.get("direction", "unidirectional")
-
-                # Get target agent profile info
-                target_agent = self.profile_id2agent.get(target_id,None)
-                if not target_agent:
-                    # logger.warning(f"Relationship skipped: target agent {target_id} not found.")
+                description = rel.get("relationship_type") or "Unknown"
+                direction = rel.get("direction") or "unidirectional"
+                target_info = _public_profile(self.profile_id2agent.get(target_id))
+                if target_info is None:
                     continue
+                source_info = _public_profile(self.profile_id2agent.get(source_id))
+                parsed.append((source_id, target_id, description, direction, target_info, source_info))
 
-                # Get target agent profile info
-                if isinstance(target_agent, dict):  # For distributed mode
-                    target_info = target_agent["profile_data"]
-                else:  # For local mode
-                    target_info = target_agent.get_profile(include_private=False)
+            for source_id, target_id, description, direction, target_info, source_info in parsed:
+                _upsert(source_id, target_id, description, target_info, explicit=True)
+                inverse = social_inverse.get(description)
+                if inverse and source_info is not None:
+                    _upsert(target_id, source_id, inverse, source_info, explicit=False)
+                elif direction == "bidirectional" and source_info is not None:
+                    _upsert(target_id, source_id, description, source_info, explicit=True)
 
-                # Add relationship to source agent's relationships
-                if source_id not in relationships_by_agent:
-                    relationships_by_agent[source_id] = []
-
-                relationships_by_agent[source_id].append({
-                    "target_id": target_id,
-                    "description": description,
-                    "target_info": target_info
-                })
-
-                # If bidirectional, add the reverse relationship
-                if direction == "bidirectional":
-                    # Get source agent profile info
-                    source_agent = self.profile_id2agent.get(source_id,None)
-                    if not source_agent:
-                        # logger.warning(f"Reverse relationship skipped: source agent {source_id} not found.")
-                        continue
-
-                    # Get source agent profile info
-                    if isinstance(source_agent, dict):  # For distributed mode
-                        source_info = source_agent["profile_data"]
-                    else:  # For local mode
-                        source_info = source_agent.get_profile(include_private=False)
-
-                    # Add relationship to target agent's relationships
-                    if target_id not in relationships_by_agent:
-                        relationships_by_agent[target_id] = []
-
-                    relationships_by_agent[target_id].append({
-                        "target_id": source_id,
-                        "description": description,
-                        "target_info": source_info
-                    })
+        relationships_by_agent = {
+            owner_id: [
+                {
+                    "target_id": item["target_id"],
+                    "description": item["description"],
+                    "target_info": item["target_info"],
+                }
+                for item in entries.values()
+            ]
+            for owner_id, entries in relationships_by_agent.items()
+        }
 
         logger.info(f"Loaded relationship data for {len(relationships_by_agent)} agents.")
         return relationships_by_agent
@@ -513,8 +551,12 @@ class AgentFactory:
         logger.info("Step 2: Loading relationship data")
 
         # Get from config if available
-        if self.agent_config and hasattr(self.agent_config, 'relationship_path'):
-            relationship_path = os.path.join(self.env_path, 'profile', 'data', self.agent_config.relationship_path)
+        if self.agent_config and getattr(self.agent_config, 'relationship_path', None):
+            rel = self.agent_config.relationship_path
+            if os.path.isabs(rel) or os.path.isfile(rel):
+                relationship_path = rel
+            else:
+                relationship_path = os.path.join(self.env_path, 'profile', 'data', rel)
         else:
             relationship_path = os.path.join(self.env_path, 'profile', 'data', 'Relationship.csv')
 
@@ -731,6 +773,24 @@ class AgentFactory:
         return profiles
 
     @staticmethod
+    def _profiles_from_platform_algorithm_config(raw: Dict[str, Any]) -> Optional[List[Dict[str, Any]]]:
+        """Expand recommendation_algorithm / search_algorithm blocks into agent profile rows."""
+        rec = raw.get("recommendation_algorithm")
+        search = raw.get("search_algorithm")
+        if not isinstance(rec, dict) and not isinstance(search, dict):
+            return None
+        rows: List[Dict[str, Any]] = []
+        if isinstance(rec, dict) and rec.get("id"):
+            row = dict(rec)
+            row.setdefault("role", "recommendation")
+            rows.append(row)
+        if isinstance(search, dict) and search.get("id"):
+            row = dict(search)
+            row.setdefault("role", "search")
+            rows.append(row)
+        return rows
+
+    @staticmethod
     def _normalize_profile_rows_from_json(raw: Any) -> List[Dict[str, Any]]:
         """
         Normalize the root structure of profile JSON to a list of dictionaries.
@@ -746,7 +806,12 @@ class AgentFactory:
                     logger.warning(f"Skipping non-dictionary profile item: {type(item).__name__}")
             return rows
         if isinstance(raw, dict):
-            # Single key wrapped list, like {"profiles": [...], "data": [...]}
+            platform_rows = AgentFactory._profiles_from_platform_algorithm_config(raw)
+            if platform_rows is not None:
+                return platform_rows
+            if "profiles" in raw and isinstance(raw["profiles"], list):
+                return AgentFactory._normalize_profile_rows_from_json(raw["profiles"])
+            # Single key wrapped list, like {"data": [...]}
             if len(raw) == 1:
                 sole_key = next(iter(raw))
                 sole_val = raw[sole_key]
@@ -782,9 +847,24 @@ class AgentFactory:
             raw = json.load(jsonfile)
 
         all_profile_rows = AgentFactory._normalize_profile_rows_from_json(raw)
+        profiles = AgentFactory._profiles_from_rows(
+            agent_type, schema, all_profile_rows, count, index, source_path=json_file
+        )
+        logger.info(f"Loaded {len(profiles)} base profiles from '{json_file}'.")
+        return profiles
+
+    @staticmethod
+    def _profiles_from_rows(
+        agent_type: str, schema: AgentSchema, rows: List[Dict[str, Any]],
+        count: int, index: int, *, source_path: str = "",
+    ) -> List[AgentProfile]:
+        profiles = []
 
         # Create profiles up to requested count
-        for row in all_profile_rows:
+        for row in rows:
+            if agent_type == "UserAgent":
+                from onesim.utils.social_data_compat import profile_for_runtime
+                row = profile_for_runtime(row, source_path)
             profile = AgentProfile(agent_type, schema, profile_data=row)
             profiles.append(profile)
             if 'id' not in row:
@@ -795,7 +875,6 @@ class AgentFactory:
                 break
             index += 1
 
-        logger.info(f"Loaded {len(profiles)} base profiles from '{json_file}'.")
         return profiles
 
     def add_env_relationship(self, profile_id: str):

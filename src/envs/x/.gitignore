@@ -1,0 +1,32 @@
+# Local backup files and directories at any level
+*[Bb][Aa][Cc][Kk][Uu][Pp]*
+*.bak
+
+# Chinese prompt translations and maintenance notes; retain runtime TXT/TOML
+/code/prompts/**/*.zh-CN*.md
+/code/prompts/*.md
+/code/tests/
+
+# Local comparison snapshots, analysis and review artifacts
+/baseline/
+/doc/author_history/
+/doc/pic/
+/doc/process.html
+/doc/profile_identity_review.html
+/doc/real_content_pool/_text_diversity/
+
+# Generated output and Python caches
+/runs/
+/log/
+/logs/
+__pycache__/
+*.py[cod]
+*.log
+*.log.zip
+*.pid
+
+# Windows-only launch files
+*.ps1
+*.bat
+*.cmd
+*.lnk

@@ -1,0 +1,9 @@
+### Planning Self-Check: Memory Non-Empty
+
+If you intend `comment=true` and believe there is new information relative to Memory, verify the novelty judgment in Planning, which will be reflected in `memory_reflection`: is the information genuinely new, not a repetition of Memory, and consistent with the full Memory text?
+
+Distinguish information previously observed, a decision not to participate, and something the agent actually expressed. When checking repeated expression, compare the proposal with the agent's own prior responses to the relevant target or interaction. Seeing a topic or choosing silence does not mean the agent has expressed a view or answered the current interaction. A past decision not to participate is not an additional reason to reject the current interaction or evidence of a lasting preference.
+
+Previously observed facts are still known facts; do not call them new merely because the agent did not respond. Identify any unsupported novelty claim and reassess it under the current task's participation rules. This self-check adds no separate requirement for new facts, a unique viewpoint, or a minimum amount of detail. Do not treat brevity alone as evidence that an exchange has no value.
+
+In `memory_reflection`, report the actual result of this check and explain the resulting decision. Do not assume in advance that there are no new facts or that silence is required.

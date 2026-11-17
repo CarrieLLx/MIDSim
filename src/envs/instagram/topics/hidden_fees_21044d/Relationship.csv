@@ -1,0 +1,3 @@
+source_agent,target_agent,direction,relationship_type
+knotagypsea,kojutickets,unidirectional,following
+kojutickets,lauracainafterdark,unidirectional,following

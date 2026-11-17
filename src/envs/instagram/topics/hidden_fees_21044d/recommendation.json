@@ -1,0 +1,254 @@
+{
+  "fine_interest_recommendation_content_pool": {
+    "ig_hidden_fees_21044d_01": {
+      "post_id": "ig_hidden_fees_21044d_01",
+      "desc": "Should concert tickets have to show the full price before a customer reaches checkout?"
+    },
+    "ig_hidden_fees_21044d_02": {
+      "post_id": "ig_hidden_fees_21044d_02",
+      "desc": "Why can a ticket advertised at $50 cost nearly twice as much after fees?"
+    },
+    "ig_hidden_fees_21044d_03": {
+      "post_id": "ig_hidden_fees_21044d_03",
+      "desc": "Should sports tickets be required to display all mandatory fees in the first advertised price?"
+    },
+    "ig_hidden_fees_21044d_04": {
+      "post_id": "ig_hidden_fees_21044d_04",
+      "desc": "Would an all-in ticket price make it easier for consumers to compare events?"
+    },
+    "ig_hidden_fees_21044d_05": {
+      "post_id": "ig_hidden_fees_21044d_05",
+      "desc": "Should ticketing companies be prohibited from adding mandatory fees at the end of checkout?"
+    },
+    "ig_hidden_fees_21044d_06": {
+      "post_id": "ig_hidden_fees_21044d_06",
+      "desc": "Are service fees and venue fees justified if customers are not shown the total price upfront?"
+    },
+    "ig_hidden_fees_21044d_07": {
+      "post_id": "ig_hidden_fees_21044d_07",
+      "desc": "Should consumers have the right to see taxes and mandatory charges before selecting a ticket?"
+    },
+    "ig_hidden_fees_21044d_08": {
+      "post_id": "ig_hidden_fees_21044d_08",
+      "desc": "Would banning hidden ticket fees make the ticket market more transparent?"
+    },
+    "ig_hidden_fees_21044d_09": {
+      "post_id": "ig_hidden_fees_21044d_09",
+      "desc": "Should resale platforms have the same all-in pricing requirements as primary ticket sellers?"
+    },
+    "ig_hidden_fees_21044d_10": {
+      "post_id": "ig_hidden_fees_21044d_10",
+      "desc": "Why is the advertised ticket price often so different from the final amount paid?"
+    },
+    "ig_hidden_fees_21044d_11": {
+      "post_id": "ig_hidden_fees_21044d_11",
+      "desc": "Should ticket sellers clearly separate optional fees from mandatory fees?"
+    },
+    "ig_hidden_fees_21044d_12": {
+      "post_id": "ig_hidden_fees_21044d_12",
+      "desc": "Would requiring upfront pricing reduce deceptive advertising in the live entertainment industry?"
+    },
+    "ig_hidden_fees_21044d_13": {
+      "post_id": "ig_hidden_fees_21044d_13",
+      "desc": "Should Congress require every ticket website to show the final price before a buyer clicks purchase?"
+    },
+    "ig_hidden_fees_21044d_14": {
+      "post_id": "ig_hidden_fees_21044d_14",
+      "desc": "Are convenience fees really optional if there is no way to buy the ticket without paying them?"
+    },
+    "ig_hidden_fees_21044d_15": {
+      "post_id": "ig_hidden_fees_21044d_15",
+      "desc": "Should venues be responsible for making sure all ticket fees are disclosed upfront?"
+    },
+    "ig_hidden_fees_21044d_16": {
+      "post_id": "ig_hidden_fees_21044d_16",
+      "desc": "Would transparent ticket pricing make it easier for fans to decide whether an event fits their budget?"
+    },
+    "ig_hidden_fees_21044d_17": {
+      "post_id": "ig_hidden_fees_21044d_17",
+      "desc": "Should ticket sellers be required to explain exactly what each added fee pays for?"
+    },
+    "ig_hidden_fees_21044d_18": {
+      "post_id": "ig_hidden_fees_21044d_18",
+      "desc": "Could all-in pricing reduce the frustration consumers experience during online ticket checkout?"
+    },
+    "ig_hidden_fees_21044d_19": {
+      "post_id": "ig_hidden_fees_21044d_19",
+      "desc": "Should hidden-fee rules apply to concerts, sporting events, theaters, and other live entertainment equally?"
+    },
+    "ig_hidden_fees_21044d_20": {
+      "post_id": "ig_hidden_fees_21044d_20",
+      "desc": "Is displaying a low ticket price and revealing mandatory fees later misleading, even when the final price is technically disclosed?"
+    }
+  },
+  "candidate_post_ids_by_user": {
+    "aversa54": [
+      "ig_hidden_fees_21044d_01",
+      "ig_hidden_fees_21044d_02",
+      "ig_hidden_fees_21044d_03",
+      "ig_hidden_fees_21044d_04",
+      "ig_hidden_fees_21044d_05",
+      "ig_hidden_fees_21044d_06",
+      "ig_hidden_fees_21044d_07",
+      "ig_hidden_fees_21044d_08",
+      "ig_hidden_fees_21044d_09",
+      "ig_hidden_fees_21044d_10",
+      "ig_hidden_fees_21044d_11",
+      "ig_hidden_fees_21044d_12",
+      "ig_hidden_fees_21044d_13",
+      "ig_hidden_fees_21044d_14",
+      "ig_hidden_fees_21044d_15",
+      "ig_hidden_fees_21044d_16",
+      "ig_hidden_fees_21044d_17",
+      "ig_hidden_fees_21044d_18",
+      "ig_hidden_fees_21044d_19",
+      "ig_hidden_fees_21044d_20",
+      "ig_interest_191",
+      "ig_interest_121",
+      "ig_interest_116",
+      "ig_interest_110",
+      "ig_interest_272",
+      "ig_interest_279",
+      "ig_interest_277",
+      "ig_interest_53",
+      "ig_interest_242",
+      "ig_interest_241",
+      "ig_interest_125",
+      "ig_interest_189",
+      "ig_interest_41",
+      "ig_interest_269",
+      "ig_interest_124",
+      "ig_interest_122",
+      "ig_interest_247",
+      "ig_interest_99",
+      "ig_interest_123",
+      "ig_interest_195"
+    ],
+    "knotagypsea": [
+      "ig_hidden_fees_21044d_01",
+      "ig_hidden_fees_21044d_02",
+      "ig_hidden_fees_21044d_03",
+      "ig_hidden_fees_21044d_04",
+      "ig_hidden_fees_21044d_05",
+      "ig_hidden_fees_21044d_06",
+      "ig_hidden_fees_21044d_07",
+      "ig_hidden_fees_21044d_08",
+      "ig_hidden_fees_21044d_09",
+      "ig_hidden_fees_21044d_10",
+      "ig_hidden_fees_21044d_11",
+      "ig_hidden_fees_21044d_12",
+      "ig_hidden_fees_21044d_13",
+      "ig_hidden_fees_21044d_14",
+      "ig_hidden_fees_21044d_15",
+      "ig_hidden_fees_21044d_16",
+      "ig_hidden_fees_21044d_17",
+      "ig_hidden_fees_21044d_18",
+      "ig_hidden_fees_21044d_19",
+      "ig_hidden_fees_21044d_20",
+      "ig_interest_198",
+      "ig_interest_174",
+      "ig_interest_120",
+      "ig_interest_197",
+      "ig_interest_216",
+      "ig_interest_114",
+      "ig_interest_89",
+      "ig_interest_43",
+      "ig_interest_276",
+      "ig_interest_96",
+      "ig_interest_113",
+      "ig_interest_156",
+      "ig_interest_54",
+      "ig_interest_162",
+      "ig_interest_258",
+      "ig_interest_30",
+      "ig_interest_95",
+      "ig_interest_222",
+      "ig_interest_110",
+      "ig_interest_150"
+    ],
+    "kojutickets": [
+      "ig_hidden_fees_21044d_01",
+      "ig_hidden_fees_21044d_02",
+      "ig_hidden_fees_21044d_03",
+      "ig_hidden_fees_21044d_04",
+      "ig_hidden_fees_21044d_05",
+      "ig_hidden_fees_21044d_06",
+      "ig_hidden_fees_21044d_07",
+      "ig_hidden_fees_21044d_08",
+      "ig_hidden_fees_21044d_09",
+      "ig_hidden_fees_21044d_10",
+      "ig_hidden_fees_21044d_11",
+      "ig_hidden_fees_21044d_12",
+      "ig_hidden_fees_21044d_13",
+      "ig_hidden_fees_21044d_14",
+      "ig_hidden_fees_21044d_15",
+      "ig_hidden_fees_21044d_16",
+      "ig_hidden_fees_21044d_17",
+      "ig_hidden_fees_21044d_18",
+      "ig_hidden_fees_21044d_19",
+      "ig_hidden_fees_21044d_20",
+      "ig_interest_30",
+      "ig_interest_28",
+      "ig_interest_186",
+      "ig_interest_258",
+      "ig_interest_53",
+      "ig_interest_71",
+      "ig_interest_33",
+      "ig_interest_269",
+      "ig_interest_69",
+      "ig_interest_266",
+      "ig_interest_18",
+      "ig_interest_58",
+      "ig_interest_94",
+      "ig_interest_95",
+      "ig_interest_270",
+      "ig_interest_271",
+      "ig_interest_98",
+      "ig_interest_34",
+      "ig_interest_43",
+      "ig_interest_267"
+    ],
+    "lauracainafterdark": [
+      "ig_hidden_fees_21044d_01",
+      "ig_hidden_fees_21044d_02",
+      "ig_hidden_fees_21044d_03",
+      "ig_hidden_fees_21044d_04",
+      "ig_hidden_fees_21044d_05",
+      "ig_hidden_fees_21044d_06",
+      "ig_hidden_fees_21044d_07",
+      "ig_hidden_fees_21044d_08",
+      "ig_hidden_fees_21044d_09",
+      "ig_hidden_fees_21044d_10",
+      "ig_hidden_fees_21044d_11",
+      "ig_hidden_fees_21044d_12",
+      "ig_hidden_fees_21044d_13",
+      "ig_hidden_fees_21044d_14",
+      "ig_hidden_fees_21044d_15",
+      "ig_hidden_fees_21044d_16",
+      "ig_hidden_fees_21044d_17",
+      "ig_hidden_fees_21044d_18",
+      "ig_hidden_fees_21044d_19",
+      "ig_hidden_fees_21044d_20",
+      "ig_interest_113",
+      "ig_interest_108",
+      "ig_interest_41",
+      "ig_interest_114",
+      "ig_interest_30",
+      "ig_interest_71",
+      "ig_interest_47",
+      "ig_interest_17",
+      "ig_interest_174",
+      "ig_interest_119",
+      "ig_interest_12",
+      "ig_interest_168",
+      "ig_interest_186",
+      "ig_interest_162",
+      "ig_interest_299",
+      "ig_interest_270",
+      "ig_interest_95",
+      "ig_interest_257",
+      "ig_interest_197",
+      "ig_interest_77"
+    ]
+  }
+}

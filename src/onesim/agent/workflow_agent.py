@@ -5,6 +5,8 @@ from .base import AgentBase
 import json
 from onesim.models import JsonBlockParser
 import networkx as nx
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from pyvis.network import Network
 import random
@@ -293,11 +295,11 @@ class WorkflowAgent(AgentBase):
                                 existed=True
                                 break
                         if not existed:
-                            # 添加condition字段
+                            # Add the condition field.
                             action_entry = {
                                 'id': action_id,
                                 'name': action_name,
-                                'condition': action.get('condition', None)  # 获取condition字段，如果不存在则默认为None
+                                'condition': action.get('condition', None)  # Use None when the condition field is absent.
                             }
                             self.actions[agent_type].append(action_entry)
                             action_name_to_id[(agent_type, action_name)] = action_id
@@ -346,7 +348,7 @@ class WorkflowAgent(AgentBase):
                             action_entry={
                                 'id': action_id,
                                 'name': to_action_name,
-                                'condition': None  # 为自动创建的action添加默认condition为None
+                                'condition': None  # Default the condition to None for automatically created actions.
                             }
                             self.actions[to_agent_type].append(action_entry)
                             action_name_to_id[(to_agent_type, to_action_name)] = action_id

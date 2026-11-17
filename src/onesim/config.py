@@ -203,6 +203,7 @@ class AgentConfig:
     memory: AgentMemoryConfig = field(default_factory=AgentMemoryConfig)
     general_agent_locale: Optional[str] = None
     backbone_profile: Optional[str] = None
+    relationship_path: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert instance to a dictionary for JSON serialization"""
@@ -212,6 +213,7 @@ class AgentConfig:
             "memory": self.memory.to_dict(),
             "general_agent_locale": self.general_agent_locale,
             "backbone_profile": self.backbone_profile,
+            "relationship_path": self.relationship_path,
         }
 
 @dataclass_json

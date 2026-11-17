@@ -1,0 +1,11 @@
+source_agent,target_agent,direction,relationship_type
+moreperfectus,public_citizen,unidirectional,following
+potus46archive,vp46archive,unidirectional,following
+public_citizen,moreperfectus,unidirectional,following
+public_citizen,potus46archive,unidirectional,following
+public_citizen,vp46archive,unidirectional,following
+vp46archive,potus46archive,unidirectional,following
+wiselionman,moreperfectus,unidirectional,following
+wiselionman,potus46archive,unidirectional,following
+wiselionman,public_citizen,unidirectional,following
+wiselionman,vp46archive,unidirectional,following

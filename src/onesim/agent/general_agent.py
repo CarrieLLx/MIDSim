@@ -10,11 +10,7 @@ from asyncio import Future
 from loguru import logger
 from onesim.models.core.message import Message
 from onesim.models import (
-    JsonBlockParser,
     parse_llm_json_response,
-    parse_memory_response,
-    DEFAULT_RECOMMENDATION_MATCH_FIELDS,
-    DEFAULT_REACTION_MATCH_FIELDS,
 )
 from onesim.profile import AgentProfile
 from onesim.memory import *
@@ -29,19 +25,142 @@ from onesim.distribution.distributed_lock import  get_lock
 from onesim.utils.work_graph import WorkGraph
 from datetime import datetime
 
-from onesim.agent.locale import get_general_agent_locale
 from onesim.agent.backbone import is_llama_backbone
-from onesim.agent.general_agent_prompts import (
-    build_profile_tags_prompt_text,
-    memory_fallback_sentence,
-    memory_locale_instructions,
-    mem_planning_gate,
-    profile_tags_system_prompt,
+from pathlib import Path
+from onesim.utils.prompt_resources import load_prompt
+from onesim.utils.recommendation_validation import (
+    RecommendationFormatError,
+    validate_recommendation,
 )
+from onesim.utils.llm_validation import (
+    LLMRequestError, validate_memory, validate_reaction, response_metadata, recommendation_candidates,
+)
+from onesim.utils.reaction_failure import (
+    SkippedReaction, SkippedMemory, SkippedRecommendation, skipped_social_reaction, register_output_failure,
+)
+from onesim.utils.model_retry import model_attempt_limit, single_model_attempt, model_audit_scope, ModelRequestSkipped
 
 
 class GeneralAgent(AgentBase):
-    _reaction_semaphore = asyncio.Semaphore(14)
+    _reaction_semaphore = asyncio.Semaphore(45)
+
+    async def get_prompt_profile(self, observation: str) -> str:
+        return self.profile.get_profile_str(include_private=False) if self.profile else "No profile information provided."
+
+    def _mark_llm_failure(self, failure: dict) -> None:
+        # Mark before raising: platform handlers may catch exceptions themselves.
+        self._llm_failure = getattr(self, '_llm_failure', None) or failure
+        env = getattr(self, 'env', None)
+        if env is not None:
+            env._llm_failure = getattr(env, '_llm_failure', None) or failure
+            pause = getattr(env, '_pause_signal', None)
+            if pause is not None:
+                pause.set()
+
+    async def _validated_model_request(
+        self, prompt_text, *, kind, action, instruction, observation, memory='',
+        validator, max_tokens=None, error_class=LLMRequestError,
+    ):
+        """Retry only the model request; never replay actions or regenerate inputs."""
+        if getattr(getattr(self, 'env', None), '_llm_failure', None):
+            raise LLMRequestError('The environment is stopping after a failed model request.')
+        retries = model_attempt_limit() - 1
+        request_id, last_error = str(uuid.uuid4()), None
+        for attempt in range(1, retries + 2):
+            attempt_prompt = prompt_text
+            if last_error:
+                attempt_prompt += (
+                    f'\nOutput validation failed: {last_error}\n'
+                    'Return a complete JSON object in the original schema. '
+                    'Keep the original decision criteria and input IDs. '
+                    'A valid decision to take no action is allowed; do not change it merely to retry.'
+                )
+            prompt = self.model.format(
+                Message('system', self.sys_prompt, role='system'),
+                Message('user', attempt_prompt, role='user'),
+            )
+            response, parse_method, result, caught = None, None, None, None
+            validating_output = False
+            start_time = time.time()
+            try:
+                kwargs = {} if max_tokens is None else {'max_tokens': max_tokens}
+                with single_model_attempt():
+                    response = await self.model.acall(prompt, **kwargs)
+                validating_output = True
+                if response_metadata(response).get('finish_reason') == 'length':
+                    raise ValueError('Response reached its output token limit; return a complete, compact JSON object.')
+                raw, parse_method, parse_note = parse_llm_json_response(response, empty_fallback=None)
+                if parse_method != 'json_block':
+                    raise ValueError(parse_note or 'Response is not complete JSON.')
+                result = validator(raw)
+                last_error = None
+            except asyncio.CancelledError:
+                raise
+            except Exception as exc:
+                caught = exc
+                last_error = str(exc)[:1000] or type(exc).__name__
+            status = 'ok' if caught is None else ('retrying' if attempt <= retries else 'failed')
+            failure, output_failure, skipped = None, None, None
+            if status == 'failed':
+                failure = {
+                    'agent_id': self.profile_id, 'kind': kind, 'request_id': request_id,
+                    'attempts': attempt, 'error': last_error,
+                    'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+                }
+                env = getattr(self, 'env', None)
+                if kind == 'memory':
+                    skipped, fallback = SkippedMemory(), 'skip_memory_write'
+                elif kind == 'recommendation':
+                    skipped, fallback = SkippedRecommendation(), 'skip_recommendation'
+                else:
+                    skipped = skipped_social_reaction(instruction, observation)
+                    fallback = 'skip_reaction' if skipped is not None else 'skip_event'
+                output_failure = register_output_failure(
+                    env if env is not None else self,
+                    dict(failure, action=action, step=getattr(env, 'current_step', None),
+                         fallback=fallback, error_stage='output' if validating_output else 'transport'))
+                status = 'skipped_error'
+            context = {
+                'instruction': instruction, 'observation': observation, 'memory': memory,
+                'llm_request_id': request_id, 'llm_request_kind': kind,
+                'format_attempt': attempt, 'format_status': status,
+                'format_error': last_error, 'parse_method': parse_method,
+                'response_metadata': response_metadata(response),
+            }
+            if output_failure is not None:
+                context['reaction_output_failure'] = output_failure
+                context['system_skipped'] = status == 'skipped_error'
+            if kind == 'recommendation':
+                context['recommendation_request_id'] = request_id
+            await self._record_decision({
+                'agent_id': self.profile_id, 'agent_type': self.profile.agent_type,
+                'prompt': attempt_prompt, 'output': getattr(response, 'text', None),
+                'processing_time': time.time() - start_time,
+                'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'decision_id': str(uuid.uuid4()), 'action': action,
+                'context': context, 'response_validation': 'passed' if caught is None else 'failed',
+                'feedback': None, 'rating': None, 'reason': last_error,
+            })
+            if caught is None:
+                return result
+            logger.warning(
+                'Agent(ID:{}) {} format {}: attempt={}/{} request={} error={}',
+                self.profile_id, kind, status, attempt, retries + 1, request_id, last_error,
+            )
+            if status == 'skipped_error':
+                effect = ('memory write skipped; successful reaction preserved' if kind == 'memory'
+                          else 'no ranking selected' if kind == 'recommendation'
+                          else 'no action or memory generated')
+                logger.warning(
+                    'Agent(ID:{}) {} skipped after request exhaustion: request={} '
+                    'topic_failure_count={} stop_at={}; {}',
+                    self.profile_id, kind, request_id, output_failure['count'], output_failure['stop_at'], effect,
+                )
+                if skipped is None:
+                    raise ModelRequestSkipped(f'{kind} {request_id} skipped after {attempt} attempts: {last_error}') from caught
+                return skipped
+            delay = max(0.0, float(os.environ.get('ONESIM_LLM_RETRY_WAIT_SECONDS', '2')))
+            await asyncio.sleep(min(delay * 2 ** (attempt - 1), 30.0))
 
     def __init__(self,
                  sys_prompt: Optional[str] = None,
@@ -77,7 +196,6 @@ class GeneralAgent(AgentBase):
         if self.memory:
             self.memory.set_agent_context(self.create_context())
         self.stopped=False
-        self._prompt_locale = get_general_agent_locale()
         self._run_subtasks: set = set()
         self._hooks = {
             'before_event_handling': [],
@@ -111,6 +229,24 @@ class GeneralAgent(AgentBase):
 
     def has_pending_event_queue(self) -> bool:
         return not self._queue.empty()
+
+    def _on_run_task_done(self, task: asyncio.Task) -> None:
+        self._run_subtasks.discard(task)
+        if task.cancelled():
+            return
+        exc = task.exception()
+        if isinstance(exc, ModelRequestSkipped):
+            logger.warning('Agent event skipped after exhausted model request: {}', exc)
+            return
+        if exc is not None:
+            logger.error(
+                f"{self.profile.agent_type}(ID:{self.profile_id}) run_task failed: {exc}"
+            )
+            if not getattr(self, '_llm_failure', None):
+                self._mark_llm_failure({
+                    'agent_id': self.profile_id, 'kind': 'agent_task',
+                    'error': str(exc)[:1000], 'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+                })
         
     async def cancel_pending_run_tasks(self) -> None:
         tasks = [t for t in self._run_subtasks if not t.done()]
@@ -211,7 +347,7 @@ class GeneralAgent(AgentBase):
                     await self._execute_hooks('before_action', ability_name=ability_name, event=event)
                     rt = asyncio.create_task(self.run_task(method, event))
                     self._run_subtasks.add(rt)
-                    rt.add_done_callback(self._run_subtasks.discard)
+                    rt.add_done_callback(self._on_run_task_done)
                     await self._execute_hooks('after_action', ability_name=ability_name, event=event)
                 await self._execute_hooks('after_event_handling', event=event)
                 self._queue.task_done()
@@ -245,7 +381,7 @@ class GeneralAgent(AgentBase):
     async def generate_memory(self, instruction: str, observation: str, reaction: dict) -> str:
         if not self.memory:
             return ""
-        profile_str = self.profile.get_profile_str(include_private=False) if self.profile else "No profile information provided."
+        profile_str = await self.get_prompt_profile(observation)
 
         prompt_text = f"""
         ### Agent Profile:
@@ -256,48 +392,41 @@ class GeneralAgent(AgentBase):
         Instruction: {instruction}
         Reaction: {json.dumps(reaction, indent=2)}
 
-        Based on the agent's profile and the complete event that occurred (the instruction received, what was observed, and how the agent reacted), generate a single sentence memory that captures this experience from the agent's perspective. The memory should be personal and reflect the complete interaction including what the agent was asked to do, what they perceived, and how they responded.
+        Based on the agent's profile and the complete event that occurred (the instruction received, what was observed, and how the agent reacted), generate a concise memory that captures this experience from the agent's perspective. The memory should be personal and reflect the complete interaction including what the agent was asked to do, what they perceived, and how they responded.
 
-        {memory_locale_instructions(self._prompt_locale)}
+        {load_prompt(Path(__file__).parent / 'prompts' / 'memory.txt')}
 
-        Structure the response in JSON format with a single 'memory' field containing this sentence. Format the response in a json fenced code block as follows:
+        Structure the response in JSON format with a single 'memory' field containing the memory text. Format the response in a json fenced code block as follows:
         ```json
-        {{"memory": "Your memory sentence here"}}
+        {{"memory": "Your memory text here"}}
         ```
         """
         ### the returned json format should comes from the memory manager
-        prompt = self.model.format(
-            Message("system", self.sys_prompt, role="system"),
-            Message("user", prompt_text, role="user")
+        memory = await self._validated_model_request(
+            prompt_text, kind="memory", action="generate_memory",
+            instruction=instruction, observation=observation,
+            validator=validate_memory,
         )
-
-        # Parse LLM JSON response (JsonBlock -> FieldMatch -> field extract)
-        try:
-            logger.info(f"{self.profile.agent_type}(ID:{self.profile_id}) generate memory")
-            response = await self.model.acall(prompt)
-            logger.info(f"{self.profile.agent_type}(ID:{self.profile_id}) generate memory response")
-            memory, parse_method, parse_note = parse_memory_response(response)
-            if not memory or not memory.strip():
-                logger.warning(
-                    f"{self.profile.agent_type}(ID:{self.profile_id}) generate_memory: "
-                    f"parse_method={parse_method} note={parse_note}; using fallback sentence."
-                )
-                memory = memory_fallback_sentence(self._prompt_locale)
-            if self.memory:
+        if isinstance(memory, SkippedMemory):
+            # Keep the existing memory and allow the already validated reaction
+            # to reach its handler. Never store an empty or invented memory.
+            return ""
+        if self.memory:
+            with model_audit_scope(getattr(self, 'env', None) or self):
                 await self.memory.add(MemoryItem(self.agent_id, memory))
-            return memory
-        except (json.JSONDecodeError, ValueError, KeyError, TypeError) as e:
-            logger.error(f"LLM response is not valid JSON or missing memory. {e} prompt_snip={prompt[:500]!r}...")
-            raise ValueError("LLM response is not valid JSON.")
+        return memory
 
-    async def generate_reaction(self, instruction: str, observation: str = None) -> json:
+    async def generate_reaction(self, instruction: str, observation: str = None, *, prepare_input=None, response_validator=None) -> json:
         async with self._reaction_semaphore:
+            if prepare_input is not None:
+                instruction, observation = await prepare_input()
             logger.info(f"{self.profile.agent_type}(ID:{self.profile_id}) generate_reaction entry")
             
             # Get the Profile and Memory information of the Agent
-            profile_str = self.profile.get_profile_str(include_private=False) if self.profile else "No profile information provided."
+            profile_str = await self.get_prompt_profile(observation)
             if self.memory:     
-                memory_msgs = (await self.memory.retrieve(observation))
+                with model_audit_scope(getattr(self, 'env', None) or self):
+                    memory_msgs = await self.memory.retrieve(observation)
                 memory=""
                 for msg in memory_msgs:
                     memory+=msg.content
@@ -313,17 +442,14 @@ class GeneralAgent(AgentBase):
             successor_types=work_graph.get_successor_agent_types(f"{self.profile.agent_type}.{action_name}")
 
             if self.planning:
-                planning=await self.planning.plan(profile=profile_str,memory=memory,observation=observation,instruction=instruction) 
-                planning="### Planning:\n"+planning+"\n"
+                planning = await self._plan_with_retries(profile_str, memory, observation, instruction)
+                planning = "### Planning:\n" + planning + "\n" if planning else ""
             else:
                 planning=""
             logger.info(f"{self.profile.agent_type}(ID:{self.profile_id}) after planning.plan")
 
             if memory.strip():
-                _mem_planning_gate = mem_planning_gate(
-                    self._prompt_locale,
-                    llama_backbone=is_llama_backbone(),
-                )
+                _mem_planning_gate = load_prompt(Path(__file__).parent / 'prompts' / 'memory_planning_check.txt')
             else:
                 _mem_planning_gate = ""
 
@@ -353,52 +479,21 @@ class GeneralAgent(AgentBase):
             Your JSON response here
             ```
             """
-            start_time = time.time()
-            prompt = self.model.format(
-                Message("system", self.sys_prompt, role="system"),
-                Message("user", prompt_text, role="user")
+            def validate_output(raw):
+                reaction = validate_reaction(raw, instruction, observation or "")
+                if response_validator is not None:
+                    reaction = response_validator(reaction)
+                return reaction
+
+            reaction = await self._validated_model_request(
+                prompt_text, kind="reaction", action=action_name,
+                instruction=instruction, observation=observation, memory=memory,
+                validator=validate_output,
+                max_tokens=int(os.environ.get("ONESIM_REACTION_MAX_TOKENS", "4096")),
             )
-            logger.info(f"Agent(ID:{self.profile_id}) generate_reaction 即将调用 model.acall, model={type(self.model).__name__}({getattr(self.model,'config_name','')})")
 
-            reaction_max_tokens = int(os.environ.get("ONESIM_REACTION_MAX_TOKENS", "4096"))
-            response = await self.model.acall(prompt, max_tokens=reaction_max_tokens)
-            processing_time = time.time() - start_time
-
-            parse_note: Optional[str] = None
-            raw, parse_method, parse_note = parse_llm_json_response(
-                response,
-                field_match_fields=DEFAULT_REACTION_MATCH_FIELDS,
-                recover_decisions=True,
-                empty_fallback={"decisions": []},
-            )
-            if parse_method != "json_block":
-                logger.warning(
-                    f"{self.profile.agent_type}(ID:{self.profile_id}) generate_reaction "
-                    f"JSON parse fallback: method={parse_method} note={parse_note!r} "
-                    f"raw_prefix={(response.text or '')[:400]!r}"
-                )
-            reaction = GeneralAgent._normalize_llm_reaction(raw)
-
-            # Record decision for data storage - supports both local and distributed modes
-            decision_data = {
-                'agent_id': self.profile_id,
-                'agent_type': self.profile.agent_type,
-                'prompt': prompt_text,
-                'output': response.text,
-                'processing_time': processing_time,
-                'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
-                'decision_id': str(uuid.uuid4()),
-                'action': action_name,
-                'context': {
-                    'instruction': instruction,
-                    'observation': observation,
-                    'memory': memory
-                },
-                'feedback': None,
-                'rating': None,
-                'reason': parse_note,
-            }
-            await self._record_decision(decision_data)
+            if isinstance(reaction, SkippedReaction):
+                return reaction
 
             if self.memory:
                 event_memory = await self.generate_memory(instruction, observation, reaction)
@@ -412,7 +507,38 @@ class GeneralAgent(AgentBase):
 
             return reaction
 
-    async def generate_recommendation(self, instruction: str, observation: str = None) -> json:
+    async def _plan_with_retries(self, profile, memory, observation, instruction):
+        """Planning is optional; exhausted planning never blocks the reaction."""
+        request_id = str(uuid.uuid4())
+        limit = model_attempt_limit()
+        for attempt in range(1, limit + 1):
+            try:
+                with single_model_attempt():
+                    result = await self.planning.plan(profile=profile, memory=memory,
+                                                      observation=observation, instruction=instruction)
+                if not isinstance(result, str) or not result.strip():
+                    raise ValueError('Planning response is empty')
+                return result
+            except asyncio.CancelledError:
+                raise
+            except Exception as exc:
+                logger.warning('Planning request={} attempt={}/{} failed: {}', request_id, attempt, limit, exc)
+                if attempt == limit:
+                    env = getattr(self, 'env', None)
+                    register_output_failure(env if env is not None else self, {
+                        'agent_id': self.profile_id, 'kind': 'planning', 'request_id': request_id,
+                        'attempts': attempt, 'error': str(exc)[:1000], 'fallback': 'skip_planning',
+                        'action': 'plan', 'step': getattr(env, 'current_step', None),
+                        'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+                    })
+                    return ''
+                delay = max(0.0, float(os.environ.get('ONESIM_LLM_RETRY_WAIT_SECONDS', '2')))
+                await asyncio.sleep(min(delay * 2 ** (attempt - 1), 30.0))
+
+    async def generate_recommendation(
+        self, instruction: str, observation: str = None, *,
+        candidate_post_ids: Optional[List[str]] = None,
+    ) -> dict:
         async with self._reaction_semaphore:
             logger.info(f"{self.profile.agent_type}(ID:{self.profile_id}) generate_recommendation entry")
     
@@ -430,61 +556,22 @@ class GeneralAgent(AgentBase):
 
             Please analyze the observation and instruction. Based on these, generate a recommendation response that aligns with the Agent's identity and instruction. 
             
-            Structure the response in JSON format, specifying a detailed action or reaction based on the instruction. You should respond a json object in a json fenced code block as follows:
-            ```json
-            Your JSON response here
-            ```
+            Return only the JSON object requested by the instruction.
             """
-            start_time = time.time()
-            prompt = self.model.format(
-                Message("system", self.sys_prompt, role="system"),
-                Message("user", prompt_text, role="user")
-            )
-            logger.info(f"Agent(ID:{self.profile_id}) generate_recommendation 即将调用 model.acall, model={type(self.model).__name__}({getattr(self.model,'config_name','')})")
             rec_max_tokens = int(os.environ.get("ONESIM_RECOMMENDATION_MAX_TOKENS", "4096"))
-            response = await self.model.acall(prompt, max_tokens=rec_max_tokens)
-            processing_time = time.time() - start_time
-
-            parse_note: Optional[str] = None
-            raw, parse_method, parse_note = parse_llm_json_response(
-                response,
-                field_match_fields=DEFAULT_RECOMMENDATION_MATCH_FIELDS,
-                empty_fallback={},
+            if candidate_post_ids is None:
+                candidate_post_ids = recommendation_candidates(observation)
+            reaction = await self._validated_model_request(
+                prompt_text, kind="recommendation", action=action_name,
+                instruction=instruction, observation=observation,
+                validator=lambda raw: validate_recommendation(raw, candidate_post_ids),
+                max_tokens=rec_max_tokens, error_class=RecommendationFormatError,
             )
-            if parse_method != "json_block":
-                logger.warning(
-                    f"{self.profile.agent_type}(ID:{self.profile_id}) generate_recommendation "
-                    f"JSON parse fallback: method={parse_method} note={parse_note!r}"
-                )
-            reaction = GeneralAgent._normalize_llm_reaction(raw)
-
-            # Record decision for data storage - supports both local and distributed modes
-            decision_data = {
-                'agent_id': self.profile_id,
-                'agent_type': self.profile.agent_type,
-                'prompt': prompt_text,
-                'output': response.text,
-                'processing_time': processing_time,
-                'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
-                'decision_id': str(uuid.uuid4()),
-                'action': action_name,
-                'context': {
-                    'instruction': instruction,
-                    'observation': observation,
-                    'memory': '',
-                },
-                'feedback': None,
-                'rating': None,
-                'reason': parse_note,
-            }
-            await self._record_decision(decision_data)
-
             logger.info(
                 f"{self.profile.agent_type}(ID:{self.profile_id}) Action: {action_name} - generate_recommendation - "
                 f"Observation: {observation or 'None'}, "
                 f"Reaction: {json.dumps(reaction, indent=2)}"
             )
-
             return reaction
 
     async def get_memory(self):
@@ -730,6 +817,13 @@ Respond in JSON format with a single 'message' field containing your response. F
         Returns:
             Any: The requested data or default value
         """
+        env = getattr(self, "env", None)
+        if env is not None and hasattr(env, "get_data"):
+            try:
+                return await env.get_data(key, default)
+            except Exception as e:
+                logger.warning(f"Local env.get_data({key}) failed, falling back to event bus: {e}")
+
         # Create a unique request ID
         request_id = f"agent_env_req_{time.time()}_{id(self)}"
 
@@ -754,15 +848,25 @@ Respond in JSON format with a single 'message' field containing your response. F
 
         # Wait for response: in single-node mode the response is delivered to our _queue,
         # so we must process our queue while waiting (same event loop may not schedule run() in time).
-        deadline = asyncio.get_event_loop().time() + 60.0
+        # 0 / unset = wait until ENV replies (params must not fall back after 60s).
+        try:
+            wait_seconds = float(os.environ.get("ONESIM_ENV_DATA_WAIT_SECONDS", "0"))
+        except ValueError:
+            wait_seconds = 0.0
+        loop = asyncio.get_event_loop()
+        deadline = None if wait_seconds <= 0 else loop.time() + wait_seconds
+        last_wait_log = loop.time()
         try:
             while not future.done():
-                remaining = deadline - asyncio.get_event_loop().time()
-                if remaining <= 0:
+                if deadline is not None and loop.time() >= deadline:
                     raise asyncio.TimeoutError()
                 try:
-                    event = await asyncio.wait_for(self._queue.get(), timeout=min(0.2, remaining))
+                    event = await asyncio.wait_for(self._queue.get(), timeout=0.2)
                 except asyncio.TimeoutError:
+                    now = loop.time()
+                    if now - last_wait_log >= 60.0:
+                        logger.warning(f"Still waiting for environment data: {key}")
+                        last_wait_log = now
                     await asyncio.sleep(0)
                     continue
                 # Only process data response events here; others go back to queue for run() to handle
@@ -1061,190 +1165,3 @@ Respond in JSON format with a single 'message' field containing your response. F
         if not self.memory:
             return
         await self.memory.add(MemoryItem(self.agent_id, memory))
-
-    async def generate_profile_tags(self, append_mode: bool = True) -> Dict[str, Any]:
-        nickname = await self.get_data("nickname", "")
-        gender = await self.get_data("gender", "")
-        description = await self.get_data("description", "")
-        location = await self.get_data("location", "")
-        historical_notes = await self.get_data("historical_notes", {})
-
-        if isinstance(historical_notes, list):
-            historical_notes = historical_notes[:30]
-        elif isinstance(historical_notes, tuple):
-            historical_notes = list(historical_notes)[:30]
-        elif isinstance(historical_notes, dict):
-            historical_notes = dict(list(historical_notes.items())[:100])
-        following_count = await self.get_data("following_count", 0)
-        follower_count = await self.get_data("follower_count", 0)
-        interaction = await self.get_data("interaction", 0)
-        
-        existing_tags = await self.get_data("interest_tags", [])
-        if not isinstance(existing_tags, list):
-            existing_tags = []
-        
-        if historical_notes and isinstance(historical_notes, dict):
-            historical_notes_str = json.dumps(historical_notes, ensure_ascii=False, indent=2)
-        elif historical_notes:
-            historical_notes_str = str(historical_notes)
-        else:
-            historical_notes_str = "(none)"
-        
-        original_historical_notes_str = historical_notes_str
-        
-        existing_tags_info = ""
-        if append_mode and existing_tags:
-            existing_tags_str = ", ".join(existing_tags)
-            existing_tags_info = f"\n- Existing interest tags: {existing_tags_str}\nNote: generate new tags and avoid duplicating existing ones."
-        
-        def extract_excess_tokens(error_msg: str) -> Optional[int]:
-            import re
-            patterns = [
-                r"your request has (\d+) input tokens",
-                r"request has (\d+) input tokens",
-                r"(\d+) input tokens",
-                r"exceeds.*?(\d+)",
-            ]
-            for pattern in patterns:
-                match = re.search(pattern, error_msg, re.IGNORECASE)
-                if match:
-                    try:
-                        request_tokens = int(match.group(1))
-                        max_context = 32768
-                        excess = request_tokens - max_context
-                        return max(0, excess)
-                    except ValueError:
-                        continue
-            return None
-        
-        def truncate_notes_by_tokens(notes_str: str, excess_tokens: int) -> str:
-            """Truncate notes_str based on estimated excess tokens."""
-            if not notes_str or notes_str == "(none)":
-                return notes_str
-            
-            chars_to_remove = int(excess_tokens * 2.0) + 200  
-            
-            if len(notes_str) <= chars_to_remove:
-                return "(none) (content too long; fully truncated)"
-            
-            truncated = notes_str[:len(notes_str) - chars_to_remove] + "\n... (truncated due to token limit)"
-            return truncated
-        
-        def build_prompt(notes_str: str) -> tuple:
-            """Build prompt; returns (prompt_text, formatted_prompt)."""
-            prompt_text = build_profile_tags_prompt_text(
-                locale=self._prompt_locale,
-                nickname=nickname,
-                gender=gender,
-                description=description,
-                location=location,
-                notes_str=notes_str,
-                existing_tags_info=existing_tags_info,
-                following_count=following_count,
-                follower_count=follower_count,
-                interaction=interaction,
-                append_mode=append_mode,
-                existing_tags=existing_tags,
-            )
-            prompt = self.model.format(
-                Message(
-                    "system",
-                    profile_tags_system_prompt(self._prompt_locale, self.sys_prompt),
-                    role="system",
-                ),
-                Message("user", prompt_text, role="user"),
-            )
-            return prompt_text, prompt
-        
-        max_retries = 10
-        current_notes_str = original_historical_notes_str
-        prompt_text = None
-        response = None
-        
-        for attempt in range(max_retries + 1):
-            try:
-                prompt_text, prompt = build_prompt(current_notes_str)
-                
-                response = await self.model.acall(prompt)
-                break  # Success; exit retry loop
-                
-            except Exception as e:
-                error_msg = str(e)
-                
-                if ("token" in error_msg.lower() or "context length" in error_msg.lower() or 
-                    "BadRequestError" in error_msg or "400" in error_msg):
-                    excess_tokens = extract_excess_tokens(error_msg)
-                    
-                    if excess_tokens and attempt < max_retries:
-                        logger.warning(
-                            f"Token limit exceeded (~{excess_tokens} tokens over); "
-                            f"truncating historical_notes and retrying ({attempt + 1}/{max_retries})"
-                        )
-                        current_notes_str = truncate_notes_by_tokens(current_notes_str, excess_tokens)
-                        logger.info(
-                            f"Truncated historical_notes; current length: {len(current_notes_str)} chars "
-                            f"(original: {len(original_historical_notes_str)} chars)"
-                        )
-                        continue  # Retry
-                    else:
-                        if attempt >= max_retries:
-                            logger.error(
-                                "Token limit exceeded after max retries; "
-                                "last attempt with minimal historical_notes"
-                            )
-                            current_notes_str = "(none) (content too long; fully truncated)"
-                            # Final attempt
-                            try:
-                                prompt_text, prompt = build_prompt(current_notes_str)
-                                response = await self.model.acall(prompt)
-                                break
-                            except Exception as final_e:
-                                logger.error(f"Final retry also failed: {final_e}")
-                                raise
-                        else:
-                            raise
-                else:
-                    raise
-        
-        try:
-            
-            parser = JsonBlockParser()
-            res = parser.parse(response)
-            result = res.parsed
-            
-            if "interest_tags" not in result:
-                raise ValueError("LLM response missing required field: interest_tags")
-            
-            new_tags = result["interest_tags"]
-            
-            if not isinstance(new_tags, list):
-                raise ValueError(f"interest_tags must be a list, got {type(new_tags)}")
-            if len(new_tags) < 5 or len(new_tags) > 10:
-                logger.warning(f"Generated interest_tags count is {len(new_tags)}, expected 5–10")
-            
-            if append_mode and existing_tags:
-                all_tags = existing_tags + [tag for tag in new_tags if tag not in existing_tags]
-                interest_tags = all_tags
-                logger.info(
-                    f"Append mode: kept {len(existing_tags)} existing tags, added {len(new_tags)} new tags, "
-                    f"{len(interest_tags)} total after dedup"
-                )
-            else:
-                interest_tags = new_tags
-            
-            await self.update_data("interest_tags", interest_tags)
-            logger.info(f"Updated profile interest_tags={interest_tags}")
-            
-            return {
-                "interest_tags": interest_tags
-            }
-            
-        except (json.JSONDecodeError, KeyError) as e:
-            logger.error(
-                f"Invalid LLM response format: {e}\nPrompt: {prompt_text}\n"
-                f"Response: {response.text if hasattr(response, 'text') else response}"
-            )
-            raise ValueError(f"Invalid LLM response format: {e}")
-        except Exception as e:
-            logger.error(f"Error generating profile tags: {e}")
-            raise

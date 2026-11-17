@@ -1,0 +1,118 @@
+{
+  "current_timestamp": 1563408000000,
+  "timestamp_duration": 0,
+  "reference_embedding_path": "datasets/x/embeddings/bge-base-en-v1.5_embeddings.json",
+  "scenario_topic": "Should the federal minimum wage be raised?",
+  "content_pool": {
+    "1151868495824642049": {
+      "id": "1151868495824642049",
+      "content": "Reminder of what people are calling the \"radical, extreme-left agenda\": ✅ Medicare for All ✅ A Living Wage & Labor Rights ✅ K-16 schooling, aka Public Colleges ✅ 100% Renewable Energy ✅ Fixing the pipes in Flint ✅ Not Hurting Immigrants ✅ Holding Wall Street Accountable",
+      "time": 1563461824000,
+      "url": "https://x.com/AOC/status/1151868495824642049",
+      "user_id": "aoc",
+      "username": "Alexandria Ocasio-Cortez",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1151878079184277504": {
+      "id": "1151878079184277504",
+      "content": "Here is what a $15 minimum wage means: According to CBO, up to 3.7 million jobs lost. So while some workers will get a small increase in pay, up to 3.7 million will get a 100% decrease in pay. This is poorly devised one-size-fits-all policy that costs people 100% of their job.",
+      "time": 1563464109000,
+      "url": "https://x.com/DanCrenshawTX/status/1151878079184277504",
+      "user_id": "dancrenshawtx",
+      "username": "Dan Crenshaw",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1151889873458081793": {
+      "id": "1151889873458081793",
+      "content": "$15 minimum wage is all the rage now. It's a feel good policy, but does it actually do good? Watch this to find out the truth about this policy. #Heresthetruth https://t.co/uzjtVj6RRE",
+      "time": 1563466921000,
+      "url": "https://x.com/RepDanCrenshaw/status/1151889873458081793",
+      "user_id": "repdancrenshaw",
+      "username": "Rep. Dan Crenshaw",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1152187589606199296": {
+      "id": "1152187589606199296",
+      "content": "WOULD YOU TRUST BERNIE? .@SenSanders Fights for $15 Minimum Wage for All Americans: Pays $13 to His Own Campaign Staff https://t.co/i5GaUKxEB8",
+      "time": 1563537902000,
+      "url": "https://x.com/SaraCarterDC/status/1152187589606199296",
+      "user_id": "saracarterdc",
+      "username": "Sara A. Carter",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1152252198564220928": {
+      "id": "1152252198564220928",
+      "content": "A $15 minimum wage seems great but if an iPad can replace you...might want to rethink that wage hike demand!",
+      "time": 1563553306000,
+      "url": "https://x.com/TomiLahren/status/1152252198564220928",
+      "user_id": "tomilahren",
+      "username": "Tomi Lahren",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1152518513166344193": {
+      "id": "1152518513166344193",
+      "content": "WOULD YOU TRUST BERNIE? .@SenSanders Fights for $15 Minimum Wage for All Americans: Pays $13 to His Own Campaign Staff https://t.co/i5GaUKxEB8",
+      "time": 1563616800000,
+      "url": "https://x.com/SaraCarterDC/status/1152518513166344193",
+      "user_id": "saracarterdc",
+      "username": "Sara A. Carter",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1152931252598706179": {
+      "id": "1152931252598706179",
+      "content": "Bernie Sanders' 2020 campaign will limit working hours for organizers to guarantee $15 minimum wage https://t.co/EJHKmTDUMK",
+      "time": 1563715205000,
+      "url": "https://x.com/Newsweek/status/1152931252598706179",
+      "user_id": "newsweek",
+      "username": "Newsweek",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1153404280771997697": {
+      "id": "1153404280771997697",
+      "content": "Far-Left Rep. Rashida Tlaib calls for a $20 minimum wage The Congressional Budget Office recently said a $15 minimum wage would destroy 1.3 million jobs. A $20 minimum wage would destroy even more jobs. https://t.co/ILhaHht06k",
+      "time": 1563827984000,
+      "url": "https://x.com/RyanSaavedra/status/1153404280771997697",
+      "user_id": "ryansaavedra",
+      "username": "Ryan Saavedra",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1153536683918295040": {
+      "id": "1153536683918295040",
+      "content": "The Left is all about this \"fight for 15\" minimum wage mandate. Want to boost wages? Fight for border security. Illegal immigrants are suppressing your \"living wage.\" #buildthatwall",
+      "time": 1563859551000,
+      "url": "https://x.com/TomiLahren/status/1153536683918295040",
+      "user_id": "tomilahren",
+      "username": "Tomi Lahren",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1154201098275762177": {
+      "id": "1154201098275762177",
+      "content": "The federal minimum wage: April 1, 1990: $3.80 April 1, 1991: $4.25 October 1, 1996: $4.75 September 1, 1997: $5.15 July 24, 2007: $5.85 July 24, 2008: $6.55 July 24, 2009: $7.25 Ten years later & the federal minimum wage hasn't moved from $7.25. This is why I #FightFor15.",
+      "time": 1564017960000,
+      "url": "https://x.com/KamalaHarris/status/1154201098275762177",
+      "user_id": "kamalaharris",
+      "username": "Kamala Harris",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "1157350727846703106": {
+      "id": "1157350727846703106",
+      "content": "I say to McConnell: Stop being a coward. If you want to vote against a $15 minimum wage, so be it. But don't continue to deny a Senate vote on my bill to raise the minimum wage to a living wage of $15/hour when that is exactly what 67% of Americans demand. https://t.co/MfoRWMhsD7",
+      "time": 1564768890000,
+      "url": "https://x.com/BernieSanders/status/1157350727846703106",
+      "user_id": "berniesanders",
+      "username": "Bernie Sanders",
+      "comment_count": 0,
+      "comments": {}
+    }
+  }
+}

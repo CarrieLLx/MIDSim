@@ -1,0 +1,177 @@
+{
+  "source": "datasets/facebook/comments.csv",
+  "note": "Observed comments are stored in doc/real_content_pool; initial comments in topics/env_data.json are empty.",
+  "topics": [
+    {
+      "slug": "fmla_c334ab",
+      "topic": "Should paid family and parental leave be provided?",
+      "thread_count": 38,
+      "comment_count": 57,
+      "posts": [
+        {
+          "post_id": "pfbid02c4QboMdXzzqr5DxfgbZsSdFysWnbUJUhA3H9Syj93Peu48AeVcUr12PPAQqkfS8rl",
+          "thread_count": 5,
+          "comment_count": 7
+        },
+        {
+          "post_id": "pfbid0GCML4dqA4iJDEKsruK57TsbCW96kX9VK2nZAPbnnFMhZYgvLjAfuyPCk18fzvHZol",
+          "thread_count": 21,
+          "comment_count": 34
+        },
+        {
+          "post_id": "pfbid0YjKpUGAA5Kuc37uGABE225EXDffUw7DzLTWUCpdtDcDxBxCGoeGhXNj9q1knxeYDl",
+          "thread_count": 0,
+          "comment_count": 0
+        },
+        {
+          "post_id": "pfbid0yXWidCGDn3SxcunRUsiDwhDVWaEXvVfynWiUzRpYoWFZm2Q6EiRiwc1updzrjmyDl",
+          "thread_count": 12,
+          "comment_count": 16
+        }
+      ]
+    },
+    {
+      "slug": "food_stamps_ecd548",
+      "topic": "Should college students have easier access to SNAP food assistance?",
+      "thread_count": 11,
+      "comment_count": 25,
+      "posts": [
+        {
+          "post_id": "858790f5a47ea4e4d3f962c145b44566",
+          "thread_count": 0,
+          "comment_count": 0
+        },
+        {
+          "post_id": "pfbid02NiDZ6eKCnm8mGn88DVrTGpEhnf9KRLLC8SDfymsNfKu1zPEQN2eYJWRLJCfxinEol",
+          "thread_count": 0,
+          "comment_count": 0
+        },
+        {
+          "post_id": "pfbid0UUQCWo4dC7jGH9Mt2EZRZKLo9MLPabtzBqYKb9M1qQW46m6i4hKyxwB9eeLRrr6rl",
+          "thread_count": 11,
+          "comment_count": 25
+        }
+      ]
+    },
+    {
+      "slug": "hidden_fees_21044d",
+      "topic": "Should concert and sports tickets be required to show the full price?",
+      "thread_count": 578,
+      "comment_count": 739,
+      "posts": [
+        {
+          "post_id": "pfbid02HHunpbpvnMeZ5BJkQ5meQmACErsGTHQVNXAxbV5R6oGxpQTPGEmxwFQWKnenNxNDl",
+          "thread_count": 578,
+          "comment_count": 739
+        }
+      ]
+    },
+    {
+      "slug": "living_wage_bcd48e",
+      "topic": "Should the federal minimum wage be raised?",
+      "thread_count": 52,
+      "comment_count": 101,
+      "posts": [
+        {
+          "post_id": "pfbid02d1tNGK33cfNHidpPM1PJSjjfRRzNhkqcf5W9S3eiUaggcpfgY75HVt1tVfWF5gMtl",
+          "thread_count": 0,
+          "comment_count": 0
+        },
+        {
+          "post_id": "pfbid02rhBtxVRwHteHiVbDVY6YhQbGfFeUMYZYWjqCu5a7WnhCYJG6hkz5rQt8r8Q4sa8kl",
+          "thread_count": 2,
+          "comment_count": 2
+        },
+        {
+          "post_id": "pfbid0CpY8hFbFVjSrmqRiQrsp6GpTUNc8uBQndjcrBFwRPg1TGWDksxpLpPmyx1bKqriPl",
+          "thread_count": 0,
+          "comment_count": 0
+        },
+        {
+          "post_id": "pfbid0guJBqqi3CgBBE9YwE6DEmJsLPYTrzo6XU36eFfNz6ZcTteJz5KCCFoBBVpqzt9GSl",
+          "thread_count": 15,
+          "comment_count": 64
+        },
+        {
+          "post_id": "pfbid0oeVF3oAkcxeUhSgt3do6FdFBGU3VSsJtu5qyVosbr85nxnY5ksnDg32awax1ju1il",
+          "thread_count": 30,
+          "comment_count": 30
+        },
+        {
+          "post_id": "pfbid0q1zXjLcgUWvxgF5sjxY4AHWss3whYSupojKaB8maw5U7nhZE1gxDzcykZ6yqSjQXl",
+          "thread_count": 5,
+          "comment_count": 5
+        }
+      ]
+    },
+    {
+      "slug": "no_tax_on_tips_f18fbe",
+      "topic": "Should tip income be tax-exempt?",
+      "thread_count": 68,
+      "comment_count": 92,
+      "posts": [
+        {
+          "post_id": "pfbid02aKVp66FnByhHdpoHeP2zhzb2QcbmwHYZR9QDnHgLpNMNZ8rpBFPb6G9RLPDgBKaJl",
+          "thread_count": 9,
+          "comment_count": 15
+        },
+        {
+          "post_id": "pfbid0fvBQdqyufPCe4vMCRc69Zdt6L8VgLgFBjChKFKrU2N5iw2HA8pGFhAuWTnt7afb4l",
+          "thread_count": 57,
+          "comment_count": 73
+        },
+        {
+          "post_id": "pfbid0td8VoSw6JMNFB3boUPfZwWdRa7niJiSWHUfDysyxLjKRViUnpsG2VBTZqYaWDn3Ql",
+          "thread_count": 2,
+          "comment_count": 4
+        }
+      ]
+    },
+    {
+      "slug": "rent_too_high_aebcfb",
+      "topic": "Should the United States expand affordable housing supply?",
+      "thread_count": 58,
+      "comment_count": 74,
+      "posts": [
+        {
+          "post_id": "pfbid02cdprwNaa5sK7TsmZDFbqeJiZFHvtm8yJ4ev1dC5USaxBZ14GBJYgeU3N2iV9gQjxl",
+          "thread_count": 0,
+          "comment_count": 0
+        },
+        {
+          "post_id": "pfbid02mGmoJFBtMYa2dVnDqqgNw7srtb2iJRYTgr7XyKAvSX8bFGnnNL2AV1EdaGfCn81Kl",
+          "thread_count": 54,
+          "comment_count": 70
+        },
+        {
+          "post_id": "pfbid0A6QEPnjbDVr5khvXCTTe5rZoRgEUyH2DY4jRuaTo2qjMA6QtUXFgvVDZFmbV6jktl",
+          "thread_count": 4,
+          "comment_count": 4
+        }
+      ]
+    },
+    {
+      "slug": "universal_school_meals_6d389a",
+      "topic": "Should free school meals be expanded?",
+      "thread_count": 9,
+      "comment_count": 33,
+      "posts": [
+        {
+          "post_id": "pfbid021ik3bJXfKxXmbZrp6BaQjdmEigViHByyq51J8XkK4kTDY8t79XnWzaF4bTuKpStTl",
+          "thread_count": 0,
+          "comment_count": 0
+        },
+        {
+          "post_id": "pfbid02Nu2dzi2thXTDT1qtq2a4HFYeDdPsspAxL5agJ1AW9A9qjK2r75y52hAh6jum8h6ql",
+          "thread_count": 0,
+          "comment_count": 0
+        },
+        {
+          "post_id": "pfbid0MNThSoUw4XZczTzuv1fbq2znihT2pHnyXKSvqaphamcbgzRjyRsPksXhcWzfT6Vql",
+          "thread_count": 9,
+          "comment_count": 33
+        }
+      ]
+    }
+  ]
+}

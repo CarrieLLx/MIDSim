@@ -6,6 +6,7 @@ from loguru import logger
 from onesim.models import ModelManager
 from onesim.models.core.message import Message
 from onesim.models.parsers import TagParser
+from onesim.utils.model_retry import validated_auxiliary_request, ModelRequestSkipped
 
 class MemoryMetric(ABC):
     def __init__(self, config):
@@ -38,7 +39,7 @@ class ImportanceMetric(MemoryMetric):
         
   
     async def calculate(self, memory_item, query=None):
-        # 检查缓存
+        # Check the cache.
         if memory_item.id in self.cache:
             return self.cache[memory_item.id]
             
@@ -50,32 +51,30 @@ class ImportanceMetric(MemoryMetric):
         prompt = self.llm_model.format(
             Message("user",prompt, role="user")
         )
-        try:
-            model_name = getattr(self.llm_model, "config_name", type(self.llm_model).__name__)
-            logger.debug(
-                f"[ImportanceMetric] Call LLM to evaluate importance memory_id={memory_item.id} "
-                f"model={model_name}"
-            )
-            response = await self.llm_model.acall(prompt)
+        def validate_score(response):
             res = self.parser.parse(response)
-            # importance = float(res.parsed['score'])
             raw = res.parsed
             if isinstance(raw, dict):
                 score_val = raw.get("score")
-                importance = float(str(score_val).strip()) if score_val is not None else 5.0
+                importance = float(str(score_val).strip())
             else:
                 importance = float(str(raw).strip())
-            logger.info(
-                f"[ImportanceMetric] memory_id={memory_item.id} importance={importance} "
-                f"raw_parsed={raw!r}"
+            if not 1 <= importance <= 10:
+                raise ValueError('Importance score must be between 1 and 10')
+            return importance
+
+        try:
+            importance = await validated_auxiliary_request(
+                self.llm_model, prompt, validate_score, kind='memory_importance',
+                owner=self, agent_id=getattr(memory_item, 'agent_id', None),
             )
-            # Save to cache
-            self.cache[memory_item.id] = importance
-            return importance
-        except Exception as e:
-            error_msg = f"Error parsing importance score: {e}\nResponse: {response if 'response' in locals() else 'No response'}"
-            importance = 5.0
-            return importance
+        except ModelRequestSkipped:
+            importance = None
+            memory_item.attributes['importance_status'] = 'skipped_error'
+        # Cache skips too: adding, scoring and reflection must not retry this
+        # same memory's exhausted request again within the running strategy.
+        self.cache[memory_item.id] = importance
+        return importance
 
 class RecencyMetric(MemoryMetric):
     @staticmethod

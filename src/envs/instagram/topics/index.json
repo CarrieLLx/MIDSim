@@ -1,0 +1,137 @@
+{
+  "source_csv": "datasets/ins/posts.csv",
+  "selection_manifest": "config/datasets/instagram/selection_24day.json",
+  "comment_count_file": "comment_counts.json",
+  "platform_filter": "Instagram",
+  "topic_count": 7,
+  "topics": [
+    {
+      "slug": "fmla_c334ab",
+      "topic": "Should paid family and parental leave be provided?",
+      "keyword": "paid parental leave",
+      "post_count": 46,
+      "comment_count": 653,
+      "relationship_count": 137,
+      "user_count": 475
+    },
+    {
+      "slug": "food_stamps_ecd548",
+      "topic": "Should college students have easier access to SNAP food assistance?",
+      "keyword": "student food insecurity",
+      "post_count": 10,
+      "comment_count": 47,
+      "relationship_count": 14,
+      "user_count": 42
+    },
+    {
+      "slug": "hidden_fees_21044d",
+      "topic": "Should concert and sports tickets be required to show the full price?",
+      "keyword": "ticket fees",
+      "post_count": 3,
+      "comment_count": 6,
+      "relationship_count": 2,
+      "user_count": 4
+    },
+    {
+      "slug": "living_wage_bcd48e",
+      "topic": "Should the federal minimum wage be raised?",
+      "keyword": "federal minimum wage",
+      "post_count": 8,
+      "comment_count": 120,
+      "relationship_count": 72,
+      "user_count": 85
+    },
+    {
+      "slug": "no_tax_on_tips_f18fbe",
+      "topic": "Should tip income be tax-exempt?",
+      "keyword": "tipped workers",
+      "post_count": 14,
+      "comment_count": 1694,
+      "relationship_count": 310,
+      "user_count": 1613
+    },
+    {
+      "slug": "rent_too_high_aebcfb",
+      "topic": "Should the United States expand affordable housing supply?",
+      "keyword": "zoning reform",
+      "post_count": 4,
+      "comment_count": 20,
+      "relationship_count": 16,
+      "user_count": 11
+    },
+    {
+      "slug": "universal_school_meals_6d389a",
+      "topic": "Should free school meals be expanded?",
+      "keyword": "school lunch debt",
+      "post_count": 7,
+      "comment_count": 2,
+      "relationship_count": 4,
+      "user_count": 5
+    }
+  ],
+  "scenarios": [
+    {
+      "slug": "fmla_c334ab",
+      "topic": "Should paid family and parental leave be provided?",
+      "keyword": "paid parental leave",
+      "post_count": 46,
+      "comment_count": 653,
+      "relationship_count": 137,
+      "user_count": 475
+    },
+    {
+      "slug": "food_stamps_ecd548",
+      "topic": "Should college students have easier access to SNAP food assistance?",
+      "keyword": "student food insecurity",
+      "post_count": 10,
+      "comment_count": 47,
+      "relationship_count": 14,
+      "user_count": 42
+    },
+    {
+      "slug": "hidden_fees_21044d",
+      "topic": "Should concert and sports tickets be required to show the full price?",
+      "keyword": "ticket fees",
+      "post_count": 3,
+      "comment_count": 6,
+      "relationship_count": 2,
+      "user_count": 4
+    },
+    {
+      "slug": "living_wage_bcd48e",
+      "topic": "Should the federal minimum wage be raised?",
+      "keyword": "federal minimum wage",
+      "post_count": 8,
+      "comment_count": 120,
+      "relationship_count": 72,
+      "user_count": 85
+    },
+    {
+      "slug": "no_tax_on_tips_f18fbe",
+      "topic": "Should tip income be tax-exempt?",
+      "keyword": "tipped workers",
+      "post_count": 14,
+      "comment_count": 1694,
+      "relationship_count": 310,
+      "user_count": 1613
+    },
+    {
+      "slug": "rent_too_high_aebcfb",
+      "topic": "Should the United States expand affordable housing supply?",
+      "keyword": "zoning reform",
+      "post_count": 4,
+      "comment_count": 20,
+      "relationship_count": 16,
+      "user_count": 11
+    },
+    {
+      "slug": "universal_school_meals_6d389a",
+      "topic": "Should free school meals be expanded?",
+      "keyword": "school lunch debt",
+      "post_count": 7,
+      "comment_count": 2,
+      "relationship_count": 4,
+      "user_count": 5
+    }
+  ]
+}

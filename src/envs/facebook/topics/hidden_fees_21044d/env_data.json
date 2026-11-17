@@ -1,0 +1,18 @@
+{
+  "current_timestamp": 1782248416000,
+  "timestamp_duration": 0,
+  "reference_embedding_path": "datasets/facebook/embeddings/bge-base-en-v1.5_embeddings.json",
+  "scenario_topic": "Should concert and sports tickets be required to show the full price?",
+  "content_pool": {
+    "pfbid02HHunpbpvnMeZ5BJkQ5meQmACErsGTHQVNXAxbV5R6oGxpQTPGEmxwFQWKnenNxNDl": {
+      "id": "pfbid02HHunpbpvnMeZ5BJkQ5meQmACErsGTHQVNXAxbV5R6oGxpQTPGEmxwFQWKnenNxNDl",
+      "content": "Too often, companies advertise one price and then tack on hidden fees before you check out.…",
+      "time": 1782248416000,
+      "url": "https://www.facebook.com/GovMikieSherrill/posts/pfbid02HHunpbpvnMeZ5BJkQ5meQmACErsGTHQVNXAxbV5R6oGxpQTPGEmxwFQWKnenNxNDl?__cft__[0]=AZZF_6iIB6XhMXz9u5TjJ0a5g4zu63MYN3A9DkT891SdMilVxSlntzkjiJjFQlDR0kCf1GcK3rfz7AWeLKxhKhVC7ZOR810UK0JvxJpzIKZYwKTs6WVwzyccvOZ3n-Bj-kE4PHuQ4qiwJV73CQBPIvgpMU8Nmv734hVJZy_5OiciVSmX1wDMRxbDw0CqdcjPBN4&__tn__=%2CO%2CP-R",
+      "user_id": "GovMikieSherrill",
+      "username": "Governor Mikie Sherrill",
+      "comment_count": 0,
+      "comments": {}
+    }
+  }
+}

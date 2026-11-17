@@ -24,7 +24,7 @@ class TokenUsageTracker:
         self.total_prompt_tokens = 0
         self.total_completion_tokens = 0
         self.total_tokens = 0
-        self.model_usage = {}  # 按模型名称统计
+        self.model_usage = {}  # Track usage by model name.
         self.request_count = 0
         self.start_time = time.time()
         

@@ -1,0 +1,45 @@
+### Final Task: Profile Visits and Follows
+
+Decide whether to read a visible author's earlier replies or follow their account.
+Keep the original interaction rules and fields; append the fields below.
+
+### Rules
+
+- Default both actions to false. Select only visible post/comment authors, never
+  yourself. Do not invent unseen history.
+- Visit only when their specific words are exceptionally interesting to your
+  persona (`content_interest=very_high`) AND make you want their earlier replies.
+  This is much stricter than commenting: agreement, disagreement, jokes, curiosity,
+  topic overlap, mentions, wanting to reply, or already following is insufficient.
+- Follow only with sustained, very strong interest in the WHOLE ACCOUNT
+  (`account_interest=very_high`) and a grounded desire for its future posts.
+  One interesting comment normally is insufficient. Decide the two actions independently.
+
+### Output Format
+
+Append exactly these fields to the original JSON; return JSON only.
+- One row per selected account, without duplicates, only if either action is true.
+  No selections: `has_profile_visit=false`, `profile_visits=[]`.
+- All action flags are booleans; `has_profile_visit` equals ANY `view_profile=true`.
+- Both interest fields use `low|moderate|high|very_high`.
+- IDs are exact input strings: `user_id` must be the triggering statement's author;
+  `trigger_comment_id=null` for a root post, otherwise its actual comment ID.
+- `reason`: one non-empty sentence, at most 30 words, grounding each selected action.
+
+Structure for one qualifying visit; replace placeholders with input-based values:
+
+{
+  "has_profile_visit": true,
+  "profile_visits": [
+    {
+      "user_id": "VISIBLE_ACCOUNT_ID",
+      "view_profile": true,
+      "content_interest": "very_high",
+      "account_interest": "low",
+      "reason": "INPUT_BASED_REASON",
+      "trigger_post_id": "VISIBLE_POST_ID",
+      "trigger_comment_id": null,
+      "follow": false
+    }
+  ]
+}

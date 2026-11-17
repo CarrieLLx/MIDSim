@@ -12,6 +12,7 @@ import os
 import time
 import json
 import inspect
+import tempfile
 from onesim.data import (
     TrailManager, TrailStatus, 
     EnvironmentStateManager, 
@@ -26,6 +27,14 @@ from datetime import datetime
 # Use aiofiles for asynchronous file operations
 import aiofiles
 import aiofiles.os
+
+
+def _event_json_default(value: Any) -> Any:
+    """Keep set-valued event fields as JSON arrays without changing live data."""
+    if isinstance(value, (set, frozenset)):
+        return sorted(value, key=lambda item: (type(item).__name__, repr(item)))
+    raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
+
 
 class SimulationMode(Enum):
     """Enumeration of simulation modes."""
@@ -149,6 +158,7 @@ class BasicSimEnv:
         self._termination_signal = asyncio.Event()  # Termination signal
         # Signal when stop_simulation fully completed
         self.stopped_event = asyncio.Event()
+        self._shutdown_task: Optional[asyncio.Task] = None
 
         # Data storage managers
         self.trail_id = trail_id
@@ -943,7 +953,7 @@ class BasicSimEnv:
 
         if env_file and await aiofiles.os.path.exists(env_file):
             try:
-                async with aiofiles.open(env_file, 'r') as f:
+                async with aiofiles.open(env_file, 'r', encoding='utf-8') as f:
                     data = json.loads(await f.read())
                 # Update data using the async lock
                 async with self._lock:
@@ -1032,6 +1042,9 @@ class BasicSimEnv:
             if not isinstance(params, dict):
                 logger.error(f"MIDSim params file must be a JSON object: {resolved}")
                 return
+            from onesim.utils.midsim_params import clear_midsim_root_cache
+
+            clear_midsim_root_cache()
             async with self._lock:
                 self.data["midsim_params"] = params
                 simulator = params.get("simulator")
@@ -1469,22 +1482,50 @@ class BasicSimEnv:
         return stats
 
     async def stop_simulation(self):
+        """Join one shutdown operation; cancelling a caller must not cancel exports."""
+        if self._shutdown_task is None:
+            self._shutdown_task = asyncio.create_task(
+                self._stop_simulation(), name=f"{self.name}_shutdown"
+            )
+        await asyncio.shield(self._shutdown_task)
+
+    async def _stop_simulation(self):
         """
         Stop the simulation gracefully in both single and distributed modes.
         Sends termination signal to all registered agents.
         """
         logger.info("Stopping simulation...")
 
+        model_failure = getattr(self, '_llm_failure', None)
+        if model_failure:
+            # Cancel behavior tasks before saving a partial step, to stop further writes.
+            for group in (self.agents or {}).values():
+                for agent in group.values():
+                    agent.stopped = True
+                    cancel = getattr(agent, 'cancel_pending_run_tasks', None)
+                    if cancel is not None:
+                        await cancel()
+            self.data['simulation_failure'] = model_failure
+            self.data['simulation_complete'] = False
+            failure_path = os.path.join(self.output_dir or '.', 'run_failure.json')
+            os.makedirs(os.path.dirname(failure_path) or '.', exist_ok=True)
+            with open(failure_path, 'w', encoding='utf-8') as failure_file:
+                json.dump({'status': 'failed', 'partial_step': self.current_step,
+                           'failure': model_failure}, failure_file, ensure_ascii=False, indent=2)
+
         # Set state to terminated
-        await self.set_simulation_state(SimulationState.TERMINATED, reason="user_requested")
+        await self.set_simulation_state(SimulationState.TERMINATED, reason="model_request_failed" if model_failure else "user_requested")
 
         # Stop external MonitorManager tasks early to avoid post-termination RPCs
         try:
             registry = get_component_registry()
             monitor_manager = registry.get_instance("monitor")
             if monitor_manager and hasattr(monitor_manager, 'stop_all_metrics'):
-                await monitor_manager.stop_all_metrics()
-                logger.info("Stopped MonitorManager metric tasks")
+                try:
+                    await asyncio.wait_for(monitor_manager.stop_all_metrics(), timeout=3.0)
+                    logger.info("Stopped MonitorManager metric tasks")
+                except asyncio.TimeoutError:
+                    logger.warning("Monitor stop timed out; continuing shutdown")
         except Exception as e:
             logger.warning(f"Failed to stop MonitorManager tasks: {e}")
 
@@ -1506,12 +1547,12 @@ class BasicSimEnv:
 
         # Update trail status if not already updated
         if self._trail_manager:
-            await self._trail_manager.update_trail_status(self.trail_id, TrailStatus.COMPLETED)
+            await self._trail_manager.update_trail_status(self.trail_id, TrailStatus.FAILED if model_failure else TrailStatus.COMPLETED)
 
         # Create a global termination event using EndEvent class
         from onesim.events import EndEvent
         termination_event = EndEvent(
-            from_agent_id="ENV", to_agent_id="all", reason="simulation_completed"
+            from_agent_id="ENV", to_agent_id="all", reason="model_request_failed" if model_failure else "simulation_completed"
         )
 
         # Export event flow data if enabled in config
@@ -1526,8 +1567,13 @@ class BasicSimEnv:
             except Exception as e:
                 logger.error(f"Error exporting event flow data: {e}")
 
-        # Send termination event to event bus
-        await self.event_bus.dispatch_event(termination_event)
+        # Send termination event only while the bus is still running. A second
+        # EndEvent after the bus already exited stays in the shared queue and
+        # instantly kills the next batch topic.
+        if not self.event_bus.is_stopped():
+            await self.event_bus.dispatch_event(termination_event)
+        else:
+            logger.info("Event bus already stopped; skip leftover EndEvent dispatch")
 
         # For distributed mode, we need to make sure the event is propagated
         # to all nodes. The event bus will handle this based on the "all" target.
@@ -1541,7 +1587,7 @@ class BasicSimEnv:
         # Record final state (use async lock if modifying shared data)
         # This modifies self.data, use the lock
         async with self._lock:
-            self.data["simulation_complete"] = True
+            self.data["simulation_complete"] = not bool(model_failure)
             end_time = time.time()
             self.data["simulation_end_time"] = end_time
             self.data["total_simulation_time"] = end_time - self.data.get("simulation_start_time", end_time)
@@ -1967,18 +2013,33 @@ class BasicSimEnv:
         Args:
             export_path (str): Path to save the exported data
         """
+        temporary_path = None
         try:
             # Check if we have pending events
             if hasattr(self, '_pending_events') and self._pending_events:
-                # Export just the events array to match the format in event.py and test.json
-                with open(export_path, "w", encoding='utf-8') as f:
-                    json.dump(self._pending_events, f, indent=4)
+                # Publish only a fully serialized file. Failed exports must not
+                # truncate a previous checkpoint or leave a partial JSON file.
+                with tempfile.NamedTemporaryFile(
+                    mode="w", encoding="utf-8", delete=False,
+                    dir=os.path.dirname(os.path.abspath(export_path)),
+                    prefix=f".{os.path.basename(export_path)}.", suffix=".tmp",
+                ) as f:
+                    temporary_path = f.name
+                    json.dump(self._pending_events, f, indent=4, default=_event_json_default)
+                os.replace(temporary_path, export_path)
+                temporary_path = None
 
                 logger.info(f"Exported {len(self._pending_events)} events directly to {export_path}")
             else:
                 logger.warning("No events to export - file not created")
         except Exception as e:
             logger.error(f"Error in direct export of events: {e}")
+        finally:
+            if temporary_path is not None:
+                try:
+                    os.unlink(temporary_path)
+                except OSError as e:
+                    logger.warning(f"Could not remove temporary event export {temporary_path}: {e}")
 
     async def get_agent_data_by_type(self, agent_type: str, key: str, default: Optional[Any] = None) -> Any:
         """

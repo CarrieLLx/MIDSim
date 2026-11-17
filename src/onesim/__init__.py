@@ -201,43 +201,44 @@ async def init_monitor_component(monitor_config: MonitorConfig):
         # Create monitor manager
         monitor_manager = MonitorManager()
         
-        # 尝试从环境目录加载 scene_info.json
+        # Try to load scene_info.json from the environment directory.
         env_path = os.path.dirname(monitor_config.metrics_path) if monitor_config.metrics_path else None
         metrics_module = None
         
         if env_path and os.path.exists(env_path):
-            # 加载 scene_info.json 获取监控配置和指标定义
-            scene_info_path = os.path.join(env_path, "scene_info.json")
+            # Load monitoring configuration and metric definitions from scene_info.json.
+            from onesim.env_layout import get_scene_info_path
+            scene_info_path = get_scene_info_path(env_path)
             if os.path.exists(scene_info_path):
                 try:
                     with open(scene_info_path, 'r', encoding='utf-8') as f:
                         scene_info = json.load(f)
                     
-                    # 从 scene_info.json 加载指标定义
+                    # Load metric definitions from scene_info.json.
                     if "metrics" in scene_info and isinstance(scene_info["metrics"], list):
-                        # 首先尝试加载指标计算函数模块
+                        # First try to load the metric computation module.
                         if monitor_config.metrics_path and os.path.exists(monitor_config.metrics_path):
                             try:
                                 if os.path.isdir(monitor_config.metrics_path):
-                                    # 如果是目录，查找metrics.py
+                                    # Look for metrics.py if this path is a directory.
                                     module_path = os.path.join(monitor_config.metrics_path, "metrics.py")
                                 else:
                                     module_path = monitor_config.metrics_path
                                 
                                 if os.path.exists(module_path):
-                                    # 使用importlib动态导入模块
+                                    # Import the module dynamically with importlib.
                                     spec = importlib.util.spec_from_file_location("metrics_module", module_path)
                                     metrics_module = importlib.util.module_from_spec(spec)
                                     spec.loader.exec_module(metrics_module)
-                                    logger.info(f"成功导入指标计算模块: {module_path}")
+                                    logger.info(f"Imported metric computation module: {module_path}")
                             except Exception as e:
-                                logger.error(f"导入指标计算模块失败: {e}")
+                                logger.error(f"Failed to import metric computation module: {e}")
                         
-                        # 加载并注册指标
+                        # Load and register metrics.
                         metrics_loaded = 0
                         for metric_def in scene_info["metrics"]:
                             try:
-                                # 创建变量规格
+                                # Create variable specifications.
                                 variables = []
                                 for var in metric_def.get("variables", []):
                                     variables.append(VariableSpec(
@@ -248,12 +249,12 @@ async def init_monitor_component(monitor_config: MonitorConfig):
                                         required=var.get("required", True)
                                     ))
                                 
-                                # 获取函数名
+                                # Get the function name.
                                 function_name = metric_def.get("function_name") or metric_def.get("id")
                                 if not function_name:
                                     function_name = re.sub(r'[^\w\-_]', '_', metric_def["name"])
                                 
-                                # 创建指标定义
+                                # Create the metric definition.
                                 metric_definition = MetricDefinition(
                                     id=metric_def.get("id", function_name),
                                     name=metric_def["name"],
@@ -263,41 +264,41 @@ async def init_monitor_component(monitor_config: MonitorConfig):
                                     update_interval=metric_def.get("update_interval", 60)
                                 )
                                 
-                                # 尝试从metrics模块查找计算函数
+                                # Look for the computation function in the metrics module.
                                 calculation_function = None
                                 if metrics_module:
-                                    # 首先尝试通过get_metric_function获取
+                                    # First try get_metric_function.
                                     if hasattr(metrics_module, 'get_metric_function'):
                                         calculation_function = metrics_module.get_metric_function(function_name)
                                     
-                                    # 如果没有找到，直接尝试获取同名函数
+                                    # If not found, try the function with the same name directly.
                                     if calculation_function is None and hasattr(metrics_module, function_name):
                                         calculation_function = getattr(metrics_module, function_name)
                                 
                                 if calculation_function:
-                                    # 注册指标
+                                    # Register the metric.
                                     monitor_manager.register_metric(
                                         metric_definition, 
                                         calculation_function=calculation_function
                                     )
                                     metrics_loaded += 1
                                 else:
-                                    logger.warning(f"未找到指标 '{metric_def['name']}' 的计算函数 '{function_name}'")
+                                    logger.warning(f"Metric '{metric_def['name']}' has no computation function '{function_name}'")
                             except Exception as e:
-                                logger.error(f"加载指标 '{metric_def.get('name', 'unknown')}' 失败: {e}")
+                                logger.error(f"Failed to load metric '{metric_def.get('name', 'unknown')}': {e}")
                         
-                        logger.info(f"从scene_info.json中加载了 {metrics_loaded} 个指标")
+                        logger.info(f"Loaded {metrics_loaded} metrics from scene_info.json")
                 except Exception as e:
-                    logger.error(f"从scene_info.json加载数据失败: {e}")
+                    logger.error(f"Failed to load data from scene_info.json: {e}")
         
-        # 注册监控管理器
+        # Register the monitoring manager.
         registry.register(COMPONENT_MONITOR, monitor_manager)
-        logger.info("监控系统初始化完成")
+        logger.info("Monitoring system initialized")
         
-        # 如果enabled为true，尝试获取环境并启动监控
+        # If enabled, try to obtain the environment and start monitoring.
         active_env = None
         
-        # 1. 尝试从simulator获取环境 (如果已注册)
+        # 1. Try to get the environment from the simulator, if registered.
         try:
             simulator = registry.get_instance("simulator")
             if simulator and hasattr(simulator, "env"):
@@ -305,7 +306,7 @@ async def init_monitor_component(monitor_config: MonitorConfig):
         except:
             pass
             
-        # 2. 尝试从已知模块获取环境
+        # 2. Try to get the environment from known modules.
         if not active_env:
             try:
                 from onesim.simulator import get_current_environment
@@ -313,17 +314,17 @@ async def init_monitor_component(monitor_config: MonitorConfig):
             except:
                 pass
                 
-        # 如果找到环境，配置监控并启动
+        # Configure and start monitoring if an environment was found.
         
         if active_env:
             monitor_manager.setup(active_env)
             monitor_manager.start_all_metrics()
-            logger.info("已自动启动所有指标的监控")
+            logger.info("Automatically started monitoring for all metrics")
         else:
-            logger.info("未找到活跃环境，监控将在环境可用时启动")
+            logger.info("No active environment found; monitoring will start when one becomes available")
         
     except ImportError as e:
-        logger.error(f"初始化监控组件失败: {e}")
+        logger.error(f"Failed to initialize monitoring components: {e}")
         raise
 
 async def init_database_component(db_config: DatabaseConfig):

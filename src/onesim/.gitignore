@@ -1,0 +1,4 @@
+# Chinese reading copies are local reference material, not runtime prompts.
+/agent/prompts/*.zh-CN*.md
+__pycache__/
+*.py[cod]

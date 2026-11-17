@@ -14,6 +14,50 @@ from loguru import logger
 from .model_base import ModelAdapterBase
 from .model_response import ModelResponse
 from .message import Message
+from onesim.utils.model_retry import single_attempt_active
+
+
+_INSPECTION_SHRINK_LIMITS = (8000, 3000, 1200)
+
+
+def _is_content_inspection_error(exc: BaseException) -> bool:
+    text = str(exc).lower()
+    return "data_inspection_failed" in text or "inappropriate content" in text
+
+
+def _shrink_text(text: str, limit: int) -> str:
+    if len(text) <= limit:
+        return text
+    marker = "\n...[truncated]...\n"
+    keep = max(limit - len(marker), 0)
+    head = keep // 2
+    tail = keep - head
+    return text[:head] + marker + text[-tail:]
+
+
+def _shrink_messages(messages: List[Any], limit: int) -> List[Any]:
+    shrunk: List[Any] = []
+    for message in messages:
+        if isinstance(message, dict):
+            copied = dict(message)
+            content = copied.get("content")
+            if isinstance(content, str):
+                copied["content"] = _shrink_text(content, limit)
+            shrunk.append(copied)
+        else:
+            shrunk.append(message)
+    return shrunk
+
+
+def _shrink_call(args: tuple, kwargs: Dict[str, Any], limit: int) -> tuple:
+    new_args = list(args)
+    new_kwargs = dict(kwargs)
+    if new_args and isinstance(new_args[0], list):
+        new_args[0] = _shrink_messages(new_args[0], limit)
+    messages = new_kwargs.get("messages")
+    if isinstance(messages, list):
+        new_kwargs["messages"] = _shrink_messages(messages, limit)
+    return tuple(new_args), new_kwargs
 
 
 class LoadBalancerStrategy:
@@ -104,7 +148,7 @@ class LoadBalancer(ModelAdapterBase):
         self.category = category.lower()
         self.provider = provider
         self.model_name = model_name  # Store the model name if specified
-        self.max_retries = max_retries  # Store max retries
+        self.max_retries = max_retries  # Store max retries; failover still tries every configured key
 
         if self.category not in ["chat", "embedding"]:
             logger.warning(f"Unknown category '{category}', defaulting to 'chat'")
@@ -185,13 +229,28 @@ class LoadBalancer(ModelAdapterBase):
             logger.warning(f"Model '{model.config_name}' failed: {str(e)}")
             raise
 
+    def _next_untried_model(self, tried: set) -> Optional[ModelAdapterBase]:
+        """Pick the next key that this request has not already called.
+
+        A failed request walks every configured key once. Duplicate picks from
+        the strategy do not consume an attempt.
+        """
+        pool = self._model_instances
+        if not pool:
+            return None
+        for _ in range(len(pool)):
+            model = self._strategy.select_model(pool)
+            if model.config_name not in tried:
+                return model
+        return None
+
     def __call__(self, *args, **kwargs) -> ModelResponse:
         """
         Process a request synchronously using one of the balanced models.
         
         This method selects a model using the configured load balancing strategy
         and forwards the request to that model. If the selected model fails,
-        it will try other models up to max_retries times.
+        it tries each remaining configured key once.
         
         Args:
             *args: Arguments to pass to the selected model.
@@ -202,32 +261,42 @@ class LoadBalancer(ModelAdapterBase):
             
         Raises:
             ValueError: If no models are configured or initialized.
-            Exception: If all models fail after max_retries attempts.
+            Exception: If every configured model fails.
         """
         if not self._model_instances:
             raise ValueError(f"Load balancer '{self.config_name}' has no initialized models")
 
         last_error = None
         tried_models = set()
+        saw_inspection = False
+        shrink_level = 0
 
-        for _ in range(self.max_retries):
-            # Select a model based on the strategy
-            model = self._strategy.select_model(self._model_instances)
-
-            # Skip if we've already tried this model
-            if model.config_name in tried_models:
-                continue
-
+        while True:
+            model = self._next_untried_model(tried_models)
+            if model is None:
+                if saw_inspection and shrink_level < len(_INSPECTION_SHRINK_LIMITS):
+                    limit = _INSPECTION_SHRINK_LIMITS[shrink_level]
+                    shrink_level += 1
+                    args, kwargs = _shrink_call(args, kwargs, limit)
+                    tried_models.clear()
+                    saw_inspection = False
+                    logger.warning(
+                        "Content inspection rejected the prompt; retrying all keys with input capped at {} chars",
+                        limit,
+                    )
+                    continue
+                break
             tried_models.add(model.config_name)
-
             try:
                 return self._try_with_model(model, *args, **kwargs)
             except Exception as e:
                 last_error = e
+                saw_inspection = saw_inspection or _is_content_inspection_error(e)
                 continue
 
-        # If we get here, all models failed
-        raise Exception(f"All models failed after {self.max_retries} attempts. Last error: {str(last_error)}")
+        raise Exception(
+            f"All models failed after {len(tried_models)} attempts. Last error: {str(last_error)}"
+        )
 
     async def _try_with_model_async(self, model: ModelAdapterBase, *args, **kwargs) -> ModelResponse:
         """
@@ -268,7 +337,7 @@ class LoadBalancer(ModelAdapterBase):
         
         This method selects a model using the configured load balancing strategy
         and forwards the request to that model using its asynchronous interface.
-        If the selected model fails, it will try other models up to max_retries times.
+        If the selected model fails, it tries each remaining configured key once.
         
         Args:
             *args: Arguments to pass to the selected model.
@@ -279,33 +348,52 @@ class LoadBalancer(ModelAdapterBase):
             
         Raises:
             ValueError: If no models are configured or initialized.
-            Exception: If all models fail after max_retries attempts.
+            Exception: If every configured model fails.
         """
         if not self._model_instances:
             raise ValueError(f"Load balancer '{self.config_name}' has no initialized models")
 
+        if single_attempt_active():
+            # Validation owns the twenty-attempt budget. Do not multiply it by
+            # the number of keys, transport retries, or input-shrinking passes.
+            model = self._next_untried_model(set())
+            return await self._try_with_model_async(model, *args, **kwargs)
+
         last_error = None
         tried_models = set()
+        saw_inspection = False
+        shrink_level = 0
 
-        for _ in range(self.max_retries):
-            # Select a model based on the strategy
-            model = self._strategy.select_model(self._model_instances)
-
-            # Skip if we've already tried this model
-            if model.config_name in tried_models:
-                continue
-
+        while True:
+            model = self._next_untried_model(tried_models)
+            if model is None:
+                if saw_inspection and shrink_level < len(_INSPECTION_SHRINK_LIMITS):
+                    limit = _INSPECTION_SHRINK_LIMITS[shrink_level]
+                    shrink_level += 1
+                    args, kwargs = _shrink_call(args, kwargs, limit)
+                    tried_models.clear()
+                    saw_inspection = False
+                    logger.warning(
+                        "Content inspection rejected the prompt; retrying all keys with input capped at {} chars",
+                        limit,
+                    )
+                    continue
+                break
             tried_models.add(model.config_name)
-
             try:
-                logger.info(f"[LoadBalancer] {self.config_name} 收到请求，选中模型: {model.config_name}")
+                logger.info(
+                    f"[LoadBalancer] {self.config_name} received a request; selected model: {model.config_name} "
+                    f"({len(tried_models)}/{len(self._model_instances)})"
+                )
                 return await self._try_with_model_async(model, *args, **kwargs)
             except Exception as e:
                 last_error = e
+                saw_inspection = saw_inspection or _is_content_inspection_error(e)
                 continue
 
-        # If we get here, all models failed
-        raise Exception(f"All models failed after {self.max_retries} attempts. Last error: {str(last_error)}")
+        raise Exception(
+            f"All models failed after {len(tried_models)} attempts. Last error: {str(last_error)}"
+        )
     # FEAT: add list_models and alist_models
     def list_models(self) -> List[str]:
         """

@@ -1,0 +1,17 @@
+[keyword_overlap]
+guidance = '''
+### Similarity to Memory: Keywords
+
+Signal: This batch has high keyword overlap with stored memory and may repeat a stance or discussion already in memory.
+
+Guidance: Treat this as a signal to check each proposed response against memory, not proof that all comments in the batch have been answered. Apply the current memory policy to repeated statements about the post and to distinct visible-comment targets separately. Similar wording, a different recipient, or another channel does not justify repeating the user's own generic response.
+'''
+
+[embedding_similarity]
+guidance = '''
+### Similarity to Memory: Meaning
+
+Signal: Embedding similarity to stored memory is at or above the threshold. The batch may contain a familiar topic; this does not establish that every interaction in it has been handled.
+
+Guidance: A response must satisfy the applicable memory policy, including its distinction between another statement about the post and a reply to a distinct visible comment. Reject redundant expression; do not reject all response targets solely from this batch-level similarity score.
+'''

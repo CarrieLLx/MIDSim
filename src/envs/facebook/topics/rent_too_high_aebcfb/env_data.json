@@ -1,0 +1,38 @@
+{
+  "current_timestamp": 1782222472000,
+  "timestamp_duration": 0,
+  "reference_embedding_path": "datasets/facebook/embeddings/bge-base-en-v1.5_embeddings.json",
+  "scenario_topic": "Should the United States expand affordable housing supply?",
+  "content_pool": {
+    "pfbid02cdprwNaa5sK7TsmZDFbqeJiZFHvtm8yJ4ev1dC5USaxBZ14GBJYgeU3N2iV9gQjxl": {
+      "id": "pfbid02cdprwNaa5sK7TsmZDFbqeJiZFHvtm8yJ4ev1dC5USaxBZ14GBJYgeU3N2iV9gQjxl",
+      "content": "Glad to not be a part of this statistic... Fuck all that!_Rent too high? More young adults are staying with their parents as housing costs continue to rise across the U.S. _…",
+      "time": 1782222472000,
+      "url": "https://www.facebook.com/skitch88/posts/pfbid02cdprwNaa5sK7TsmZDFbqeJiZFHvtm8yJ4ev1dC5USaxBZ14GBJYgeU3N2iV9gQjxl?__cft__[0]=AZYoQwJFb-KomsBkMpzPfBER36LY6u5aiB_BqkcaW41b4jD1KDCEtXqmugwioBmMwTHkYHtM7JZa2SCWUQUXSy_alvzRmJFugpoudoXd8hhyLYY_PI5rZkt4hJW0a4bM5oobQChDeOAIDBYQAbeinAEEd1NDhQUpDFBUv9jaeF8SNaLrsKuhQ4YiVMovBKhzxjJTJuQlCj56xuQPOfe7aHwtaKzYabOc-nfTQ_Gm5dNZ8g&__tn__=%2CO%2CP-R",
+      "user_id": "skitch88",
+      "username": "Kayla Barr",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "pfbid02mGmoJFBtMYa2dVnDqqgNw7srtb2iJRYTgr7XyKAvSX8bFGnnNL2AV1EdaGfCn81Kl": {
+      "id": "pfbid02mGmoJFBtMYa2dVnDqqgNw7srtb2iJRYTgr7XyKAvSX8bFGnnNL2AV1EdaGfCn81Kl",
+      "content": "Today, the 21st Century ROAD to Housing Act passed – legislation to rein in corporate landlords that are buying up single-family homes and to remove barriers to housing development._This is an important first step, and Congress must continue working to lower the cost of rent and homeownership, including by passing my Housing is a Human Right Act which would invest billions into housing infrastructure and affordable housing.",
+      "time": 1782265623000,
+      "url": "https://www.facebook.com/RepJayapal/posts/pfbid02mGmoJFBtMYa2dVnDqqgNw7srtb2iJRYTgr7XyKAvSX8bFGnnNL2AV1EdaGfCn81Kl?__cft__[0]=AZbpRc5Bi_eIkbYId88s9MNeH2Z6rnR2fp0qc-p1miRuXo_VlCZgWRNXRSVEXWquVeRwlSJCC37nAPxuh_8lt5RTqCnAL9uIYN24dhFKpSBs4GGRSxNwrBdj1xPg2-dkdg5Mlv8QiULTXZD_IlqpXUUGXiBdmOnf5Z57n17vo14Zvo1ILrBLON3S6-zgGVQNU-M&__tn__=%2CO%2CP-R",
+      "user_id": "RepJayapal",
+      "username": "Congresswoman Pramila Jayapal",
+      "comment_count": 0,
+      "comments": {}
+    },
+    "pfbid0A6QEPnjbDVr5khvXCTTe5rZoRgEUyH2DY4jRuaTo2qjMA6QtUXFgvVDZFmbV6jktl": {
+      "id": "pfbid0A6QEPnjbDVr5khvXCTTe5rZoRgEUyH2DY4jRuaTo2qjMA6QtUXFgvVDZFmbV6jktl",
+      "content": "Out of 50 states and Washington, D.C., New York is dead last. _ got an F. Housing costs in New York are eating up more than 55% of the average family's income. That is not a housing crisis. That is an affordability crisis, and Kathy Hochul caused it. Highest taxes in the nation. Utility bills 70% above the national average. And now the worst housing ranking in the country. _ just graded New York DEAD LAST on housing and affordability. Out of 50 states and Washington, D.C., New York is dead last. Hochul got an F.…",
+      "time": 1782268447000,
+      "url": "https://www.facebook.com/mary.barton.9/posts/pfbid0A6QEPnjbDVr5khvXCTTe5rZoRgEUyH2DY4jRuaTo2qjMA6QtUXFgvVDZFmbV6jktl?__cft__[0]=AZYqwVpi-7OV2JFNlMM2azQV-V3fAtJKWwbRqV4il50zNtZ4M2P9QewnXUTTr9UUZAz1FfsKuCFctuA-MBD2FL4ykog30eC696LTWeYJ_B14RAbSz_Ehawxgn1M2APP3o8F1qyw6L3SFis6VGvEqbgB9e2EKxdnOGSaoSbOeoFfr8L0zODYfkIRQjPWP7dSQX9mtGFroq7BYO7NqIU7uOGKy&__tn__=%2CO%2CP-R",
+      "user_id": "mary.barton.9",
+      "username": "Mary Kay Barton",
+      "comment_count": 0,
+      "comments": {}
+    }
+  }
+}

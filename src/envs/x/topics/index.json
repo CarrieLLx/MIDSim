@@ -1,0 +1,136 @@
+{
+  "source_posts": "datasets/x/posts.jsonl",
+  "selection_manifest": "config/datasets/x/selection_24day.json",
+  "platform_filter": "X",
+  "topic_count": 7,
+  "topics": [
+    {
+      "slug": "fmla_c334ab",
+      "topic": "Should paid family and parental leave be provided?",
+      "keyword": "paid parental leave",
+      "post_count": 11,
+      "comment_count": 29,
+      "user_count": 38,
+      "relationship_count": 99
+    },
+    {
+      "slug": "food_stamps_ecd548",
+      "topic": "Should college students have easier access to SNAP food assistance?",
+      "keyword": "food stamps",
+      "post_count": 20,
+      "comment_count": 84,
+      "user_count": 101,
+      "relationship_count": 353
+    },
+    {
+      "slug": "hidden_fees_21044d",
+      "topic": "Should concert and sports tickets be required to show the full price?",
+      "keyword": "hidden fees",
+      "post_count": 4,
+      "comment_count": 1,
+      "user_count": 5,
+      "relationship_count": 10
+    },
+    {
+      "slug": "living_wage_bcd48e",
+      "topic": "Should the federal minimum wage be raised?",
+      "keyword": "federal minimum wage",
+      "post_count": 11,
+      "comment_count": 105,
+      "user_count": 112,
+      "relationship_count": 305
+    },
+    {
+      "slug": "no_tax_on_tips_f18fbe",
+      "topic": "Should tip income be tax-exempt?",
+      "keyword": "tipped workers",
+      "post_count": 25,
+      "comment_count": 67,
+      "user_count": 73,
+      "relationship_count": 359
+    },
+    {
+      "slug": "rent_too_high_aebcfb",
+      "topic": "Should the United States expand affordable housing supply?",
+      "keyword": "housing crisis",
+      "post_count": 18,
+      "comment_count": 35,
+      "user_count": 51,
+      "relationship_count": 58
+    },
+    {
+      "slug": "universal_school_meals_6d389a",
+      "topic": "Should free school meals be expanded?",
+      "keyword": "free school meals",
+      "post_count": 9,
+      "comment_count": 38,
+      "user_count": 45,
+      "relationship_count": 79
+    }
+  ],
+  "scenarios": [
+    {
+      "slug": "fmla_c334ab",
+      "topic": "Should paid family and parental leave be provided?",
+      "keyword": "paid parental leave",
+      "post_count": 11,
+      "comment_count": 29,
+      "user_count": 38,
+      "relationship_count": 99
+    },
+    {
+      "slug": "food_stamps_ecd548",
+      "topic": "Should college students have easier access to SNAP food assistance?",
+      "keyword": "food stamps",
+      "post_count": 20,
+      "comment_count": 84,
+      "user_count": 101,
+      "relationship_count": 353
+    },
+    {
+      "slug": "hidden_fees_21044d",
+      "topic": "Should concert and sports tickets be required to show the full price?",
+      "keyword": "hidden fees",
+      "post_count": 4,
+      "comment_count": 1,
+      "user_count": 5,
+      "relationship_count": 10
+    },
+    {
+      "slug": "living_wage_bcd48e",
+      "topic": "Should the federal minimum wage be raised?",
+      "keyword": "federal minimum wage",
+      "post_count": 11,
+      "comment_count": 105,
+      "user_count": 112,
+      "relationship_count": 305
+    },
+    {
+      "slug": "no_tax_on_tips_f18fbe",
+      "topic": "Should tip income be tax-exempt?",
+      "keyword": "tipped workers",
+      "post_count": 25,
+      "comment_count": 67,
+      "user_count": 73,
+      "relationship_count": 359
+    },
+    {
+      "slug": "rent_too_high_aebcfb",
+      "topic": "Should the United States expand affordable housing supply?",
+      "keyword": "housing crisis",
+      "post_count": 18,
+      "comment_count": 35,
+      "user_count": 51,
+      "relationship_count": 58
+    },
+    {
+      "slug": "universal_school_meals_6d389a",
+      "topic": "Should free school meals be expanded?",
+      "keyword": "free school meals",
+      "post_count": 9,
+      "comment_count": 38,
+      "user_count": 45,
+      "relationship_count": 79
+    }
+  ]
+}

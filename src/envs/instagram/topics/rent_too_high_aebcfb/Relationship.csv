@@ -1,0 +1,17 @@
+source_agent,target_agent,direction,relationship_type
+abusellshomes,kiraloginoff,unidirectional,following
+abusellshomes,walsh_photovideo,unidirectional,following
+dirtbag.barbie,walkableroanoke,unidirectional,following
+homeofva,strongtownsrva,unidirectional,following
+icemopper,lbcanary,unidirectional,following
+icemopper,walkableroanoke,unidirectional,following
+kiraloginoff,abusellshomes,unidirectional,following
+kiraloginoff,walsh_photovideo,unidirectional,following
+lbcanary,walkableroanoke,unidirectional,following
+reedinthewind,walkableroanoke,unidirectional,following
+strongtownsrva,homeofva,unidirectional,following
+strongtownsrva,walkableroanoke,unidirectional,following
+walkableroanoke,homeofva,unidirectional,following
+walkableroanoke,strongtownsrva,unidirectional,following
+walsh_photovideo,abusellshomes,unidirectional,following
+walsh_photovideo,kiraloginoff,unidirectional,following

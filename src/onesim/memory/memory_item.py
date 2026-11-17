@@ -25,7 +25,7 @@ class MemoryItem:
 
     def to_dict(self):
         """
-        将MemoryItem对象转换为可JSON序列化的字典。
+        Convert a MemoryItem to a JSON-serializable dictionary.
         """
         embedding_serializable = self.embedding
         if hasattr(self.embedding, 'tolist'):
@@ -43,7 +43,7 @@ class MemoryItem:
     @classmethod
     def from_dict(cls, data):
         """
-        从字典创建MemoryItem对象。
+        Create a MemoryItem from a dictionary.
         """
         embedding = data.get('embedding')
         if isinstance(embedding, list):

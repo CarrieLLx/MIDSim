@@ -1,0 +1,124 @@
+{
+  "fine_interest_recommendation_content_pool": {
+    "x_living_wage_bcd48e_01": {
+      "post_id": "x_living_wage_bcd48e_01",
+      "desc": "The federal minimum wage has stayed at $7.25 for years. Should Congress finally raise it?",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_02": {
+      "post_id": "x_living_wage_bcd48e_02",
+      "desc": "A full-time job should at least put basic living costs within reach. What would a workable policy look like?",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_03": {
+      "post_id": "x_living_wage_bcd48e_03",
+      "desc": "Raising the minimum wage sounds simple until you ask how small businesses will absorb it.",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_04": {
+      "post_id": "x_living_wage_bcd48e_04",
+      "desc": "Minimum wage policy should account for inflation instead of waiting years for a political fight. Curious how others see this.",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_05": {
+      "post_id": "x_living_wage_bcd48e_05",
+      "desc": "Can one national wage floor reflect the cost of living in both rural towns and big cities?",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_06": {
+      "post_id": "x_living_wage_bcd48e_06",
+      "desc": "Workers should not need multiple jobs just to cover essentials.",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_07": {
+      "post_id": "x_living_wage_bcd48e_07",
+      "desc": "Would a gradual federal minimum wage increase be easier for employers to manage?",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_08": {
+      "post_id": "x_living_wage_bcd48e_08",
+      "desc": "Higher wages help workers, but what happens to prices and hiring? We need that debate too.",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_09": {
+      "post_id": "x_living_wage_bcd48e_09",
+      "desc": "The conversation is not just about paychecks. It is about what full-time work can buy.",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_10": {
+      "post_id": "x_living_wage_bcd48e_10",
+      "desc": "Should the federal minimum wage be indexed to a cost-of-living measure? Thoughts?",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_11": {
+      "post_id": "x_living_wage_bcd48e_11",
+      "desc": "Cities already set different wage floors. Does the country still need a stronger federal baseline?",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_12": {
+      "post_id": "x_living_wage_bcd48e_12",
+      "desc": "A minimum wage that never changes effectively loses value every year prices rise.",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_13": {
+      "post_id": "x_living_wage_bcd48e_13",
+      "desc": "Service-sector workers are central to the wage debate, but their experiences are not identical.",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_14": {
+      "post_id": "x_living_wage_bcd48e_14",
+      "desc": "Could tax credits for small employers ease the transition to a higher minimum wage? Anyone seen this handled well locally?",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_15": {
+      "post_id": "x_living_wage_bcd48e_15",
+      "desc": "The wage floor should be high enough to matter without ignoring regional differences.",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_16": {
+      "post_id": "x_living_wage_bcd48e_16",
+      "desc": "Why is it easier to debate a number than to talk to people actually earning it?",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_17": {
+      "post_id": "x_living_wage_bcd48e_17",
+      "desc": "Does raising the minimum wage reduce poverty, or do housing costs eat up the gains?",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_18": {
+      "post_id": "x_living_wage_bcd48e_18",
+      "desc": "Young and entry-level workers deserve a realistic path to better wages.",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_19": {
+      "post_id": "x_living_wage_bcd48e_19",
+      "desc": "If a business depends on extremely low wages, what does that say about its model?",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    },
+    "x_living_wage_bcd48e_20": {
+      "post_id": "x_living_wage_bcd48e_20",
+      "desc": "What federal minimum wage would you support, and why that amount?",
+      "topic": "living_wage_bcd48e",
+      "post_type": "similar_topic_post"
+    }
+  }
+}

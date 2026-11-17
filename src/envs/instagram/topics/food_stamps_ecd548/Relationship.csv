@@ -1,0 +1,15 @@
+source_agent,target_agent,direction,relationship_type
+maria.muoio.31,voteinorout,unidirectional,following
+oakandcannon,budgetbytes,unidirectional,following
+eyad.ebrahim.3158,the.aaany,unidirectional,following
+nouveaugretchen,voteinorout,unidirectional,following
+gingertakesphotos,budgetbytes,unidirectional,following
+budgetbytes,oakandcannon,unidirectional,following
+jameslawrencecamp,voteinorout,unidirectional,following
+unitedmediagroupdc,freshfarmdc,unidirectional,following
+killbill3571,harvard6744,unidirectional,following
+mitch_leslie,voteinorout,unidirectional,following
+bowlofdelicious,budgetbytes,unidirectional,following
+serene_menace,budgetbytes,unidirectional,following
+ohnoanotherbrad,budgetbytes,unidirectional,following
+harvard6744,killbill3571,unidirectional,following

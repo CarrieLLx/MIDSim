@@ -1,0 +1,62 @@
+{
+  "id": {
+    "type": "str",
+    "default": "platform_agent_ffff",
+    "private": false,
+    "sampling": "default",
+    "description": "Unique id of platform algorithm agent"
+  },
+  "role": {
+    "type": "str",
+    "default": "recommendation",
+    "private": false,
+    "sampling": "default",
+    "choices": [
+      "recommendation",
+      "search"
+    ],
+    "description": "Whether this agent serves recommendation or search"
+  },
+  "recommendations": {
+    "type": "dict",
+    "default": {},
+    "private": false,
+    "sampling": "none",
+    "description": "Dictionary of post content pushed by recommendation algorithm."
+  },
+  "current_posts": {
+    "type": "dict",
+    "default": {},
+    "private": false,
+    "sampling": "none",
+    "description": "Dictionary of current posts in this step window."
+  },
+  "coarse_interest_recommendation_content_pool": {
+    "type": "dict",
+    "default": {},
+    "private": false,
+    "sampling": "none",
+    "description": "Platform-shared coarse interest posts from recommendation.json."
+  },
+  "fine_interest_recommendation_content_pool": {
+    "type": "dict",
+    "default": {},
+    "private": false,
+    "sampling": "none",
+    "description": "Topic-specific fine interest posts from topics/{slug}/recommendation.json."
+  },
+  "interest_recommendation_content_pool": {
+    "type": "dict",
+    "default": {},
+    "private": false,
+    "sampling": "none",
+    "description": "Merged coarse+fine interest pool used by Algorithm.interest()."
+  },
+  "candidate_post_ids_by_user": {
+    "type": "dict",
+    "default": {},
+    "private": false,
+    "sampling": "none",
+    "description": "Topic-level user_id -> candidate post IDs. Loaded from topics/{slug}/recommendation.json."
+  }
+}

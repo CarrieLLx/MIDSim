@@ -3,264 +3,264 @@ syntax = "proto3";
 
 package agent;
 
-// 事件服务定义
+// Event service definition.
 service AgentService {
-  // 注册worker节点
+  // Register a worker node.
   rpc RegisterWorker (RegisterWorkerRequest) returns (RegisterWorkerResponse) {}
   
-  // 心跳服务
+  // Heartbeat service.
   rpc Heartbeat (HeartbeatRequest) returns (HeartbeatResponse) {}
   
-  // 在worker上创建agent
+  // Create an agent on a worker.
   rpc CreateAgent (CreateAgentRequest) returns (CreateAgentResponse) {}
   
-  // 发送事件
+  // Send an event.
   rpc SendEvent (EventRequest) returns (EventResponse) {}
   
-  // 批量创建agents
+  // Create agents in a batch.
   rpc CreateAgentsBatch (CreateAgentsBatchRequest) returns (CreateAgentsBatchResponse) {}
   
-  // 发送数据存储事件
+  // Send a data storage event.
   rpc SendStorageEvent (StorageEventRequest) returns (StorageEventResponse) {}
   
-  // 批量发送数据存储事件
+  // Send data storage events in a batch.
   rpc SendStorageEventBatch (StorageEventBatchRequest) returns (StorageEventBatchResponse) {}
   
-  // 发送决策记录
+  // Send a decision record.
   rpc SendDecisionRecord (DecisionRecordRequest) returns (DecisionRecordResponse) {}
   
-  // 批量发送决策记录
+  // Send decision records in a batch.
   rpc SendDecisionRecordBatch (DecisionRecordBatchRequest) returns (DecisionRecordBatchResponse) {}
   
-  // 获取环境数据
+  // Get environment data.
   rpc GetEnvData (EnvDataRequest) returns (EnvDataResponse) {}
   
-  // 更新环境数据
+  // Update environment data.
   rpc UpdateEnvData (EnvDataUpdateRequest) returns (EnvDataUpdateResponse) {}
   
-  // 请求停止仿真
+  // Request simulation termination.
   rpc StopSimulation (SimulationStopRequest) returns (SimulationStopResponse) {}
   
-  // 获取Agent数据
+  // Get agent data.
   rpc GetAgentData (AgentDataRequest) returns (AgentDataResponse) {}
   
-  // 获取指定类型的Agent数据
+  // Get data for agents of a specified type.
   rpc GetAgentDataByType (AgentDataByTypeRequest) returns (AgentDataByTypeResponse) {}
   
-  // 获取节点的Token使用情况
+  // Get token usage for a node.
   rpc GetTokenUsage (TokenUsageRequest) returns (TokenUsageResponse) {}
 
-  // 定位Agent所在Worker
+  // Locate the worker hosting an agent.
   rpc LocateAgent (LocateAgentRequest) returns (LocateAgentResponse) {}
 
-  // Master向Worker批量收集数据
+  // Collect data from workers in a batch at the master's request.
   rpc CollectDataBatch(BatchDataRequest) returns (BatchDataResponse) {}
 }
 
-// Worker注册请求
+// Worker registration request.
 message RegisterWorkerRequest {
   string worker_id = 1;
   string address = 2;
   int32 port = 3;
 }
 
-// Worker注册响应
+// Worker registration response.
 message RegisterWorkerResponse {
   bool success = 1;
   string message = 2;
 }
 
-// 心跳请求
+// Heartbeat request.
 message HeartbeatRequest {
   string worker_id = 1;
   int64 timestamp = 2;
 }
 
-// 心跳响应
+// Heartbeat response.
 message HeartbeatResponse {
   bool acknowledged = 1;
 }
 
-// 创建Agent请求
+// Agent creation request.
 message CreateAgentRequest {
   string agent_type = 1;
   string agent_id = 2;
-  string config_json = 3;  // JSON序列化的配置
+  string config_json = 3;  // JSON-serialized configuration.
 }
 
-// 创建Agent响应
+// Agent creation response.
 message CreateAgentResponse {
   bool success = 1;
   string message = 2;
   string agent_id = 3;
 }
 
-// 事件请求
+// Event request.
 message EventRequest {
   string event_id = 1;
   string event_kind = 2;
   string from_agent_id = 3;
   string to_agent_id = 4;
   int64 timestamp = 5;
-  string payload_json = 6;  // JSON序列化的payload
+  string payload_json = 6;  // JSON-serialized payload.
   string reply_to_worker_address = 7; // For P2P direct replies
   int32 reply_to_worker_port = 8;    // For P2P direct replies
 }
 
-// 事件响应
+// Event response.
 message EventResponse {
   bool received = 1;
 }
 
-// 批量事件请求 (用于P2P批量发送)
+// Batch event request for P2P delivery.
 message EventBatchRequest {
   repeated EventRequest events = 1;
 }
 
-// 批量事件响应
+// Batch event response.
 message EventBatchResponse {
   bool received = 1;
   int32 processed_count = 2;
   string error = 3;
 }
 
-// 数据存储事件请求
+// Data storage event request.
 message StorageEventRequest {
   string event_type = 1;
   string source_type = 2;
   string source_id = 3;
   string target_type = 4;
   string target_id = 5;
-  string payload_json = 6;  // JSON序列化的payload
+  string payload_json = 6;  // JSON-serialized payload.
 }
 
-// 数据存储事件响应
+// Data storage event response.
 message StorageEventResponse {
   bool received = 1;
 }
 
-// 批量数据存储事件请求
+// Batch data storage event request.
 message StorageEventBatchRequest {
   repeated StorageEventRequest events = 1;
 }
 
-// 批量数据存储事件响应
+// Batch data storage event response.
 message StorageEventBatchResponse {
   bool received = 1;
   int32 processed_count = 2;
   string error = 3;
 }
 
-// 决策记录请求
+// Decision record request.
 message DecisionRecordRequest {
   string agent_id = 1;
   string prompt = 2;
   string output = 3;
   double processing_time = 4;
-  string context_json = 5;  // JSON序列化的context
+  string context_json = 5;  // JSON-serialized context.
 }
 
-// 决策记录响应
+// Decision record response.
 message DecisionRecordResponse {
   bool received = 1;
 }
 
-// 批量决策记录请求
+// Batch decision record request.
 message DecisionRecordBatchRequest {
   repeated DecisionRecordRequest decisions = 1;
 }
 
-// 批量决策记录响应
+// Batch decision record response.
 message DecisionRecordBatchResponse {
   bool received = 1;
   int32 processed_count = 2;
   string error = 3;
 }
 
-// 批量创建agents请求
+// Batch agent creation request.
 message CreateAgentsBatchRequest {
   repeated string configs_json = 1;
 }
 
-// 批量创建agents响应
+// Batch agent creation response.
 message CreateAgentsBatchResponse {
   bool success = 1;
   string message = 2;
   repeated string agent_ids = 3;
 }
 
-// 环境数据请求
+// Environment data request.
 message EnvDataRequest {
   string key = 1;
-  string default_value_json = 2;  // JSON序列化的默认值
+  string default_value_json = 2;  // JSON-serialized default value.
 }
 
-// 环境数据响应
+// Environment data response.
 message EnvDataResponse {
   bool success = 1;
-  string value_json = 2;  // JSON序列化的值
+  string value_json = 2;  // JSON-serialized value.
   string error = 3;
 }
 
-// 环境数据更新请求
+// Environment data update request.
 message EnvDataUpdateRequest {
   string key = 1;
-  string value_json = 2;  // JSON序列化的值
+  string value_json = 2;  // JSON-serialized value.
 }
 
-// 环境数据更新响应
+// Environment data update response.
 message EnvDataUpdateResponse {
   bool success = 1;
   string error = 2;
 }
 
-// 停止仿真请求
+// Simulation termination request.
 message SimulationStopRequest {
   string worker_id = 1;
   string reason = 2;
   int64 timestamp = 3;
 }
 
-// 停止仿真响应
+// Simulation termination response.
 message SimulationStopResponse {
   bool acknowledged = 1;
   string message = 2;
 }
 
-// Agent数据请求
+// Agent data request.
 message AgentDataRequest {
   string agent_id = 1;
   string key = 2;
-  string default_value_json = 3;  // JSON序列化的默认值
+  string default_value_json = 3;  // JSON-serialized default value.
 }
 
-// Agent数据响应
+// Agent data response.
 message AgentDataResponse {
   bool success = 1;
-  string value_json = 2;  // JSON序列化的值
+  string value_json = 2;  // JSON-serialized value.
   string error = 3;
 }
 
-// 按类型获取Agent数据请求
+// Request for agent data by type.
 message AgentDataByTypeRequest {
   string agent_type = 1;
   string key = 2;
-  string default_value_json = 3;  // JSON序列化的默认值
+  string default_value_json = 3;  // JSON-serialized default value.
 }
 
-// 按类型获取Agent数据响应
+// Response containing agent data by type.
 message AgentDataByTypeResponse {
   bool success = 1;
-  string values_json = 2;  // JSON序列化的{agent_id: value}字典
+  string values_json = 2;  // JSON-serialized {agent_id: value} dictionary.
   string error = 3;
 }
 
-// 定位Agent请求
+// Agent location request.
 message LocateAgentRequest {
   string agent_id = 1;
 }
 
-// 定位Agent响应
+// Agent location response.
 message LocateAgentResponse {
   bool success = 1;
   string worker_address = 2;
@@ -268,28 +268,28 @@ message LocateAgentResponse {
   string error_message = 4;
 }
 
-// Token使用情况请求
+// Token usage request.
 message TokenUsageRequest {
   string worker_id = 1;
 }
 
-// Token使用情况响应
+// Token usage response.
 message TokenUsageResponse {
   bool success = 1;
-  string token_stats_json = 2;  // JSON序列化的token统计数据
+  string token_stats_json = 2;  // JSON-serialized token statistics.
   string error = 3;
 }
 
-// Master向Worker批量收集数据请求
+// Master request to collect data from workers in a batch.
 message BatchDataRequest {
-  string agent_type = 1;          // 要查询的Agent类型
-  string data_key = 2;            // 要获取的数据的键
-  string default_value_json = 3;  // JSON序列化的默认值 (可选)
+  string agent_type = 1;          // Agent type to query.
+  string data_key = 2;            // Key of the requested data.
+  string default_value_json = 3;  // Optional JSON-serialized default value.
 }
 
-// Master向Worker批量收集数据响应
+// Response to the master's batch data collection request.
 message BatchDataResponse {
   bool success = 1;
-  string collected_data_json = 2; // JSON序列化的收集到的数据 {agent_id: value}
-  string error_message = 3;       // 错误信息 (如果success为false)
+  string collected_data_json = 2; // JSON-serialized collected data: {agent_id: value}.
+  string error_message = 3;       // Error message when success is false.
 }        

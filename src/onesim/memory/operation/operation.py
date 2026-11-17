@@ -5,6 +5,7 @@ import json
 from onesim.models.core.message import Message
 from onesim.models import JsonBlockParser
 from ..memory_item import MemoryItem
+from onesim.utils.model_retry import validated_auxiliary_request, ModelRequestSkipped
 
 
 def _parse_json_dict_from_llm_response(response: Any) -> Dict[str, Any]:
@@ -77,6 +78,14 @@ class RemoveMemoryOperation(MemoryOperation):
         await storage.delete(memory_item)
 
 class ReflectMemoryOperation(MemoryOperation):
+    @staticmethod
+    def _validate_text_list(response, field):
+        values = _parse_json_dict_from_llm_response(response).get(field)
+        if (not isinstance(values, list) or not values
+                or any(not isinstance(value, str) or not value.strip() for value in values)):
+            raise ValueError(f'{field} must be a non-empty list of non-empty strings')
+        return values
+
     async def execute(self, strategy, *args, **kwargs):
         short_term_storage_name = getattr(strategy, 'short_term_storage_name', 'short_term_storage')
         long_term_storage_name = getattr(strategy, 'long_term_storage_name', 'long_term_storage')
@@ -120,23 +129,14 @@ class ReflectMemoryOperation(MemoryOperation):
                 f"[ReflectMemoryOperation] Call LLM to generate reflection questions agent_id={agent_id} "
                 f"model={model_name} short_term_count={len(short_term_memories)}"
             )
-            response = await strategy.model.acall(formatted_prompt)
-
-            parsed = _parse_json_dict_from_llm_response(response)
-            questions = parsed.get("questions")
-            if not isinstance(questions, list) or not questions:
-                raise ValueError("questions missing or not a non-empty list")
+            questions = await validated_auxiliary_request(
+                strategy.model, formatted_prompt,
+                lambda response: self._validate_text_list(response, 'questions'),
+                kind='reflection_questions', owner=strategy, agent_id=agent_id,
+            )
             logger.info(f"[ReflectMemoryOperation] Generated questions: {questions}")
-        except json.JSONDecodeError as e:
-            logger.warning(f"[ReflectMemoryOperation] Failed to parse questions JSON: {e}")
-            questions = ["What are my recent experiences?",
-                         "What insights can I derive from my memories?",
-                         "What should I focus on next?"]
-        except Exception as e:
-            logger.warning(f"[ReflectMemoryOperation] Error generating questions (using defaults): {e}")
-            questions = ["What are my recent experiences?",
-                         "What insights can I derive from my memories?",
-                         "What should I focus on next?"]
+        except ModelRequestSkipped:
+            return  # Keep existing memories; no fabricated reflection questions.
             
         retrieved_memories = []
         for question in questions:
@@ -151,7 +151,7 @@ class ReflectMemoryOperation(MemoryOperation):
                 
         retrieved_memories_descriptions = '\n'.join([str(memory_item) for memory_item in retrieved_memories])
         
-        # 构建生成见解的提示
+        # Build the insight-generation prompt.
         prompt = (
             f"Based on the following retrieved memories:\n\n{retrieved_memories_descriptions}\n\n"
             f"and considering the questions:\n\n{questions}\n\n"
@@ -171,7 +171,7 @@ class ReflectMemoryOperation(MemoryOperation):
             "Output the JSON only: either wrap it in ```json ... ```, or output a single raw JSON object."
         )
         
-        # 调用LLM生成见解
+        # Call the LLM to generate insights.
         formatted_prompt = strategy.model.format(
             Message("user", prompt, role="user")
         )
@@ -184,19 +184,14 @@ class ReflectMemoryOperation(MemoryOperation):
                 f"model={model_name} retrieved_count={len(retrieved_memories)} "
                 f"questions_count={len(questions)}"
             )
-            response = await strategy.model.acall(formatted_prompt)
-
-            parsed = _parse_json_dict_from_llm_response(response)
-            insights = parsed.get("insights")
-            if not isinstance(insights, list) or not insights:
-                raise ValueError("insights missing or not a non-empty list")
+            insights = await validated_auxiliary_request(
+                strategy.model, formatted_prompt,
+                lambda response: self._validate_text_list(response, 'insights'),
+                kind='reflection_insights', owner=strategy, agent_id=agent_id,
+            )
             logger.info(f"[ReflectMemoryOperation] Generated insights: {insights}")
-        except json.JSONDecodeError as e:
-            logger.warning(f"[ReflectMemoryOperation] Failed to parse insights JSON: {e}")
-            insights = ["No specific insights could be generated at this time."]
-        except Exception as e:
-            logger.warning(f"[ReflectMemoryOperation] Error generating insights (using fallback): {e}")
-            insights = ["No specific insights could be generated at this time."]
+        except ModelRequestSkipped:
+            return  # Leave short-term memories intact for future events.
             
         # Create memory items for insights and add to long-term storage
         for insight in insights:

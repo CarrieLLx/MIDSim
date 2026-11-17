@@ -70,9 +70,9 @@ def create_directory(path: str):
 def setup_logging(env_name: str):
     """Set up logging with a stable filename based on environment name.
     Logs will be rotated when they reach 500MB and compressed."""
-    # 命令行可覆盖：ONESIM_LOG_LEVEL=DEBUG python ...  （默认 INFO）
+    # Override from the command line: ONESIM_LOG_LEVEL=DEBUG python ... (default: INFO).
     log_level = os.environ.get("ONESIM_LOG_LEVEL", "DEBUG").upper()
-    # 可显式指定可写目录：ONESIM_LOG_DIR=~/mylogs
+    # Specify a writable directory with ONESIM_LOG_DIR=~/mylogs.
     override_dir = os.environ.get("ONESIM_LOG_DIR")
     if override_dir:
         log_dir = os.path.expanduser(override_dir)
@@ -95,7 +95,7 @@ def setup_logging(env_name: str):
         create_directory(fallback_dir)
         fallback_file = os.path.join(fallback_dir, f"{env_name}.log")
         logger.warning(
-            "无法写入环境日志目录 {}，已改用用户目录：{}",
+            "Cannot write to environment log directory {}; using user directory instead: {}",
             log_dir,
             fallback_file,
         )

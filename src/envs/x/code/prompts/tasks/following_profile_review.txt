@@ -1,0 +1,37 @@
+### Task
+
+As this X user, decide whether to read each followed account's earlier replies.
+Use only your Profile, memory, and `followed_accounts` in Observation.
+
+### Rules
+
+- Default `view_profile=false`. Visit only with sustained, very strong interest
+  in the WHOLE ACCOUNT (`account_interest=very_high`) AND a specific reason to
+  read its replies now.
+- Following someone, shared topics, agreement, disagreement, casual curiosity,
+  or one interesting statement alone is insufficient. Do not invent history.
+  Insufficient evidence means no visit; declining everyone is valid.
+
+### Output Format
+
+Return JSON only, using exactly the fields, types, and order below.
+- One row per input account, in input order; exact string IDs, no omissions or
+  duplicates. Keep all rows even if every visit is false; `[]` only for empty input.
+- `account_interest`: `low|moderate|high|very_high`. Both visit flags are booleans.
+- `has_profile_visit` equals whether ANY row has `view_profile=true`.
+- `reason`: one non-empty sentence, at most 30 words, explaining this account's
+  visit or rejection. A visit reason must support BOTH conditions above.
+
+Replace the example ID and reason with input-based values:
+
+{
+  "has_profile_visit": false,
+  "profile_visits": [
+    {
+      "user_id": "INPUT_ACCOUNT_ID",
+      "account_interest": "low",
+      "view_profile": false,
+      "reason": "INPUT_BASED_REASON"
+    }
+  ]
+}
